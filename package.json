@@ -1,0 +1,27 @@
+{
+  "name": "OkAlpha",
+  "version": "0.0.0",
+  "description": "== README",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "test"
+  },
+  "dependencies": {
+    "babel-core": "~6.3.17",
+    "babel-preset-react": "~6.3.13",
+    "babel-loader": "~6.2.0",
+    "flux": "~2.1.1",
+    "react": "~0.14.3",
+    "react-dom": "~0.14.3",
+    "webpack": "~1.12.9",
+    "history": "~1.13.1",
+    "react-router": "~1.0.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "BSD-2-Clause"
+}

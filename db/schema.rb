@@ -15,9 +15,9 @@ ActiveRecord::Schema.define(version: 20151215175053) do
 
   create_table "users", force: :cascade do |t|
     t.string   "username",         null: false
-    t.string   "gender",           null: false
-    t.string   "preferred_gender", null: false
-    t.string   "email",            null: false
+    t.string   "gender"
+    t.string   "preferred_gender"
+    t.string   "email"
     t.string   "image_url"
     t.string   "bio"
     t.string   "session_token",    null: false
