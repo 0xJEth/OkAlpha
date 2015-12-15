@@ -4,18 +4,15 @@
 ### Models
 
 ### Controllers
-* Api::LikesController (create, destroy, index)
 
 ### Views
-* Likes
 
 ## Flux
 ### Views (React Components)
-* YourLikes
-* LikesYou
-* MutualLikes
+* LikesIndex
 
 ### Stores
+* LikesStore
 
 ### Actions
 * ApiActions.receiveAllYourLikes -> triggered by ApiUtil

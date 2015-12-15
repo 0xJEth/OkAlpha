@@ -5,7 +5,7 @@
 * User
 
 ### Controllers
-* UsersController (create, new, edit)
+* UsersController (create, new)
 * SessionsController (create, new, destroy)
 
 ### Views
@@ -15,6 +15,7 @@
 
 ## Flux
 ### Views (React Components)
+* Users (index, show, update)
 
 ### Stores
 

@@ -5,7 +5,7 @@
 * AIMatches
 
 ### Controllers
-* Api::AIMatchesController (create, index)
+* Api::AIMatchesController (index)
 
 ### Views
 
