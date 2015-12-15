@@ -1,4 +1,6 @@
 class UsersController < ApplicationController
+  helper_method :create
+
   def new
     @user = User.new
   end

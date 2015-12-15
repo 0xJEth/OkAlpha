@@ -25,5 +25,9 @@ module.exports = {
         loader: "node-loader"
       }
     ]
+  },
+  devtool: 'source-maps',
+  resolve: {
+    extensions: ["", ".js", ".jsx" ]
   }
 };

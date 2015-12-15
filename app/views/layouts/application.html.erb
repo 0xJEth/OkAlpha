@@ -1,14 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>OkAlpha</title>
   <%= stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track' => true %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track' => true %>
   <%= csrf_meta_tags %>
 </head>
 <body>
+  <% if signed_in? %>
+    <%= current_user.username %>
+    <%= button_to "Sign Out", session_url, :method => :delete %>
+    <%= render "layouts/errors" %>
+    <%= yield %>
+  <% else %>
+    <%= render "layouts/errors" %>
+    <%= render "layouts/new_user" %>
+  <% end %>
 
-<%= yield %>
 
 </body>
 </html>

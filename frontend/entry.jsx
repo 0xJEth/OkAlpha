@@ -1,15 +1,19 @@
-var React = require('react');
-var ReactDOM = require('react-dom');
-var ReactRouter = require('react-router');
-var Router = ReactRouter.Router;
-var Route = ReactRouter.Route;
-var IndexRoute = ReactRouter.IndexRoute;
+var ReactRouter = require('react-router'),
+    ReactDOM = require('react-dom'),
+    React = require('react'),
+    Router = ReactRouter.Router,
+    Route = ReactRouter.Route,
+    IndexRoute = ReactRouter.IndexRoute,
+    UserForm = require('./components/User'),
+    UserShow = require('./components/User'),
+    User = require('./components/User');
 
 var App = React.createClass({
   render: function(){
     return (
       <div>
-        <header><h1>OkAlpha</h1></header>
+        <header><h1>Entry</h1></header>
+        {this.props.children}
       </div>
     );
   }
@@ -17,6 +21,9 @@ var App = React.createClass({
 
 var routes = (
   <Route path="/" component={App}>
+    <IndexRoute component={User}/>
+    <Route path="user/new" component={UserForm}/>
+    <Route path="user/:userId" component={UserShow}/>
   </Route>
 );
 
