@@ -5,7 +5,7 @@ var AppDispatcher = require('../dispatcher/dispatcher');
 var UserStore = new Store(AppDispatcher);
 var _users = [];
 
-var resetUsers = function(benches){
+var resetUsers = function(users){
   _users = users.slice(0);
 }
 
@@ -15,7 +15,7 @@ UserStore.all = function () {
 
 UserStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
-    case Constants.PROFILE_RECEIVED:
+    case Constants.USERS_RECEIVED:
       var result = resetUsers(payload.users);
       UserStore.__emitChange();
       break;

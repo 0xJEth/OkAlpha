@@ -21,7 +21,7 @@ var UserShow = React.createClass({
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
-    ApiUtil.fetchUsers();
+    // ApiUtil.fetchUsers();
   },
 
   componentWillUnmount: function () {

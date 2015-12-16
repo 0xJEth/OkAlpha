@@ -1,6 +1,7 @@
-var React = require('react');
-var ReactRouter = require('react-router');
-var LinkedStateMixin = require('react-addons-linked-state-mixin');
+var React = require('react'),
+    ReactRouter = require('react-router'),
+    LinkedStateMixin = require('react-addons-linked-state-mixin'),
+    ApiUtil = require('../util/app_util');
 
 
 var UserForm = React.createClass({
@@ -22,20 +23,20 @@ var UserForm = React.createClass({
 
   handleProfileSubmit: function(event){
     event.preventDefault();
-    var interests = Object.assign({}, this.state);
-    ApiUtil.createInterests(interests);
+    var profile = Object.assign({}, this.state);
+    ApiUtil.updateUser(profile);
     this.navigateToIndex();
   },
 
   handleInterestSubmit: function(event){
     event.preventDefault();
-    var user = Object.assign({}, this.state);
-    ApiUtil.createProfile(user);
+    var interests = Object.assign({}, this.state);
+    ApiUtil.createInterests(interests);
     this.navigateToIndex();
   },
 
   navigateToIndex: function(){
-    this.props.history.pushState(null, "/");
+
   },
 
   handleCancel: function(event){
@@ -48,7 +49,7 @@ var UserForm = React.createClass({
     var profileForm = (
       <div>
         <h3>Tell us about yourself!</h3>
-        <form className="new-profile"onSubmit={this.handleProfileSubmit}>
+        <form className="new-profile" onSubmit={this.handleProfileSubmit}>
           <label>Email address </label>
           <input type="text" valueLink={this.linkState('email')}/>
           <br/>
@@ -65,7 +66,7 @@ var UserForm = React.createClass({
         </form>
         <br/><br/>
         <h4>What are you interested in?</h4>
-        <form onSubmit={this.handleInterestSubmit}>
+        <form className="new-interests" onSubmit={this.handleInterestSubmit}>
           <input type="submit" value="Update"/>
         </form>
         <button onClick={this.handleCancel}>Cancel</button>

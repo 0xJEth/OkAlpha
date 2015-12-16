@@ -9,6 +9,7 @@ var ReactRouter = require('react-router'),
     User = require('./components/User');
 
 var App = React.createClass({
+
   render: function(){
     return (
       <div>

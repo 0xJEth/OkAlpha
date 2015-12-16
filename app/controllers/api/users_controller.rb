@@ -3,21 +3,27 @@ class Api::UsersController < ApplicationController
     render :new
   end
 
-  def create
-    redirect_to root_url
+  def index
+    users = User.all
+    render 'index'
   end
 
-  def index
+  def create
+    user = User.create!(params)
+    render json: user
   end
 
   def show
   end
 
   def update
+    user = User.find(params[:id])
+    user.update_attributes(params)
+    render json: user
   end
 
   private
 
-  def pokemon_params
+  def user_params
   end
 end

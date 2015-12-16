@@ -2,10 +2,10 @@ var AppDispatcher = require('../dispatcher/dispatcher');
 var Constants = require('../constants/constants');
 
 var ApiActions = {
-  receiveProfile: function(users){
+  updateUser: function(user){
     AppDispatcher.dispatch({
       actionType: Constants.PROFILE_RECEIVED,
-      users: users
+      user: user
     })
   },
 

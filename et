@@ -1,0 +1,26 @@
+=> [[32m#<User:0x005559d3dcf168[0m
+  id: [1;34m1[0m,
+  username: [31m[1;31m"[0m[31mleanne[1;31m"[0m[31m[0m,
+  gender: [1;36mnil[0m,
+  preferred_gender: [1;36mnil[0m,
+  email: [1;36mnil[0m,
+  image_url: [1;36mnil[0m,
+  bio: [1;36mnil[0m,
+  session_token: [31m[1;31m"[0m[31mIwKUeXgAyfqCtsS7sNtetQ[1;31m"[0m[31m[0m,
+  password_digest:
+   [31m[1;31m"[0m[31m$2a$10$UoBBHFWxgCzDbbk.8fRA6uK4ih6TN1lkXhXNUviNvHY8ShxFBjAay[1;31m"[0m[31m[0m,
+  created_at: [1;34;4mTue[0m, [1;34m15[0m [1;34;4mDec[0m [1;34m2015[0m [1;34m18[0m:[1;34m23[0m:[1;34m58[0m [1;34;4mUTC[0m [1;34m+00[0m:[1;34m00[0m,
+  updated_at: [1;34;4mWed[0m, [1;34m16[0m [1;34;4mDec[0m [1;34m2015[0m [1;34m00[0m:[1;34m43[0m:[1;34m40[0m [1;34;4mUTC[0m [1;34m+00[0m:[1;34m00[0m[32m>[0m,
+ [32m#<User:0x005559d3d9bf98[0m
+  id: [1;34m2[0m,
+  username: [31m[1;31m"[0m[31mlrteeter[1;31m"[0m[31m[0m,
+  gender: [1;36mnil[0m,
+  preferred_gender: [1;36mnil[0m,
+  email: [1;36mnil[0m,
+  image_url: [1;36mnil[0m,
+  bio: [1;36mnil[0m,
+  session_token: [31m[1;31m"[0m[31mpi-9vpTGHsEggOH9QEf-gw[1;31m"[0m[31m[0m,
+  password_digest:
+   [31m[1;31m"[0m[31m$2a$10$NN0BQTw2Duboy/grl8X8i.ICtUPx3OqiWi79ZZ.VH4SSDA6decJZ6[1;31m"[0m[31m[0m,
+  created_at: [1;34;4mTue[0m, [1;34m15[0m [1;34;4mDec[0m [1;34m2015[0m [1;34m19[0m:[1;34m42[0m:[1;34m48[0m [1;34;4mUTC[0m [1;34m+00[0m:[1;34m00[0m,
+  updated_at: [1;34;4mTue[0m, [1;34m15[0m [1;34;4mDec[0m [1;34m2015[0m [1;34m19[0m:[1;34m59[0m:[1;34m08[0m [1;34;4mUTC[0m [1;34m+00[0m:[1;34m00[0m[32m>[0m]

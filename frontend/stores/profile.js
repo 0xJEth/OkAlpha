@@ -7,22 +7,19 @@ _profile = {};
 
 var resetProfile = function(profile){
   _profile = {};
-  profile.forEach(function (profile) {
-    _profile[profile.id] = profile;
+  profile.forEach(function (key) {
+    _profile[key] = profile;
   });
 }
 
-UserStore.all = function () {
-  return _users.slice(0);
-};
-
-UserStore.__onDispatch = function (payload) {
+ProfileStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
     case Constants.PROFILE_RECEIVED:
-      var result = resetUsers(payload.users);
-      ProfileStore.__emitChange();
+    debugger
+      var result = resetProfile(payload.users);
       break;
   }
+  ProfileStore.__emitChange();
 };
 
-module.exports = UserStore;
+module.exports = ProfileStore;
