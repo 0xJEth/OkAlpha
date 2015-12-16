@@ -1,23 +1,36 @@
 var ApiActions = require('../actions/api_actions');
 
 var ApiUtil = {
-  // fetchUsers: function(){
-  //   $.get('api/users', function(users){
-  //     ApiActions.receiveAll(users);
-  //   });
-  // },
+  fetchUsers: function(){
+    $.ajax({
+      url: "api/users",
+      success: function (users) {
+        ApiActions.receiveUsers(users);
+      },
+      error: function(message) {
+        console.log(message);
+      }
+    })
+  },
 
-  createInterests: function(data) {
-    $.post('api/users', { user: data }, function (user) {
-      ApiActions.receiveInterests([user]);
+  updateInterests: function(data) {
+    $.ajax({
+      type: "POST",
+      url: "api/interests",
+      data: interests,
+      success: function(interests){
+        ApiActions.updateInterests(interests);
+      },
+      error: function(message){
+        console.log(message);
+      }
     });
   },
 
-  updateUser: function (user, callback) {
+  fetchUser: function (user, callback) {
     $.ajax({
-      url: "api/users/:userId",
-      method: "PATCH",
-      data: {user: user},
+      url: "api/users/:id",
+      data: user,
       success: function (user) {
         ApiActions.updateUser(user);
         callback && callback(user.id);
@@ -25,7 +38,7 @@ var ApiUtil = {
       error: function (message) {
         console.log(message);
       }
-    })
+    });
   }
 };
 

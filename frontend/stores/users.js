@@ -3,23 +3,41 @@ var Constants = require('../constants/constants');
 var AppDispatcher = require('../dispatcher/dispatcher');
 
 var UserStore = new Store(AppDispatcher);
-var _users = [];
+var _users = {};
 
 var resetUsers = function(users){
-  _users = users.slice(0);
+  _users = {};
+  users.forEach(function (user) {
+    _users[user.id] = user;
+  });
 }
 
-UserStore.all = function () {
-  return _users.slice(0);
+var resetUser = function (user) {
+  _users[user.id] = user;
 };
+
+UserStore.all = function () {
+  var users = [];
+  for (var id in _users) {
+    users.push(_users[id]);
+  }
+  return users;
+};
+
+UserStore.find = function (id) {
+  return _users[id];
+}
 
 UserStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
     case Constants.USERS_RECEIVED:
-      var result = resetUsers(payload.users);
-      UserStore.__emitChange();
+      resetUsers(payload.users);
+      break;
+    case Constants.USER_RECEIVED:
+      resetUser(payload.user);
       break;
   }
+  UserStore.__emitChange();
 };
 
 module.exports = UserStore;

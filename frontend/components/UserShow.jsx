@@ -1,27 +1,27 @@
-var React = require('react');
-var ReactRouter = require('react-router');
+var React = require('react'),
+    ReactRouter = require('react-router'),
+    ApiUtil = require('../util/app_util'),
+    UserStore = require('../stores/users');
 
 var UserShow = React.createClass({
 
-  getInitialState: function () {
-    var userId = this.props.params.userId;
-    var user = this._findUserById(userId) || {} ;
-    return { user: user };
+  getStateFromStore: function () {
+    return { user: UserStore.find(parseInt(this.props.params.id)) };
   },
 
-  _findUserById: function (id) {
-    var res;
-     UserStore.all().forEach(function (user) {
-      if (id == user.id) {
-        res = user;
-      }
-    }.bind(this));
-     return res;
+  getInitialState: function () {
+    return this.getStateFromStore();
+  },
+
+  componentWillReceiveProps: function (newProps) {
+    console.log(newProps.params)
+    ApiUtil.fetchUser(parseInt(newProps.params.id));
+
   },
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
-    // ApiUtil.fetchUsers();
+    ApiUtil.fetchUser(parseInt(this.props.params.id));
   },
 
   componentWillUnmount: function () {
@@ -29,19 +29,35 @@ var UserShow = React.createClass({
   },
 
   _userChanged: function () {
-    var userId = this.props.params.userId;
-    var user = this._findUserById(userId);
-    this.setState({ user: user });
+    this.setState(this.getStateFromStore());
   },
 
   render: function () {
-
+    var thisUser = this.state.user;
+    var profileProps = [];
+    if (thisUser.email) {
+      profileProps.push(<li>Email: {thisUser.email}</li>)
+    }
+    if (thisUser.gender) {
+      profileProps.push(<li>Gender: {thisUser.gender}</li>)
+    }
+    if (thisUser.preferred_gender) {
+      profileProps.push(<li>Interested in: {thisUser.preferred_gender}</li>)
+    }
+    if (thisUser.bio) {
+      profileProps.push(<li>Bio: {thisUser.bio}</li>)
+    }
     return (
       <div>
-        Your profile is awesome
+        {thisUser.username.capitalize() + "'s Profile"}
+        {profileProps}
       </div>
     );
   }
 });
+
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}
 
 module.exports = UserShow;

@@ -1,21 +1,15 @@
 var React = require('react'),
     ReactRouter = require('react-router'),
     UserForm = require('./UserForm'),
-    ApiUtil = require('../util/app_util')
-    UserStore = require('../stores/users');
+    ApiUtil = require('../util/app_util'),
+    UserStore = require('../stores/users'),
+    UserItem = require('./UserItem');
 
 function _getAllUsers() {
   return UserStore.all();
 }
 
 var User = React.createClass({
-  contextTypes: {
-    router: React.PropTypes.func
-  },
-  _usersChanged: function(){
-    this.setState({users: _getAllUsers()});
-  },
-
   getInitialState: function(){
     return {
       users: _getAllUsers(),
@@ -23,9 +17,13 @@ var User = React.createClass({
     };
   },
 
+  _usersChanged: function(){
+    this.setState({users: UserStore.all()});
+  },
+
   componentDidMount: function(){
     this.userListener = UserStore.addListener(this._usersChanged);
-    // ApiUtil.fetchUsers();
+    ApiUtil.fetchUsers();
   },
 
   componentWillUnmount: function(){
@@ -35,11 +33,11 @@ var User = React.createClass({
   render: function () {
 
     return (
-      <div>
-        <div className="user-form">
-        </div>
-        {this.props.children}
-      </div>
+      <ul> Users :
+          {this.state.users.map(function (user) {
+          return <UserItem key={user.id} user={user}/>
+        })}
+      </ul>
     );
   }
 });

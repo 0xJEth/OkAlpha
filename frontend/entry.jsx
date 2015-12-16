@@ -23,6 +23,7 @@ var App = React.createClass({
 var routes = (
   <Route path="/" component={App}>
     <IndexRoute component={User}/>
+    <Route path="user/:id" component={UserShow}/>
   </Route>
 );
 

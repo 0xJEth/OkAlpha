@@ -51,8 +51,8 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(215),
-	    User = __webpack_require__(216);
+	    UserShow = __webpack_require__(222),
+	    User = __webpack_require__(223);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -70,7 +70,8 @@
 	var routes = React.createElement(
 	  Route,
 	  { path: '/', component: App },
-	  React.createElement(IndexRoute, { component: User })
+	  React.createElement(IndexRoute, { component: User }),
+	  React.createElement(Route, { path: 'user/:id', component: UserShow })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -24447,7 +24448,7 @@
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    LinkedStateMixin = __webpack_require__(211),
-	    ApiUtil = __webpack_require__(217);
+	    ApiUtil = __webpack_require__(215);
 	
 	var UserForm = React.createClass({
 	  displayName: 'UserForm',
@@ -24795,132 +24796,39 @@
 /* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(5);
-	var ReactRouter = __webpack_require__(1);
-	
-	var UserShow = React.createClass({
-	  displayName: 'UserShow',
-	
-	  getInitialState: function () {
-	    var userId = this.props.params.userId;
-	    var user = this._findUserById(userId) || {};
-	    return { user: user };
-	  },
-	
-	  _findUserById: function (id) {
-	    var res;
-	    UserStore.all().forEach((function (user) {
-	      if (id == user.id) {
-	        res = user;
-	      }
-	    }).bind(this));
-	    return res;
-	  },
-	
-	  componentDidMount: function () {
-	    this.userListener = UserStore.addListener(this._userChanged);
-	    // ApiUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.userListener.remove();
-	  },
-	
-	  _userChanged: function () {
-	    var userId = this.props.params.userId;
-	    var user = this._findUserById(userId);
-	    this.setState({ user: user });
-	  },
-	
-	  render: function () {
-	
-	    return React.createElement(
-	      'div',
-	      null,
-	      'Your profile is awesome'
-	    );
-	  }
-	});
-	
-	module.exports = UserShow;
-
-/***/ },
-/* 216 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    UserForm = __webpack_require__(210),
-	    ApiUtil = __webpack_require__(217);
-	UserStore = __webpack_require__(224);
-	
-	function _getAllUsers() {
-	  return UserStore.all();
-	}
-	
-	var User = React.createClass({
-	  displayName: 'User',
-	
-	  contextTypes: {
-	    router: React.PropTypes.func
-	  },
-	  _usersChanged: function () {
-	    this.setState({ users: _getAllUsers() });
-	  },
-	
-	  getInitialState: function () {
-	    return {
-	      users: _getAllUsers(),
-	      clickedLoc: null
-	    };
-	  },
-	
-	  componentDidMount: function () {
-	    this.userListener = UserStore.addListener(this._usersChanged);
-	    // ApiUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.userListener.remove();
-	  },
-	
-	  render: function () {
-	
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement('div', { className: 'user-form' }),
-	      this.props.children
-	    );
-	  }
-	});
-	
-	module.exports = User;
-
-/***/ },
-/* 217 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiActions = __webpack_require__(218);
+	var ApiActions = __webpack_require__(216);
 	
 	var ApiUtil = {
-	  // fetchUsers: function(){
-	  //   $.get('api/users', function(users){
-	  //     ApiActions.receiveAll(users);
-	  //   });
-	  // },
-	
-	  createInterests: function (data) {
-	    $.post('api/users', { user: data }, function (user) {
-	      ApiActions.receiveInterests([user]);
+	  fetchUsers: function () {
+	    $.ajax({
+	      url: "api/users",
+	      success: function (users) {
+	        ApiActions.receiveUsers(users);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
 	    });
 	  },
 	
-	  updateUser: function (user, callback) {
+	  updateInterests: function (data) {
 	    $.ajax({
-	      url: "api/users/:userId",
-	      method: "PATCH",
-	      data: { user: user },
+	      type: "POST",
+	      url: "api/interests",
+	      data: interests,
+	      success: function (interests) {
+	        ApiActions.updateInterests(interests);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  fetchUser: function (user, callback) {
+	    $.ajax({
+	      url: "api/users/:id",
+	      data: user,
 	      success: function (user) {
 	        ApiActions.updateUser(user);
 	        callback && callback(user.id);
@@ -24935,21 +24843,21 @@
 	module.exports = ApiUtil;
 
 /***/ },
-/* 218 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var AppDispatcher = __webpack_require__(219);
-	var Constants = __webpack_require__(223);
+	var AppDispatcher = __webpack_require__(217);
+	var Constants = __webpack_require__(221);
 	
 	var ApiActions = {
 	  updateUser: function (user) {
 	    AppDispatcher.dispatch({
-	      actionType: Constants.PROFILE_RECEIVED,
+	      actionType: Constants.USER_RECEIVED,
 	      user: user
 	    });
 	  },
 	
-	  receiveInterests: function (users) {
+	  updateInterests: function (users) {
 	    AppDispatcher.dispatch({
 	      actionType: Constants.INTERESTS_RECEIVED,
 	      users: users
@@ -24958,7 +24866,7 @@
 	
 	  receiveUsers: function (users) {
 	    AppDispatcher.dispatch({
-	      actionType: Constants.USER_RECEIVED,
+	      actionType: Constants.USERS_RECEIVED,
 	      users: users
 	    });
 	  }
@@ -24967,14 +24875,14 @@
 	module.exports = ApiActions;
 
 /***/ },
-/* 219 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(220).Dispatcher;
+	var Dispatcher = __webpack_require__(218).Dispatcher;
 	module.exports = new Dispatcher();
 
 /***/ },
-/* 220 */
+/* 218 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24986,11 +24894,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Dispatcher = __webpack_require__(221);
+	module.exports.Dispatcher = __webpack_require__(219);
 
 
 /***/ },
-/* 221 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25012,7 +24920,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	var _prefix = 'ID_';
 	
@@ -25227,7 +25135,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 222 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25282,43 +25190,203 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 223 */
+/* 221 */
 /***/ function(module, exports) {
 
 	var Constants = {
 	  PROFILE_RECEIVED: "PROFILE_RECEIVED",
 	  INTERESTS_RECEIVED: "INTERESTS_RECEIVED",
-	  USERS_RECEIVED: "USERS_RECEIVED"
+	  USERS_RECEIVED: "USERS_RECEIVED",
+	  USER_RECEIVED: "USER_RECEIVED"
 	};
 	
 	module.exports = Constants;
+
+/***/ },
+/* 222 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUtil = __webpack_require__(215),
+	    UserStore = __webpack_require__(224);
+	
+	var UserShow = React.createClass({
+	  displayName: 'UserShow',
+	
+	  getStateFromStore: function () {
+	    return { user: UserStore.find(parseInt(this.props.params.id)) };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    console.log(newProps.params);
+	    ApiUtil.fetchUser(parseInt(newProps.params.id));
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._userChanged);
+	    ApiUtil.fetchUser(parseInt(this.props.params.id));
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  _userChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    var thisUser = this.state.user;
+	    var profileProps = [];
+	    if (thisUser.email) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Email: ',
+	        thisUser.email
+	      ));
+	    }
+	    if (thisUser.gender) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Gender: ',
+	        thisUser.gender
+	      ));
+	    }
+	    if (thisUser.preferred_gender) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Interested in: ',
+	        thisUser.preferred_gender
+	      ));
+	    }
+	    if (thisUser.bio) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Bio: ',
+	        thisUser.bio
+	      ));
+	    }
+	    return React.createElement(
+	      'div',
+	      null,
+	      thisUser.username.capitalize() + "'s Profile",
+	      profileProps
+	    );
+	  }
+	});
+	
+	String.prototype.capitalize = function () {
+	  return this.charAt(0).toUpperCase() + this.slice(1);
+	};
+	
+	module.exports = UserShow;
+
+/***/ },
+/* 223 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    UserForm = __webpack_require__(210),
+	    ApiUtil = __webpack_require__(215),
+	    UserStore = __webpack_require__(224),
+	    UserItem = __webpack_require__(241);
+	
+	function _getAllUsers() {
+	  return UserStore.all();
+	}
+	
+	var User = React.createClass({
+	  displayName: 'User',
+	
+	  getInitialState: function () {
+	    return {
+	      users: _getAllUsers(),
+	      clickedLoc: null
+	    };
+	  },
+	
+	  _usersChanged: function () {
+	    this.setState({ users: UserStore.all() });
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._usersChanged);
+	    ApiUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  render: function () {
+	
+	    return React.createElement(
+	      'ul',
+	      null,
+	      ' Users :',
+	      this.state.users.map(function (user) {
+	        return React.createElement(UserItem, { key: user.id, user: user });
+	      })
+	    );
+	  }
+	});
+	
+	module.exports = User;
 
 /***/ },
 /* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(225).Store;
-	var Constants = __webpack_require__(223);
-	var AppDispatcher = __webpack_require__(219);
+	var Constants = __webpack_require__(221);
+	var AppDispatcher = __webpack_require__(217);
 	
 	var UserStore = new Store(AppDispatcher);
-	var _users = [];
+	var _users = {};
 	
 	var resetUsers = function (users) {
-	  _users = users.slice(0);
+	  _users = {};
+	  users.forEach(function (user) {
+	    _users[user.id] = user;
+	  });
+	};
+	
+	var resetUser = function (user) {
+	  _users[user.id] = user;
 	};
 	
 	UserStore.all = function () {
-	  return _users.slice(0);
+	  var users = [];
+	  for (var id in _users) {
+	    users.push(_users[id]);
+	  }
+	  return users;
+	};
+	
+	UserStore.find = function (id) {
+	  return _users[id];
 	};
 	
 	UserStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
 	    case Constants.USERS_RECEIVED:
-	      var result = resetUsers(payload.users);
-	      UserStore.__emitChange();
+	      resetUsers(payload.users);
+	      break;
+	    case Constants.USER_RECEIVED:
+	      resetUser(payload.user);
 	      break;
 	  }
+	  UserStore.__emitChange();
 	};
 	
 	module.exports = UserStore;
@@ -25368,7 +25436,7 @@
 	
 	var FluxStoreGroup = __webpack_require__(227);
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	var shallowEqual = __webpack_require__(228);
 	
 	var DEFAULT_OPTIONS = {
@@ -25546,7 +25614,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	/**
 	 * FluxStoreGroup allows you to execute a callback on every dispatch after
@@ -25687,7 +25755,7 @@
 	var FluxReduceStore = __webpack_require__(230);
 	var Immutable = __webpack_require__(239);
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	/**
 	 * This is a simple store. It allows caching key value pairs. An implementation
@@ -25837,7 +25905,7 @@
 	var FluxStore = __webpack_require__(231);
 	
 	var abstractMethod = __webpack_require__(238);
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	var FluxReduceStore = (function (_FluxStore) {
 	  _inherits(FluxReduceStore, _FluxStore);
@@ -25943,7 +26011,7 @@
 	
 	var EventEmitter = _require.EventEmitter;
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	/**
 	 * This class should be extended by the stores in your application, like so:
@@ -26146,7 +26214,7 @@
 	var EventSubscriptionVendor = __webpack_require__(236);
 	
 	var emptyFunction = __webpack_require__(237);
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	/**
 	 * @class BaseEventEmitter
@@ -26443,7 +26511,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
@@ -26593,7 +26661,7 @@
 	
 	'use strict';
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	function abstractMethod(className, methodName) {
 	   true ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Subclasses of %s must override %s() with their own implementation.', className, methodName) : invariant(false) : undefined;
@@ -31587,7 +31655,7 @@
 	
 	var FluxStoreGroup = __webpack_require__(227);
 	
-	var invariant = __webpack_require__(222);
+	var invariant = __webpack_require__(220);
 	
 	/**
 	 * `FluxContainer` should be preferred over this mixin, but it requires using
@@ -31689,6 +31757,35 @@
 	
 	module.exports = FluxMixinLegacy;
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
+
+/***/ },
+/* 241 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5);
+	var History = __webpack_require__(1).History;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [History],
+	
+	  showDetail: function () {
+	    this.history.pushState(null, '/user/' + this.props.user.id, {});
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'li',
+	      { onClick: this.showDetail, className: 'user-item' },
+	      React.createElement(
+	        'p',
+	        null,
+	        this.props.user.username
+	      )
+	    );
+	  }
+	});
 
 /***/ }
 /******/ ]);

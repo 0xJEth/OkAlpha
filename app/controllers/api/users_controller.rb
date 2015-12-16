@@ -5,7 +5,8 @@ class Api::UsersController < ApplicationController
 
   def index
     users = User.all
-    render 'index'
+    render json: users
+    # redirect_to root_url
   end
 
   def create
@@ -14,6 +15,7 @@ class Api::UsersController < ApplicationController
   end
 
   def show
+    render "show"
   end
 
   def update
