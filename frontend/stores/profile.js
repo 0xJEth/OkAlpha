@@ -2,11 +2,14 @@ var Store = require('flux/utils').Store;
 var Constants = require('../constants/constants');
 var AppDispatcher = require('../dispatcher/dispatcher');
 
-var UserStore = new Store(AppDispatcher);
-var _users = [];
+var ProfileStore = new Store(AppDispatcher);
+_profile = {};
 
-var resetUsers = function(benches){
-  _users = users.slice(0);
+var resetProfile = function(profile){
+  _profile = {};
+  profile.forEach(function (profile) {
+    _profile[profile.id] = profile;
+  });
 }
 
 UserStore.all = function () {
@@ -17,7 +20,7 @@ UserStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
     case Constants.PROFILE_RECEIVED:
       var result = resetUsers(payload.users);
-      UserStore.__emitChange();
+      ProfileStore.__emitChange();
       break;
   }
 };

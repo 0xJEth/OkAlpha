@@ -1,12 +1,15 @@
 var React = require('react');
 var ReactRouter = require('react-router');
+var UserForm = require('./UserForm')
 
 var User = React.createClass({
   render: function () {
 
     return (
       <div>
-        Welcome page
+        <div className="user-form">
+        </div>
+        {this.props.children}
       </div>
     );
   }

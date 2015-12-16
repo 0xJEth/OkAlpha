@@ -15,7 +15,7 @@ UserStore.all = function () {
 
 UserStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
-    case Constants.PROFILE_RECEIVED:
+    case Constants.USERS_RECEIVED:
       var result = resetUsers(payload.users);
       UserStore.__emitChange();
       break;

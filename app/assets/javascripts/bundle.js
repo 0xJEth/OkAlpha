@@ -51,8 +51,8 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(210),
-	    User = __webpack_require__(210);
+	    UserShow = __webpack_require__(215),
+	    User = __webpack_require__(216);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -61,15 +61,7 @@
 	    return React.createElement(
 	      'div',
 	      null,
-	      React.createElement(
-	        'header',
-	        null,
-	        React.createElement(
-	          'h1',
-	          null,
-	          'Entry'
-	        )
-	      ),
+	      React.createElement('header', null),
 	      this.props.children
 	    );
 	  }
@@ -78,9 +70,7 @@
 	var routes = React.createElement(
 	  Route,
 	  { path: '/', component: App },
-	  React.createElement(IndexRoute, { component: User }),
-	  React.createElement(Route, { path: 'user/new', component: UserForm }),
-	  React.createElement(Route, { path: 'user/:userId', component: UserShow })
+	  React.createElement(IndexRoute, { component: User })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -90,6 +80,11 @@
 	    null,
 	    routes
 	  ), root);
+	
+	  var profile = document.getElementById('user_form');
+	  profile.addEventListener("click", function () {
+	    ReactDOM.render(React.createElement(UserForm, { users: this.state }), root);
+	  });
 	});
 
 /***/ },
@@ -24451,6 +24446,412 @@
 
 	var React = __webpack_require__(5);
 	var ReactRouter = __webpack_require__(1);
+	var LinkedStateMixin = __webpack_require__(211);
+	
+	var UserForm = React.createClass({
+	  displayName: 'UserForm',
+	
+	  mixins: [LinkedStateMixin],
+	  contextTypes: {
+	    router: React.PropTypes.func
+	  },
+	
+	  getInitialState: function () {
+	    return {
+	      email: "",
+	      image_url: "",
+	      gender: "",
+	      preferred_gender: "",
+	      bio: "",
+	      interests: ""
+	    };
+	  },
+	
+	  handleProfileSubmit: function (event) {
+	    event.preventDefault();
+	    var interests = Object.assign({}, this.state);
+	    ApiUtil.createInterests(interests);
+	    this.navigateToIndex();
+	  },
+	
+	  handleInterestSubmit: function (event) {
+	    event.preventDefault();
+	    var user = Object.assign({}, this.state);
+	    ApiUtil.createProfile(user);
+	    this.navigateToIndex();
+	  },
+	
+	  navigateToIndex: function () {
+	    this.props.history.pushState(null, "/");
+	  },
+	
+	  handleCancel: function (event) {
+	    event.preventDefault();
+	    this.navigateToIndex();
+	  },
+	
+	  render: function () {
+	
+	    var profileForm = React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'h3',
+	        null,
+	        'Tell us about yourself!'
+	      ),
+	      React.createElement(
+	        'form',
+	        { className: 'new-profile', onSubmit: this.handleProfileSubmit },
+	        React.createElement(
+	          'label',
+	          null,
+	          'Email address '
+	        ),
+	        React.createElement('input', { type: 'text', valueLink: this.linkState('email') }),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'label',
+	          null,
+	          'Your gender '
+	        ),
+	        React.createElement('input', { type: 'text', valueLink: this.linkState('gender') }),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'label',
+	          null,
+	          'Gender you\'re interested in dating '
+	        ),
+	        React.createElement('input', { type: 'text', value: this.linkState('preferred_gender') }),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'label',
+	          null,
+	          'Short bio '
+	        ),
+	        React.createElement('input', { type: 'text', value: this.linkState('bio') }),
+	        React.createElement('br', null),
+	        React.createElement('input', { type: 'submit', value: 'Update' })
+	      ),
+	      React.createElement('br', null),
+	      React.createElement('br', null),
+	      React.createElement(
+	        'h4',
+	        null,
+	        'What are you interested in?'
+	      ),
+	      React.createElement(
+	        'form',
+	        { onSubmit: this.handleInterestSubmit },
+	        React.createElement('input', { type: 'submit', value: 'Update' })
+	      ),
+	      React.createElement(
+	        'button',
+	        { onClick: this.handleCancel },
+	        'Cancel'
+	      )
+	    );
+	
+	    return React.createElement(
+	      'div',
+	      null,
+	      profileForm
+	    );
+	  }
+	});
+	
+	module.exports = UserForm;
+
+/***/ },
+/* 211 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(212);
+
+/***/ },
+/* 212 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule LinkedStateMixin
+	 * @typechecks static-only
+	 */
+	
+	'use strict';
+	
+	var ReactLink = __webpack_require__(213);
+	var ReactStateSetters = __webpack_require__(214);
+	
+	/**
+	 * A simple mixin around ReactLink.forState().
+	 */
+	var LinkedStateMixin = {
+	  /**
+	   * Create a ReactLink that's linked to part of this component's state. The
+	   * ReactLink will have the current value of this.state[key] and will call
+	   * setState() when a change is requested.
+	   *
+	   * @param {string} key state key to update. Note: you may want to use keyOf()
+	   * if you're using Google Closure Compiler advanced mode.
+	   * @return {ReactLink} ReactLink instance linking to the state.
+	   */
+	  linkState: function (key) {
+	    return new ReactLink(this.state[key], ReactStateSetters.createStateKeySetter(this, key));
+	  }
+	};
+	
+	module.exports = LinkedStateMixin;
+
+/***/ },
+/* 213 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactLink
+	 * @typechecks static-only
+	 */
+	
+	'use strict';
+	
+	/**
+	 * ReactLink encapsulates a common pattern in which a component wants to modify
+	 * a prop received from its parent. ReactLink allows the parent to pass down a
+	 * value coupled with a callback that, when invoked, expresses an intent to
+	 * modify that value. For example:
+	 *
+	 * React.createClass({
+	 *   getInitialState: function() {
+	 *     return {value: ''};
+	 *   },
+	 *   render: function() {
+	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
+	 *     return <input valueLink={valueLink} />;
+	 *   },
+	 *   _handleValueChange: function(newValue) {
+	 *     this.setState({value: newValue});
+	 *   }
+	 * });
+	 *
+	 * We have provided some sugary mixins to make the creation and
+	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
+	 */
+	
+	var React = __webpack_require__(6);
+	
+	/**
+	 * @param {*} value current value of the link
+	 * @param {function} requestChange callback to request a change
+	 */
+	function ReactLink(value, requestChange) {
+	  this.value = value;
+	  this.requestChange = requestChange;
+	}
+	
+	/**
+	 * Creates a PropType that enforces the ReactLink API and optionally checks the
+	 * type of the value being passed inside the link. Example:
+	 *
+	 * MyComponent.propTypes = {
+	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
+	 * }
+	 */
+	function createLinkTypeChecker(linkType) {
+	  var shapes = {
+	    value: typeof linkType === 'undefined' ? React.PropTypes.any.isRequired : linkType.isRequired,
+	    requestChange: React.PropTypes.func.isRequired
+	  };
+	  return React.PropTypes.shape(shapes);
+	}
+	
+	ReactLink.PropTypes = {
+	  link: createLinkTypeChecker
+	};
+	
+	module.exports = ReactLink;
+
+/***/ },
+/* 214 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactStateSetters
+	 */
+	
+	'use strict';
+	
+	var ReactStateSetters = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function (component, funcReturningState) {
+	    return function (a, b, c, d, e, f) {
+	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
+	      if (partialState) {
+	        component.setState(partialState);
+	      }
+	    };
+	  },
+	
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function (component, key) {
+	    // Memoize the setters.
+	    var cache = component.__keySetters || (component.__keySetters = {});
+	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
+	  }
+	};
+	
+	function createStateKeySetter(component, key) {
+	  // Partial state is allocated outside of the function closure so it can be
+	  // reused with every call, avoiding memory allocation when this function
+	  // is called.
+	  var partialState = {};
+	  return function stateKeySetter(value) {
+	    partialState[key] = value;
+	    component.setState(partialState);
+	  };
+	}
+	
+	ReactStateSetters.Mixin = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateSetter(function(xValue) {
+	   *     return {x: xValue};
+	   *   })(1);
+	   *
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function (funcReturningState) {
+	    return ReactStateSetters.createStateSetter(this, funcReturningState);
+	  },
+	
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateKeySetter('x')(1);
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function (key) {
+	    return ReactStateSetters.createStateKeySetter(this, key);
+	  }
+	};
+	
+	module.exports = ReactStateSetters;
+
+/***/ },
+/* 215 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5);
+	var ReactRouter = __webpack_require__(1);
+	
+	var UserShow = React.createClass({
+	  displayName: 'UserShow',
+	
+	  getInitialState: function () {
+	    var userId = this.props.params.userId;
+	    var user = this._findUserById(userId) || {};
+	    return { user: user };
+	  },
+	
+	  _findUserById: function (id) {
+	    var res;
+	    UserStore.all().forEach((function (user) {
+	      if (id == user.id) {
+	        res = user;
+	      }
+	    }).bind(this));
+	    return res;
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._userChanged);
+	    ApiUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  _userChanged: function () {
+	    var userId = this.props.params.userId;
+	    var user = this._findUserById(userId);
+	    this.setState({ user: user });
+	  },
+	
+	  render: function () {
+	
+	    return React.createElement(
+	      'div',
+	      null,
+	      'Your profile is awesome'
+	    );
+	  }
+	});
+	
+	module.exports = UserShow;
+
+/***/ },
+/* 216 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5);
+	var ReactRouter = __webpack_require__(1);
+	var UserForm = __webpack_require__(210);
 	
 	var User = React.createClass({
 	  displayName: 'User',
@@ -24460,7 +24861,8 @@
 	    return React.createElement(
 	      'div',
 	      null,
-	      'Welcome page'
+	      React.createElement('div', { className: 'user-form' }),
+	      this.props.children
 	    );
 	  }
 	});
