@@ -13,6 +13,8 @@ var resetUsers = function(users){
 }
 
 var resetUser = function (user) {
+  // console.log(user)
+  // console.log(_users[user.id])
   _users[user.id] = user;
 };
 

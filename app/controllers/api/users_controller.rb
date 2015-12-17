@@ -24,7 +24,7 @@ class Api::UsersController < ApplicationController
   def update
     p params
     user = User.find(params[:id])
-    user.update_attributes(params)
+    user.update_attributes(user_params)
     render json: user
   end
 

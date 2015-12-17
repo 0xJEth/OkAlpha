@@ -40,15 +40,16 @@ var ApiUtil = {
     });
   },
 
-  updateProfile: function (profileInfo) {
-    console.log("here")
+  updateProfile: function (user, callback) {
+    console.log({user: user});
     $.ajax({
-      url: "/api/users/" + profileInfo.id,
+      url: "api/users/" + user.id,
       type: "PATCH",
-      data: {user: profileInfo},
+      data: {user: user},
       success: function (user) {
-        console.log("success")
+        console.log("success");
         ApiActions.updateUser(user);
+        callback && callback(user.id);
       },
       error: function (message) {
         console.log(message);

@@ -3,7 +3,6 @@ var Constants = require('../constants/constants');
 
 var ApiActions = {
   updateUser: function(user){
-    console.log("here");
     AppDispatcher.dispatch({
       actionType: Constants.USER_UPDATED,
       user: user

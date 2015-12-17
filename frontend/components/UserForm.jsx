@@ -22,14 +22,18 @@ module.exports = React.createClass({
 
   handleProfileSubmit: function(event){
     event.preventDefault();
+    debugger
     var user = UserStore.find(parseInt(this.props.routeParams.id));
-    Object.keys(this.state).forEach(function (key) {
+    Object.keys(this.state.user).forEach(function (key) {
       if (this.state[key]) {
         user[key] = this.state[key]
       }
     }.bind(this))
     console.log(user);
-    ApiUtil.updateProfile(user)
+    ApiUtil.updateProfile(user, function (id) {
+      this.history.pushState(null, "/user/" + id, {});
+    }.bind(this));
+    this.setState(this.blankAttrs);
   },
 
   handleCancel: function(event){

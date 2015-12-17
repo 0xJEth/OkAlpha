@@ -32,6 +32,7 @@ var UserShow = React.createClass({
 
 
   render: function () {
+    console.log(this.state.user)
     var thisUser = this.state.user;
     var profileProps = [];
     if (thisUser.email) {
