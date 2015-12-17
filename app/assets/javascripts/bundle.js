@@ -51,8 +51,8 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(222),
-	    User = __webpack_require__(223);
+	    UserShow = __webpack_require__(211),
+	    User = __webpack_require__(236);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -71,7 +71,8 @@
 	  Route,
 	  { path: '/', component: App },
 	  React.createElement(IndexRoute, { component: User }),
-	  React.createElement(Route, { path: 'user/:id', component: UserShow })
+	  React.createElement(Route, { path: 'user/:id', component: UserShow }),
+	  React.createElement(Route, { path: 'profile/:id', component: UserForm })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -82,10 +83,10 @@
 	    routes
 	  ), root);
 	
-	  var profile = document.getElementById('user_form');
-	  profile.addEventListener("click", function () {
-	    ReactDOM.render(React.createElement(UserForm, { users: this.state }), root);
-	  });
+	  // var profile = document.getElementById('user_form');
+	  // profile.addEventListener("click", function () {
+	  //   ReactDOM.render(<UserForm/>, root);
+	  // })
 	});
 
 /***/ },
@@ -24447,47 +24448,41 @@
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
-	    LinkedStateMixin = __webpack_require__(211),
-	    ApiUtil = __webpack_require__(215);
+	    LinkedStateMixin = __webpack_require__(238),
+	    UserStore = __webpack_require__(219),
+	    History = __webpack_require__(1).History,
+	    ApiUtil = __webpack_require__(212);
 	
-	var UserForm = React.createClass({
-	  displayName: 'UserForm',
+	module.exports = React.createClass({
+	  displayName: 'exports',
 	
-	  mixins: [LinkedStateMixin],
-	  contextTypes: {
-	    router: React.PropTypes.func
+	  mixins: [LinkedStateMixin, History],
+	
+	  blankAttrs: {
+	    email: "",
+	    gender: "",
+	    preferred_gender: "",
+	    bio: ""
 	  },
 	
 	  getInitialState: function () {
-	    return {
-	      email: "",
-	      image_url: "",
-	      gender: "",
-	      preferred_gender: "",
-	      bio: "",
-	      interests: ""
-	    };
+	    return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
 	  },
 	
 	  handleProfileSubmit: function (event) {
 	    event.preventDefault();
-	    var profile = Object.assign({}, this.state);
-	    ApiUtil.updateUser(profile);
-	    this.navigateToIndex();
+	    var user = UserStore.find(parseInt(this.props.routeParams.id));
+	    Object.keys(this.state).forEach((function (key) {
+	      if (this.state[key]) {
+	        user[key] = this.state[key];
+	      }
+	    }).bind(this));
+	    console.log(user);
+	    ApiUtil.updateProfile(user);
 	  },
-	
-	  handleInterestSubmit: function (event) {
-	    event.preventDefault();
-	    var interests = Object.assign({}, this.state);
-	    ApiUtil.createInterests(interests);
-	    this.navigateToIndex();
-	  },
-	
-	  navigateToIndex: function () {},
 	
 	  handleCancel: function (event) {
 	    event.preventDefault();
-	    this.navigateToIndex();
 	  },
 	
 	  render: function () {
@@ -24508,28 +24503,28 @@
 	          null,
 	          'Email address '
 	        ),
-	        React.createElement('input', { type: 'text', valueLink: this.linkState('email') }),
+	        React.createElement('input', { type: 'text', valueLink: this.linkState("email") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Your gender '
 	        ),
-	        React.createElement('input', { type: 'text', valueLink: this.linkState('gender') }),
+	        React.createElement('input', { type: 'text', valueLink: this.linkState("gender") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          null,
-	          'Gender you\'re interested in dating '
+	          'Gender you\'re interested in: '
 	        ),
-	        React.createElement('input', { type: 'text', value: this.linkState('preferred_gender') }),
+	        React.createElement('input', { type: 'text', valueLink: this.linkState("preferred_gender") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Short bio '
 	        ),
-	        React.createElement('input', { type: 'text', value: this.linkState('bio') }),
+	        React.createElement('input', { type: 'text', valueLink: this.linkState("bio") }),
 	        React.createElement('br', null),
 	        React.createElement('input', { type: 'submit', value: 'Update' })
 	      ),
@@ -24539,11 +24534,6 @@
 	        'h4',
 	        null,
 	        'What are you interested in?'
-	      ),
-	      React.createElement(
-	        'form',
-	        { className: 'new-interests', onSubmit: this.handleInterestSubmit },
-	        React.createElement('input', { type: 'submit', value: 'Update' })
 	      ),
 	      React.createElement(
 	        'button',
@@ -24559,244 +24549,99 @@
 	    );
 	  }
 	});
-	
-	module.exports = UserForm;
 
 /***/ },
 /* 211 */
 /***/ function(module, exports, __webpack_require__) {
 
-	module.exports = __webpack_require__(212);
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUtil = __webpack_require__(212),
+	    UserStore = __webpack_require__(219);
+	
+	var UserShow = React.createClass({
+	  displayName: 'UserShow',
+	
+	  getStateFromStore: function () {
+	    return { user: UserStore.find(parseInt(this.props.params.id)) };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    ApiUtil.fetchUser(parseInt(newProps.params.id));
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._userChanged);
+	    ApiUtil.fetchUser(parseInt(this.props.params.id));
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  _userChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    var thisUser = this.state.user;
+	    var profileProps = [];
+	    if (thisUser.email) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Email: ',
+	        thisUser.email
+	      ));
+	    }
+	    if (thisUser.gender) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Gender: ',
+	        thisUser.gender
+	      ));
+	    }
+	    if (thisUser.preferred_gender) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Interested in: ',
+	        thisUser.preferred_gender
+	      ));
+	    }
+	    if (thisUser.bio) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Bio: ',
+	        thisUser.bio
+	      ));
+	    }
+	    return React.createElement(
+	      'div',
+	      null,
+	      thisUser.username.capitalize() + "'s Profile",
+	      profileProps
+	    );
+	  }
+	});
+	
+	String.prototype.capitalize = function () {
+	  return this.charAt(0).toUpperCase() + this.slice(1);
+	};
+	
+	module.exports = UserShow;
 
 /***/ },
 /* 212 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule LinkedStateMixin
-	 * @typechecks static-only
-	 */
-	
-	'use strict';
-	
-	var ReactLink = __webpack_require__(213);
-	var ReactStateSetters = __webpack_require__(214);
-	
-	/**
-	 * A simple mixin around ReactLink.forState().
-	 */
-	var LinkedStateMixin = {
-	  /**
-	   * Create a ReactLink that's linked to part of this component's state. The
-	   * ReactLink will have the current value of this.state[key] and will call
-	   * setState() when a change is requested.
-	   *
-	   * @param {string} key state key to update. Note: you may want to use keyOf()
-	   * if you're using Google Closure Compiler advanced mode.
-	   * @return {ReactLink} ReactLink instance linking to the state.
-	   */
-	  linkState: function (key) {
-	    return new ReactLink(this.state[key], ReactStateSetters.createStateKeySetter(this, key));
-	  }
-	};
-	
-	module.exports = LinkedStateMixin;
-
-/***/ },
-/* 213 */
-/***/ function(module, exports, __webpack_require__) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactLink
-	 * @typechecks static-only
-	 */
-	
-	'use strict';
-	
-	/**
-	 * ReactLink encapsulates a common pattern in which a component wants to modify
-	 * a prop received from its parent. ReactLink allows the parent to pass down a
-	 * value coupled with a callback that, when invoked, expresses an intent to
-	 * modify that value. For example:
-	 *
-	 * React.createClass({
-	 *   getInitialState: function() {
-	 *     return {value: ''};
-	 *   },
-	 *   render: function() {
-	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
-	 *     return <input valueLink={valueLink} />;
-	 *   },
-	 *   _handleValueChange: function(newValue) {
-	 *     this.setState({value: newValue});
-	 *   }
-	 * });
-	 *
-	 * We have provided some sugary mixins to make the creation and
-	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
-	 */
-	
-	var React = __webpack_require__(6);
-	
-	/**
-	 * @param {*} value current value of the link
-	 * @param {function} requestChange callback to request a change
-	 */
-	function ReactLink(value, requestChange) {
-	  this.value = value;
-	  this.requestChange = requestChange;
-	}
-	
-	/**
-	 * Creates a PropType that enforces the ReactLink API and optionally checks the
-	 * type of the value being passed inside the link. Example:
-	 *
-	 * MyComponent.propTypes = {
-	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
-	 * }
-	 */
-	function createLinkTypeChecker(linkType) {
-	  var shapes = {
-	    value: typeof linkType === 'undefined' ? React.PropTypes.any.isRequired : linkType.isRequired,
-	    requestChange: React.PropTypes.func.isRequired
-	  };
-	  return React.PropTypes.shape(shapes);
-	}
-	
-	ReactLink.PropTypes = {
-	  link: createLinkTypeChecker
-	};
-	
-	module.exports = ReactLink;
-
-/***/ },
-/* 214 */
-/***/ function(module, exports) {
-
-	/**
-	 * Copyright 2013-2015, Facebook, Inc.
-	 * All rights reserved.
-	 *
-	 * This source code is licensed under the BSD-style license found in the
-	 * LICENSE file in the root directory of this source tree. An additional grant
-	 * of patent rights can be found in the PATENTS file in the same directory.
-	 *
-	 * @providesModule ReactStateSetters
-	 */
-	
-	'use strict';
-	
-	var ReactStateSetters = {
-	  /**
-	   * Returns a function that calls the provided function, and uses the result
-	   * of that to set the component's state.
-	   *
-	   * @param {ReactCompositeComponent} component
-	   * @param {function} funcReturningState Returned callback uses this to
-	   *                                      determine how to update state.
-	   * @return {function} callback that when invoked uses funcReturningState to
-	   *                    determined the object literal to setState.
-	   */
-	  createStateSetter: function (component, funcReturningState) {
-	    return function (a, b, c, d, e, f) {
-	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
-	      if (partialState) {
-	        component.setState(partialState);
-	      }
-	    };
-	  },
-	
-	  /**
-	   * Returns a single-argument callback that can be used to update a single
-	   * key in the component's state.
-	   *
-	   * Note: this is memoized function, which makes it inexpensive to call.
-	   *
-	   * @param {ReactCompositeComponent} component
-	   * @param {string} key The key in the state that you should update.
-	   * @return {function} callback of 1 argument which calls setState() with
-	   *                    the provided keyName and callback argument.
-	   */
-	  createStateKeySetter: function (component, key) {
-	    // Memoize the setters.
-	    var cache = component.__keySetters || (component.__keySetters = {});
-	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
-	  }
-	};
-	
-	function createStateKeySetter(component, key) {
-	  // Partial state is allocated outside of the function closure so it can be
-	  // reused with every call, avoiding memory allocation when this function
-	  // is called.
-	  var partialState = {};
-	  return function stateKeySetter(value) {
-	    partialState[key] = value;
-	    component.setState(partialState);
-	  };
-	}
-	
-	ReactStateSetters.Mixin = {
-	  /**
-	   * Returns a function that calls the provided function, and uses the result
-	   * of that to set the component's state.
-	   *
-	   * For example, these statements are equivalent:
-	   *
-	   *   this.setState({x: 1});
-	   *   this.createStateSetter(function(xValue) {
-	   *     return {x: xValue};
-	   *   })(1);
-	   *
-	   * @param {function} funcReturningState Returned callback uses this to
-	   *                                      determine how to update state.
-	   * @return {function} callback that when invoked uses funcReturningState to
-	   *                    determined the object literal to setState.
-	   */
-	  createStateSetter: function (funcReturningState) {
-	    return ReactStateSetters.createStateSetter(this, funcReturningState);
-	  },
-	
-	  /**
-	   * Returns a single-argument callback that can be used to update a single
-	   * key in the component's state.
-	   *
-	   * For example, these statements are equivalent:
-	   *
-	   *   this.setState({x: 1});
-	   *   this.createStateKeySetter('x')(1);
-	   *
-	   * Note: this is memoized function, which makes it inexpensive to call.
-	   *
-	   * @param {string} key The key in the state that you should update.
-	   * @return {function} callback of 1 argument which calls setState() with
-	   *                    the provided keyName and callback argument.
-	   */
-	  createStateKeySetter: function (key) {
-	    return ReactStateSetters.createStateKeySetter(this, key);
-	  }
-	};
-	
-	module.exports = ReactStateSetters;
-
-/***/ },
-/* 215 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiActions = __webpack_require__(216);
+	var ApiActions = __webpack_require__(213);
 	
 	var ApiUtil = {
 	  fetchUsers: function () {
@@ -24819,9 +24664,7 @@
 	      success: function (interests) {
 	        ApiActions.updateInterests(interests);
 	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
+	      error: function (message) {}
 	    });
 	  },
 	
@@ -24830,8 +24673,24 @@
 	      url: "api/users/:id",
 	      data: user,
 	      success: function (user) {
-	        ApiActions.updateUser(user);
+	        ApiActions.receiveUser(user);
 	        callback && callback(user.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateProfile: function (profileInfo) {
+	    console.log("here");
+	    $.ajax({
+	      url: "/api/users/" + profileInfo.id,
+	      type: "PATCH",
+	      data: { user: profileInfo },
+	      success: function (user) {
+	        console.log("success");
+	        ApiActions.updateUser(user);
 	      },
 	      error: function (message) {
 	        console.log(message);
@@ -24843,16 +24702,17 @@
 	module.exports = ApiUtil;
 
 /***/ },
-/* 216 */
+/* 213 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var AppDispatcher = __webpack_require__(217);
-	var Constants = __webpack_require__(221);
+	var AppDispatcher = __webpack_require__(214);
+	var Constants = __webpack_require__(218);
 	
 	var ApiActions = {
 	  updateUser: function (user) {
+	    console.log("here");
 	    AppDispatcher.dispatch({
-	      actionType: Constants.USER_RECEIVED,
+	      actionType: Constants.USER_UPDATED,
 	      user: user
 	    });
 	  },
@@ -24869,20 +24729,27 @@
 	      actionType: Constants.USERS_RECEIVED,
 	      users: users
 	    });
+	  },
+	
+	  receiveUser: function (user) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.USER_RECEIVED,
+	      user: user
+	    });
 	  }
 	};
 	
 	module.exports = ApiActions;
 
 /***/ },
-/* 217 */
+/* 214 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(218).Dispatcher;
+	var Dispatcher = __webpack_require__(215).Dispatcher;
 	module.exports = new Dispatcher();
 
 /***/ },
-/* 218 */
+/* 215 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -24894,11 +24761,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Dispatcher = __webpack_require__(219);
+	module.exports.Dispatcher = __webpack_require__(216);
 
 
 /***/ },
-/* 219 */
+/* 216 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -24920,7 +24787,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	var _prefix = 'ID_';
 	
@@ -25135,7 +25002,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 220 */
+/* 217 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25190,166 +25057,26 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 221 */
+/* 218 */
 /***/ function(module, exports) {
 
 	var Constants = {
 	  PROFILE_RECEIVED: "PROFILE_RECEIVED",
 	  INTERESTS_RECEIVED: "INTERESTS_RECEIVED",
 	  USERS_RECEIVED: "USERS_RECEIVED",
-	  USER_RECEIVED: "USER_RECEIVED"
+	  USER_RECEIVED: "USER_RECEIVED",
+	  USER_UPDATED: "USER_UPDATED"
 	};
 	
 	module.exports = Constants;
 
 /***/ },
-/* 222 */
+/* 219 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUtil = __webpack_require__(215),
-	    UserStore = __webpack_require__(224);
-	
-	var UserShow = React.createClass({
-	  displayName: 'UserShow',
-	
-	  getStateFromStore: function () {
-	    return { user: UserStore.find(parseInt(this.props.params.id)) };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentWillReceiveProps: function (newProps) {
-	    console.log(newProps.params);
-	    ApiUtil.fetchUser(parseInt(newProps.params.id));
-	  },
-	
-	  componentDidMount: function () {
-	    this.userListener = UserStore.addListener(this._userChanged);
-	    ApiUtil.fetchUser(parseInt(this.props.params.id));
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.userListener.remove();
-	  },
-	
-	  _userChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  render: function () {
-	    var thisUser = this.state.user;
-	    var profileProps = [];
-	    if (thisUser.email) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        null,
-	        'Email: ',
-	        thisUser.email
-	      ));
-	    }
-	    if (thisUser.gender) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        null,
-	        'Gender: ',
-	        thisUser.gender
-	      ));
-	    }
-	    if (thisUser.preferred_gender) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        null,
-	        'Interested in: ',
-	        thisUser.preferred_gender
-	      ));
-	    }
-	    if (thisUser.bio) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        null,
-	        'Bio: ',
-	        thisUser.bio
-	      ));
-	    }
-	    return React.createElement(
-	      'div',
-	      null,
-	      thisUser.username.capitalize() + "'s Profile",
-	      profileProps
-	    );
-	  }
-	});
-	
-	String.prototype.capitalize = function () {
-	  return this.charAt(0).toUpperCase() + this.slice(1);
-	};
-	
-	module.exports = UserShow;
-
-/***/ },
-/* 223 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    UserForm = __webpack_require__(210),
-	    ApiUtil = __webpack_require__(215),
-	    UserStore = __webpack_require__(224),
-	    UserItem = __webpack_require__(241);
-	
-	function _getAllUsers() {
-	  return UserStore.all();
-	}
-	
-	var User = React.createClass({
-	  displayName: 'User',
-	
-	  getInitialState: function () {
-	    return {
-	      users: _getAllUsers(),
-	      clickedLoc: null
-	    };
-	  },
-	
-	  _usersChanged: function () {
-	    this.setState({ users: UserStore.all() });
-	  },
-	
-	  componentDidMount: function () {
-	    this.userListener = UserStore.addListener(this._usersChanged);
-	    ApiUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.userListener.remove();
-	  },
-	
-	  render: function () {
-	
-	    return React.createElement(
-	      'ul',
-	      null,
-	      ' Users :',
-	      this.state.users.map(function (user) {
-	        return React.createElement(UserItem, { key: user.id, user: user });
-	      })
-	    );
-	  }
-	});
-	
-	module.exports = User;
-
-/***/ },
-/* 224 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(225).Store;
-	var Constants = __webpack_require__(221);
-	var AppDispatcher = __webpack_require__(217);
+	var Store = __webpack_require__(220).Store;
+	var Constants = __webpack_require__(218);
+	var AppDispatcher = __webpack_require__(214);
 	
 	var UserStore = new Store(AppDispatcher);
 	var _users = {};
@@ -25385,6 +25112,9 @@
 	    case Constants.USER_RECEIVED:
 	      resetUser(payload.user);
 	      break;
+	    case Constants.USER_UPDATED:
+	      resetUser(payload.user);
+	      break;
 	  }
 	  UserStore.__emitChange();
 	};
@@ -25392,7 +25122,7 @@
 	module.exports = UserStore;
 
 /***/ },
-/* 225 */
+/* 220 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -25404,15 +25134,15 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Container = __webpack_require__(226);
-	module.exports.MapStore = __webpack_require__(229);
-	module.exports.Mixin = __webpack_require__(240);
-	module.exports.ReduceStore = __webpack_require__(230);
-	module.exports.Store = __webpack_require__(231);
+	module.exports.Container = __webpack_require__(221);
+	module.exports.MapStore = __webpack_require__(224);
+	module.exports.Mixin = __webpack_require__(235);
+	module.exports.ReduceStore = __webpack_require__(225);
+	module.exports.Store = __webpack_require__(226);
 
 
 /***/ },
-/* 226 */
+/* 221 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25434,10 +25164,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var FluxStoreGroup = __webpack_require__(227);
+	var FluxStoreGroup = __webpack_require__(222);
 	
-	var invariant = __webpack_require__(220);
-	var shallowEqual = __webpack_require__(228);
+	var invariant = __webpack_require__(217);
+	var shallowEqual = __webpack_require__(223);
 	
 	var DEFAULT_OPTIONS = {
 	  pure: true,
@@ -25595,7 +25325,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 227 */
+/* 222 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25614,7 +25344,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	/**
 	 * FluxStoreGroup allows you to execute a callback on every dispatch after
@@ -25676,7 +25406,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 228 */
+/* 223 */
 /***/ function(module, exports) {
 
 	/**
@@ -25731,7 +25461,7 @@
 	module.exports = shallowEqual;
 
 /***/ },
-/* 229 */
+/* 224 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25752,10 +25482,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var FluxReduceStore = __webpack_require__(230);
-	var Immutable = __webpack_require__(239);
+	var FluxReduceStore = __webpack_require__(225);
+	var Immutable = __webpack_require__(234);
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	/**
 	 * This is a simple store. It allows caching key value pairs. An implementation
@@ -25881,7 +25611,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 230 */
+/* 225 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -25902,10 +25632,10 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var FluxStore = __webpack_require__(231);
+	var FluxStore = __webpack_require__(226);
 	
-	var abstractMethod = __webpack_require__(238);
-	var invariant = __webpack_require__(220);
+	var abstractMethod = __webpack_require__(233);
+	var invariant = __webpack_require__(217);
 	
 	var FluxReduceStore = (function (_FluxStore) {
 	  _inherits(FluxReduceStore, _FluxStore);
@@ -25988,7 +25718,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 231 */
+/* 226 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -26007,11 +25737,11 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var _require = __webpack_require__(232);
+	var _require = __webpack_require__(227);
 	
 	var EventEmitter = _require.EventEmitter;
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	/**
 	 * This class should be extended by the stores in your application, like so:
@@ -26171,7 +25901,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 232 */
+/* 227 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -26184,14 +25914,14 @@
 	 */
 	
 	var fbemitter = {
-	  EventEmitter: __webpack_require__(233)
+	  EventEmitter: __webpack_require__(228)
 	};
 	
 	module.exports = fbemitter;
 
 
 /***/ },
-/* 233 */
+/* 228 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -26210,11 +25940,11 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var EmitterSubscription = __webpack_require__(234);
-	var EventSubscriptionVendor = __webpack_require__(236);
+	var EmitterSubscription = __webpack_require__(229);
+	var EventSubscriptionVendor = __webpack_require__(231);
 	
-	var emptyFunction = __webpack_require__(237);
-	var invariant = __webpack_require__(220);
+	var emptyFunction = __webpack_require__(232);
+	var invariant = __webpack_require__(217);
 	
 	/**
 	 * @class BaseEventEmitter
@@ -26388,7 +26118,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 234 */
+/* 229 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -26409,7 +26139,7 @@
 	
 	function _inherits(subClass, superClass) { if (typeof superClass !== 'function' && superClass !== null) { throw new TypeError('Super expression must either be null or a function, not ' + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; }
 	
-	var EventSubscription = __webpack_require__(235);
+	var EventSubscription = __webpack_require__(230);
 	
 	/**
 	 * EmitterSubscription represents a subscription with listener and context data.
@@ -26441,7 +26171,7 @@
 	module.exports = EmitterSubscription;
 
 /***/ },
-/* 235 */
+/* 230 */
 /***/ function(module, exports) {
 
 	/**
@@ -26492,7 +26222,7 @@
 	module.exports = EventSubscription;
 
 /***/ },
-/* 236 */
+/* 231 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -26511,7 +26241,7 @@
 	
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError('Cannot call a class as a function'); } }
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	/**
 	 * EventSubscriptionVendor stores a set of EventSubscriptions that are
@@ -26601,7 +26331,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 237 */
+/* 232 */
 /***/ function(module, exports) {
 
 	/**
@@ -26644,7 +26374,7 @@
 	module.exports = emptyFunction;
 
 /***/ },
-/* 238 */
+/* 233 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -26661,7 +26391,7 @@
 	
 	'use strict';
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	function abstractMethod(className, methodName) {
 	   true ? process.env.NODE_ENV !== 'production' ? invariant(false, 'Subclasses of %s must override %s() with their own implementation.', className, methodName) : invariant(false) : undefined;
@@ -26671,7 +26401,7 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 239 */
+/* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31636,7 +31366,7 @@
 	}));
 
 /***/ },
-/* 240 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -31653,9 +31383,9 @@
 	
 	'use strict';
 	
-	var FluxStoreGroup = __webpack_require__(227);
+	var FluxStoreGroup = __webpack_require__(222);
 	
-	var invariant = __webpack_require__(220);
+	var invariant = __webpack_require__(217);
 	
 	/**
 	 * `FluxContainer` should be preferred over this mixin, but it requires using
@@ -31759,7 +31489,60 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 241 */
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    UserForm = __webpack_require__(210),
+	    ApiUtil = __webpack_require__(212),
+	    UserStore = __webpack_require__(219),
+	    UserItem = __webpack_require__(237);
+	
+	function _getAllUsers() {
+	  return UserStore.all();
+	}
+	
+	var User = React.createClass({
+	  displayName: 'User',
+	
+	  getInitialState: function () {
+	    return {
+	      users: _getAllUsers(),
+	      clickedLoc: null
+	    };
+	  },
+	
+	  _usersChanged: function () {
+	    this.setState({ users: UserStore.all() });
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._usersChanged);
+	    ApiUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  render: function () {
+	
+	    return React.createElement(
+	      'ul',
+	      null,
+	      ' Users :',
+	      this.state.users.map(function (user) {
+	        return React.createElement(UserItem, { key: user.id, user: user });
+	      })
+	    );
+	  }
+	});
+	
+	module.exports = User;
+
+/***/ },
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5);
@@ -31771,21 +31554,248 @@
 	  mixins: [History],
 	
 	  showDetail: function () {
-	    this.history.pushState(null, '/user/' + this.props.user.id, {});
+	    var state = this.props.user;
+	    this.history.pushState(state, '/user/' + this.props.user.id);
 	  },
 	
 	  render: function () {
 	    return React.createElement(
 	      'li',
 	      { onClick: this.showDetail, className: 'user-item' },
-	      React.createElement(
-	        'p',
-	        null,
-	        this.props.user.username
-	      )
+	      this.props.user.username
 	    );
 	  }
 	});
+
+/***/ },
+/* 238 */
+/***/ function(module, exports, __webpack_require__) {
+
+	module.exports = __webpack_require__(239);
+
+/***/ },
+/* 239 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule LinkedStateMixin
+	 * @typechecks static-only
+	 */
+	
+	'use strict';
+	
+	var ReactLink = __webpack_require__(240);
+	var ReactStateSetters = __webpack_require__(241);
+	
+	/**
+	 * A simple mixin around ReactLink.forState().
+	 */
+	var LinkedStateMixin = {
+	  /**
+	   * Create a ReactLink that's linked to part of this component's state. The
+	   * ReactLink will have the current value of this.state[key] and will call
+	   * setState() when a change is requested.
+	   *
+	   * @param {string} key state key to update. Note: you may want to use keyOf()
+	   * if you're using Google Closure Compiler advanced mode.
+	   * @return {ReactLink} ReactLink instance linking to the state.
+	   */
+	  linkState: function (key) {
+	    return new ReactLink(this.state[key], ReactStateSetters.createStateKeySetter(this, key));
+	  }
+	};
+	
+	module.exports = LinkedStateMixin;
+
+/***/ },
+/* 240 */
+/***/ function(module, exports, __webpack_require__) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactLink
+	 * @typechecks static-only
+	 */
+	
+	'use strict';
+	
+	/**
+	 * ReactLink encapsulates a common pattern in which a component wants to modify
+	 * a prop received from its parent. ReactLink allows the parent to pass down a
+	 * value coupled with a callback that, when invoked, expresses an intent to
+	 * modify that value. For example:
+	 *
+	 * React.createClass({
+	 *   getInitialState: function() {
+	 *     return {value: ''};
+	 *   },
+	 *   render: function() {
+	 *     var valueLink = new ReactLink(this.state.value, this._handleValueChange);
+	 *     return <input valueLink={valueLink} />;
+	 *   },
+	 *   _handleValueChange: function(newValue) {
+	 *     this.setState({value: newValue});
+	 *   }
+	 * });
+	 *
+	 * We have provided some sugary mixins to make the creation and
+	 * consumption of ReactLink easier; see LinkedValueUtils and LinkedStateMixin.
+	 */
+	
+	var React = __webpack_require__(6);
+	
+	/**
+	 * @param {*} value current value of the link
+	 * @param {function} requestChange callback to request a change
+	 */
+	function ReactLink(value, requestChange) {
+	  this.value = value;
+	  this.requestChange = requestChange;
+	}
+	
+	/**
+	 * Creates a PropType that enforces the ReactLink API and optionally checks the
+	 * type of the value being passed inside the link. Example:
+	 *
+	 * MyComponent.propTypes = {
+	 *   tabIndexLink: ReactLink.PropTypes.link(React.PropTypes.number)
+	 * }
+	 */
+	function createLinkTypeChecker(linkType) {
+	  var shapes = {
+	    value: typeof linkType === 'undefined' ? React.PropTypes.any.isRequired : linkType.isRequired,
+	    requestChange: React.PropTypes.func.isRequired
+	  };
+	  return React.PropTypes.shape(shapes);
+	}
+	
+	ReactLink.PropTypes = {
+	  link: createLinkTypeChecker
+	};
+	
+	module.exports = ReactLink;
+
+/***/ },
+/* 241 */
+/***/ function(module, exports) {
+
+	/**
+	 * Copyright 2013-2015, Facebook, Inc.
+	 * All rights reserved.
+	 *
+	 * This source code is licensed under the BSD-style license found in the
+	 * LICENSE file in the root directory of this source tree. An additional grant
+	 * of patent rights can be found in the PATENTS file in the same directory.
+	 *
+	 * @providesModule ReactStateSetters
+	 */
+	
+	'use strict';
+	
+	var ReactStateSetters = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function (component, funcReturningState) {
+	    return function (a, b, c, d, e, f) {
+	      var partialState = funcReturningState.call(component, a, b, c, d, e, f);
+	      if (partialState) {
+	        component.setState(partialState);
+	      }
+	    };
+	  },
+	
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {ReactCompositeComponent} component
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function (component, key) {
+	    // Memoize the setters.
+	    var cache = component.__keySetters || (component.__keySetters = {});
+	    return cache[key] || (cache[key] = createStateKeySetter(component, key));
+	  }
+	};
+	
+	function createStateKeySetter(component, key) {
+	  // Partial state is allocated outside of the function closure so it can be
+	  // reused with every call, avoiding memory allocation when this function
+	  // is called.
+	  var partialState = {};
+	  return function stateKeySetter(value) {
+	    partialState[key] = value;
+	    component.setState(partialState);
+	  };
+	}
+	
+	ReactStateSetters.Mixin = {
+	  /**
+	   * Returns a function that calls the provided function, and uses the result
+	   * of that to set the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateSetter(function(xValue) {
+	   *     return {x: xValue};
+	   *   })(1);
+	   *
+	   * @param {function} funcReturningState Returned callback uses this to
+	   *                                      determine how to update state.
+	   * @return {function} callback that when invoked uses funcReturningState to
+	   *                    determined the object literal to setState.
+	   */
+	  createStateSetter: function (funcReturningState) {
+	    return ReactStateSetters.createStateSetter(this, funcReturningState);
+	  },
+	
+	  /**
+	   * Returns a single-argument callback that can be used to update a single
+	   * key in the component's state.
+	   *
+	   * For example, these statements are equivalent:
+	   *
+	   *   this.setState({x: 1});
+	   *   this.createStateKeySetter('x')(1);
+	   *
+	   * Note: this is memoized function, which makes it inexpensive to call.
+	   *
+	   * @param {string} key The key in the state that you should update.
+	   * @return {function} callback of 1 argument which calls setState() with
+	   *                    the provided keyName and callback argument.
+	   */
+	  createStateKeySetter: function (key) {
+	    return ReactStateSetters.createStateKeySetter(this, key);
+	  }
+	};
+	
+	module.exports = ReactStateSetters;
 
 /***/ }
 /******/ ]);

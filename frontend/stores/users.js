@@ -36,6 +36,9 @@ UserStore.__onDispatch = function (payload) {
     case Constants.USER_RECEIVED:
       resetUser(payload.user);
       break;
+    case Constants.USER_UPDATED:
+      resetUser(payload.user);
+      break;
   }
   UserStore.__emitChange();
 };

@@ -24,6 +24,7 @@ var routes = (
   <Route path="/" component={App}>
     <IndexRoute component={User}/>
     <Route path="user/:id" component={UserShow}/>
+    <Route path="profile/:id" component={UserForm}/>
   </Route>
 );
 
@@ -31,8 +32,8 @@ document.addEventListener("DOMContentLoaded", function () {
   var root = document.getElementById("root");
   ReactDOM.render(<Router>{routes}</Router>, root);
 
-  var profile = document.getElementById('user_form');
-  profile.addEventListener("click", function () {
-    ReactDOM.render(<UserForm users={this.state}/>, root);
-  })
+  // var profile = document.getElementById('user_form');
+  // profile.addEventListener("click", function () {
+  //   ReactDOM.render(<UserForm/>, root);
+  // })
 });

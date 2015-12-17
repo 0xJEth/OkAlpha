@@ -3,8 +3,9 @@ var Constants = require('../constants/constants');
 
 var ApiActions = {
   updateUser: function(user){
+    console.log("here");
     AppDispatcher.dispatch({
-      actionType: Constants.USER_RECEIVED,
+      actionType: Constants.USER_UPDATED,
       user: user
     })
   },
@@ -20,6 +21,13 @@ var ApiActions = {
     AppDispatcher.dispatch({
       actionType: Constants.USERS_RECEIVED,
       users: users
+    });
+  },
+
+  receiveUser: function(user){
+    AppDispatcher.dispatch({
+      actionType: Constants.USER_RECEIVED,
+      user: user
     });
   }
 }

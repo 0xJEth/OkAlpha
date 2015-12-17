@@ -16,7 +16,7 @@
         </h1>
         <ul class="header-list group">
           <li>Welcome <%= current_user.username.capitalize %></li>
-          <li><a href="#" id="user_form">My Profile </a></li>
+          <li><a href= "<%="#/profile/#{current_user.id}"%> " id="user_form">My Profile </a></li>
           <li><a><%= button_to "Sign Out", session_url, :method => :delete %></a></li>
         </ul>
 

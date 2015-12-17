@@ -14,9 +14,7 @@ var UserShow = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps) {
-    console.log(newProps.params)
     ApiUtil.fetchUser(parseInt(newProps.params.id));
-
   },
 
   componentDidMount: function () {
@@ -31,6 +29,7 @@ var UserShow = React.createClass({
   _userChanged: function () {
     this.setState(this.getStateFromStore());
   },
+
 
   render: function () {
     var thisUser = this.state.user;

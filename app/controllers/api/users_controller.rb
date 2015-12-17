@@ -1,24 +1,28 @@
 class Api::UsersController < ApplicationController
   def new
-    render :new
+    render json: user
   end
 
   def index
     users = User.all
     render json: users
-    # redirect_to root_url
   end
 
   def create
     user = User.create!(params)
-    render json: user
+    render :create
   end
 
   def show
-    render "show"
+    render :show
+  end
+
+  def edit
+    render :edit
   end
 
   def update
+    p params
     user = User.find(params[:id])
     user.update_attributes(params)
     render json: user
@@ -27,5 +31,6 @@ class Api::UsersController < ApplicationController
   private
 
   def user_params
+    params.require(:user).permit(:username,:gender,:preferred_gender,:email,:bio,:image_url,:id)
   end
 end

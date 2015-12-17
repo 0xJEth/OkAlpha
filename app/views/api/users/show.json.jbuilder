@@ -1,1 +1,1 @@
-"show profile"
+"show"

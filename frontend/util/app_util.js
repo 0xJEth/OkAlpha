@@ -22,7 +22,6 @@ var ApiUtil = {
         ApiActions.updateInterests(interests);
       },
       error: function(message){
-        console.log(message);
       }
     });
   },
@@ -32,8 +31,24 @@ var ApiUtil = {
       url: "api/users/:id",
       data: user,
       success: function (user) {
-        ApiActions.updateUser(user);
+        ApiActions.receiveUser(user);
         callback && callback(user.id);
+      },
+      error: function (message) {
+        console.log(message);
+      }
+    });
+  },
+
+  updateProfile: function (profileInfo) {
+    console.log("here")
+    $.ajax({
+      url: "/api/users/" + profileInfo.id,
+      type: "PATCH",
+      data: {user: profileInfo},
+      success: function (user) {
+        console.log("success")
+        ApiActions.updateUser(user);
       },
       error: function (message) {
         console.log(message);

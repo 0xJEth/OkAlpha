@@ -5,13 +5,14 @@ module.exports = React.createClass({
   mixins: [History],
 
   showDetail: function () {
-    this.history.pushState(null, '/user/' + this.props.user.id, {});
+    var state = this.props.user;
+    this.history.pushState(state, '/user/' + this.props.user.id)
   },
 
   render: function () {
     return(
       <li onClick={this.showDetail} className="user-item">
-        <p>{this.props.user.username}</p>
+        {this.props.user.username}
       </li>
     );
   }
