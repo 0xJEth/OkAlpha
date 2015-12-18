@@ -28,6 +28,14 @@ var ApiActions = {
       actionType: Constants.USER_RECEIVED,
       user: user
     });
+  },
+
+  receiveSearchParams: function(searchParams) {
+    console.log(searchParams)
+    AppDispatcher.dispatch({
+      actionType: Constants.SEARCH_PARAMS_RECEIVED,
+      searchParams: searchParams
+    })
   }
 }
 

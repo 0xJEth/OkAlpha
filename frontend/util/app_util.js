@@ -41,13 +41,11 @@ var ApiUtil = {
   },
 
   updateProfile: function (user, callback) {
-    console.log({user: user});
     $.ajax({
       url: "api/users/" + user.id,
       type: "PATCH",
       data: {user: user},
       success: function (user) {
-        console.log("success");
         ApiActions.updateUser(user);
         callback && callback(user.id);
       },
@@ -55,8 +53,19 @@ var ApiUtil = {
         console.log(message);
       }
     });
-  }
+  },
 
+  fetchSearchResults: function (searchParams) {
+    $.ajax({
+      url: "api/users",
+      success: function (users) {
+        ApiActions.receiveSearchParams(searchParams);
+      },
+      error: function(message) {
+        console.log(message);
+      }
+    })
+  }
 
 };
 module.exports = ApiUtil;

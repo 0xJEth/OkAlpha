@@ -1,6 +1,6 @@
-var Store = require('flux/utils').Store;
-var Constants = require('../constants/constants');
-var AppDispatcher = require('../dispatcher/dispatcher');
+var Store = require('flux/utils').Store,
+    Constants = require('../constants/constants'),
+    AppDispatcher = require('../dispatcher/dispatcher');
 
 var UserStore = new Store(AppDispatcher);
 var _users = {};
@@ -10,11 +10,9 @@ var resetUsers = function(users){
   users.forEach(function (user) {
     _users[user.id] = user;
   });
-}
+};
 
 var resetUser = function (user) {
-  // console.log(user)
-  // console.log(_users[user.id])
   _users[user.id] = user;
 };
 
@@ -40,6 +38,9 @@ UserStore.__onDispatch = function (payload) {
       break;
     case Constants.USER_UPDATED:
       resetUser(payload.user);
+      break;
+    case Constants.SEARCH_PARAMS_RECEIVED:
+      UserStore.fetchSearchResults(payload.searchParams);
       break;
   }
   UserStore.__emitChange();
