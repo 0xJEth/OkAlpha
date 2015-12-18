@@ -32,9 +32,13 @@ var UserShow = React.createClass({
 
 
   render: function () {
-    console.log(this.state.user)
     var thisUser = this.state.user;
     var profileProps = [];
+    if (thisUser.image_url) {
+      var thumbnail = <img className="profile" src={thisUser.image_url.insertPictureParams()}/>
+    } else {
+      var thumbnail = <img className="blank" src={"http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"}/>
+    }
     if (thisUser.email) {
       profileProps.push(<li>Email: {thisUser.email}</li>)
     }
@@ -49,7 +53,9 @@ var UserShow = React.createClass({
     }
     return (
       <div>
-        {thisUser.username.capitalize() + "'s Profile"}
+        {thumbnail}
+        <br/>
+        <h3>{thisUser.username.capitalize()}</h3>
         {profileProps}
       </div>
     );
@@ -58,6 +64,11 @@ var UserShow = React.createClass({
 
 String.prototype.capitalize = function() {
   return this.charAt(0).toUpperCase() + this.slice(1);
+}
+
+String.prototype.insertPictureParams = function() {
+  var pos = this.indexOf("upload/") + 7;
+  return [this.slice(0,pos), "w_125,h_125,r_max/",this.slice(pos)].join("");
 }
 
 module.exports = UserShow;

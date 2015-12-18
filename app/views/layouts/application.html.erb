@@ -1,34 +1,43 @@
-<!DOCTYPE html>
-<html class="header">
-<head>
-  <%= stylesheet_link_tag    'application', media: 'all'%>
-  <%= csrf_meta_tags %>
-</head>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>OkAlpha</title>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<script src="http://widget.cloudinary.com/global/all.js"></script>
+		<script type="text/javascript">
+	    window.CLOUDINARY_OPTIONS = {
+	      cloud_name: "<%=ENV['CLOUD_NAME']%>",
+	      upload_preset: "<%= ENV['UPLOAD_PRESET'] %>"
+	    };
+		</script>
+		<%= stylesheet_link_tag 'application', media: 'all'%>
+	  <%= csrf_meta_tags %>
+	</head>
+	<body>
+		<% if signed_in? %>
+	    <%= render "layouts/errors" %>
+	    <header>
+	      <nav class="header-nav group">
 
-<body>
-  <% if signed_in? %>
-    <%= render "layouts/errors" %>
-    <header>
-      <nav class="header-nav group">
+	        <h1 class="header-logo">
+	          <a href="#">OkAlpha</a>
+	        </h1>
+	        <ul class="header-list group">
+	          <li>Welcome <%= current_user.username.capitalize %></li>
+	          <li><a href= "<%="#/profile/#{current_user.id}"%> " id="user_form">My Profile </a></li>
+	          <li><a><%= button_to "Sign Out", session_url, :method => :delete %></a></li>
+	        </ul>
 
-        <h1 class="header-logo">
-          <a href="#">OkAlpha</a>
-        </h1>
-        <ul class="header-list group">
-          <li>Welcome <%= current_user.username.capitalize %></li>
-          <li><a href= "<%="#/profile/#{current_user.id}"%> " id="user_form">My Profile </a></li>
-          <li><a><%= button_to "Sign Out", session_url, :method => :delete %></a></li>
-        </ul>
+	      </nav>
 
-      </nav>
-    </header>
-    <%= yield %>
+	    </header>
+	    <%= yield %>
 
-  <% else %>
-    <%= render "layouts/errors" %>
-    <%= render "layouts/new_user" %>
-  <% end %>
+	  <% else %>
+	    <%= render "layouts/errors" %>
+	    <%= render "layouts/new_user" %>
+	  <% end %>
 
-
-</body>
+	</body>
 </html>

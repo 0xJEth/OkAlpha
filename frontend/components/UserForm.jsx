@@ -3,6 +3,7 @@ var React = require('react'),
     LinkedStateMixin = require('react-addons-linked-state-mixin'),
     UserStore = require('../stores/users'),
     History = require('react-router').History,
+    Cloud = require('./Cloud'),
     ApiUtil = require('../util/app_util');
 
 
@@ -22,14 +23,12 @@ module.exports = React.createClass({
 
   handleProfileSubmit: function(event){
     event.preventDefault();
-    debugger
     var user = UserStore.find(parseInt(this.props.routeParams.id));
     Object.keys(this.state.user).forEach(function (key) {
       if (this.state[key]) {
         user[key] = this.state[key]
       }
     }.bind(this))
-    console.log(user);
     ApiUtil.updateProfile(user, function (id) {
       this.history.pushState(null, "/user/" + id, {});
     }.bind(this));
@@ -42,6 +41,7 @@ module.exports = React.createClass({
 
   render: function () {
 
+    var user = UserStore.find(parseInt(this.props.routeParams.id));
     var profileForm = (
       <div>
         <h3>Tell us about yourself!</h3>
@@ -65,9 +65,9 @@ module.exports = React.createClass({
         <button onClick={this.handleCancel}>Cancel</button>
       </div>
   );
-
     return (
       <div>
+        <Cloud key={user.id} user={user}/>
         {profileForm}
       </div>
     );

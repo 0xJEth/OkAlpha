@@ -17,13 +17,7 @@ span, article, footer, time, small {
 }
 
 ul {
-  list-style: none;
-}
-
-img {
-  display: block;
-  width: 100%;
-  height: auto;
+  list-style-type: none;
 }
 
 input[type="password"],
@@ -46,4 +40,14 @@ input[type="submit"] {
   content: "";
   display: block;
   clear: both;
+}
+
+.blank {
+  height: 125px;
+  width: 125px;
+}
+
+.profile {
+  height: 125px;
+  width: 125px;
 }

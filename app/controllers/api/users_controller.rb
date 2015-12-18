@@ -9,7 +9,7 @@ class Api::UsersController < ApplicationController
   end
 
   def create
-    user = User.create!(params)
+    user = User.create!(profile_params)
     render :create
   end
 
@@ -24,13 +24,13 @@ class Api::UsersController < ApplicationController
   def update
     p params
     user = User.find(params[:id])
-    user.update_attributes(user_params)
+    user.update_attributes(profile_params)
     render json: user
   end
 
   private
 
-  def user_params
+  def profile_params
     params.require(:user).permit(:username,:gender,:preferred_gender,:email,:bio,:image_url,:id)
   end
 end
