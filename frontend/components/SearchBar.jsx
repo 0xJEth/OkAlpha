@@ -44,12 +44,12 @@ var SearchBar = React.createClass({
       list = <p></p>
     }
     return (
-      <div className="search-bar">
-        <form>
+      <div>
+        <form className="search-bar group">
           <input type="text" name="users[username]"></input>
           <button onClick={this.search}>Search Users</button>
-          <ul>{list}</ul>
         </form>
+        <ul>{list}</ul>
       </div>
     );
   }

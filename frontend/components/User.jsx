@@ -4,6 +4,7 @@ var React = require('react'),
     SearchBar = require('./SearchBar'),
     ApiUtil = require('../util/app_util'),
     UserStore = require('../stores/users'),
+    History = require('react-router').History,
     UserItem = require('./UserItem');
 
 function _getAllUsers() {
@@ -11,6 +12,8 @@ function _getAllUsers() {
 }
 
 var User = React.createClass({
+  mixins: [History],
+
   getInitialState: function (){
     return {
       users: _getAllUsers(),
@@ -35,12 +38,22 @@ var User = React.createClass({
     ApiUtil.fetchSearchResults(string)
   },
 
-  render: function () {
+  showDetail: function (event) {
+    user = UserStore.find(event.target.id)
+    this.history.pushState(this.state, '/user/' + user.id)
+  },
 
+  render: function () {
     return (
       <ul> Users :
+          <div className="side-scroll">
+            {this.state.users.map(function (user) {
+              if (user.image_url) {
+                return (<img onClick={this.showDetail} id={user.id} className="side-scroll-img" src={user.image_url}/>)
+              }
+            }.bind(this))}
+          </div>
           <SearchBar/>
-
       </ul>
     );
   }

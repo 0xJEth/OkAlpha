@@ -18,15 +18,15 @@
 		<% if signed_in? %>
 	    <%= render "layouts/errors" %>
 	    <header>
-	      <nav class="header-nav group">
+	      <nav class="header-nav">
 
 	        <h1 class="header-logo">
-	          <a href="#">OkAlpha</a>
+	          <a class="header-button" href="#">OkAlpha</a>
+	          <a class="header-button" href= "<%="#/profile/#{current_user.id}"%> " id="user_form">My Profile </a>
 	        </h1>
-	        <ul class="header-list group">
-	          <li>Welcome <%= current_user.username.capitalize %></li>
-	          <li><a href= "<%="#/profile/#{current_user.id}"%> " id="user_form">My Profile </a></li>
-	          <li><a><%= button_to "Sign Out", session_url, :method => :delete %></a></li>
+	        <ul class="header-list">
+	          <li class="header-list item">Welcome <%= current_user.username.capitalize %></li>
+	          <li class="header-list item"><%= button_to "Sign Out", session_url, :method => :delete %></li>
 	        </ul>
 
 	      </nav>

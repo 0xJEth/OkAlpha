@@ -1,0 +1,40 @@
+.header-nav {
+  display: block;
+  white-space: nowrap;
+  text-align: center;
+}
+
+.header-logo {
+  display: inline-block;
+  float: left;
+  white-space: nowrap;
+}
+
+.header-list {
+  float: right;
+  white-space: nowrap;
+  display: inline-block;
+}
+
+
+
+
+.side-scroll {
+   white-space: nowrap;
+   height: 200px;
+   width: 700px;
+   overflow: auto;
+ }
+
+ .side-scroll-img {
+   height: 150px;
+   width: 150px;
+   object-fit: cover;
+   border-radius: 25px;
+ }
+
+ .search-bar {
+   width: 300px;
+   display: inline;
+   white-space: nowrap
+ }

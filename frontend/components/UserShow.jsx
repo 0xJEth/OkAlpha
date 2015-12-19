@@ -49,7 +49,7 @@ var UserShow = React.createClass({
       profileProps.push(<li>Interested in: {thisUser.preferred_gender}</li>)
     }
     if (thisUser.bio) {
-      profileProps.push(<li>Bio: {thisUser.bio}</li>)
+      profileProps.push(<p><li>{thisUser.bio}</li></p>)
     }
     return (
       <div>

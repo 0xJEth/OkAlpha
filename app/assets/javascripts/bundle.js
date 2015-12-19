@@ -31329,21 +31329,21 @@
 	    }
 	    return React.createElement(
 	      'div',
-	      { className: 'search-bar' },
+	      null,
 	      React.createElement(
 	        'form',
-	        null,
+	        { className: 'search-bar group' },
 	        React.createElement('input', { type: 'text', name: 'users[username]' }),
 	        React.createElement(
 	          'button',
 	          { onClick: this.search },
 	          'Search Users'
-	        ),
-	        React.createElement(
-	          'ul',
-	          null,
-	          list
 	        )
+	      ),
+	      React.createElement(
+	        'ul',
+	        null,
+	        list
 	      )
 	    );
 	  }
@@ -31697,8 +31697,8 @@
 	  render: function () {
 	    return React.createElement(
 	      "div",
-	      { className: "image", key: this.props.user.id },
-	      React.createElement("img", { src: this.props.user.image_url })
+	      { key: this.props.user.id },
+	      React.createElement("img", { className: "larger-image", src: this.props.user.image_url })
 	    );
 	  }
 	});
@@ -31896,10 +31896,13 @@
 	    }
 	    if (thisUser.bio) {
 	      profileProps.push(React.createElement(
-	        'li',
+	        'p',
 	        null,
-	        'Bio: ',
-	        thisUser.bio
+	        React.createElement(
+	          'li',
+	          null,
+	          thisUser.bio
+	        )
 	      ));
 	    }
 	    return React.createElement(
@@ -31938,6 +31941,7 @@
 	    SearchBar = __webpack_require__(234),
 	    ApiUtil = __webpack_require__(241),
 	    UserStore = __webpack_require__(215),
+	    History = __webpack_require__(1).History,
 	    UserItem = __webpack_require__(245);
 	
 	function _getAllUsers() {
@@ -31946,6 +31950,8 @@
 	
 	var User = React.createClass({
 	  displayName: 'User',
+	
+	  mixins: [History],
 	
 	  getInitialState: function () {
 	    return {
@@ -31971,12 +31977,25 @@
 	    ApiUtil.fetchSearchResults(string);
 	  },
 	
-	  render: function () {
+	  showDetail: function (event) {
+	    user = UserStore.find(event.target.id);
+	    this.history.pushState(this.state, '/user/' + user.id);
+	  },
 	
+	  render: function () {
 	    return React.createElement(
 	      'ul',
 	      null,
 	      ' Users :',
+	      React.createElement(
+	        'div',
+	        { className: 'side-scroll' },
+	        this.state.users.map((function (user) {
+	          if (user.image_url) {
+	            return React.createElement('img', { onClick: this.showDetail, id: user.id, className: 'side-scroll-img', src: user.image_url });
+	          }
+	        }).bind(this))
+	      ),
 	      React.createElement(SearchBar, null)
 	    );
 	  }
@@ -31988,8 +32007,8 @@
 /* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(5);
-	var History = __webpack_require__(1).History;
+	var React = __webpack_require__(5),
+	    History = __webpack_require__(1).History;
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -31998,7 +32017,7 @@
 	
 	  showDetail: function () {
 	    var state = this.props.user;
-	    this.history.pushState(state, '/user/' + this.props.user.id);
+	    this.history.pushState(state, '/user/' + state.id);
 	  },
 	
 	  render: function () {

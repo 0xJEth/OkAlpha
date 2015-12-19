@@ -1,12 +1,12 @@
-var React = require('react');
-var History = require('react-router').History;
+var React = require('react'),
+    History = require('react-router').History;
 
 module.exports = React.createClass({
   mixins: [History],
 
   showDetail: function () {
     var state = this.props.user;
-    this.history.pushState(state, '/user/' + this.props.user.id)
+    this.history.pushState(state, '/user/' + state.id)
   },
 
   render: function () {

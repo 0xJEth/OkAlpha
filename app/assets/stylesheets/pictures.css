@@ -1,0 +1,15 @@
+.blank {
+  height: 125px;
+  width: 125px;
+}
+
+.profile {
+  height: 125px;
+  width: 125px;
+}
+
+.larger-image {
+  object-fit: cover;
+  height: 250px;
+  width: 250px;
+}
