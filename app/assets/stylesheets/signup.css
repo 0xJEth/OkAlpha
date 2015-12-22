@@ -9,12 +9,12 @@
 .new-user input[type="password"], .new-session input[type="password"] {
   border: solid 1px;
   padding: 0 0 0 5px;
-  margin: 1px 1px 1px 6px;
+  margin: 1px 1px 1px 5px;
   letter-spacing: 0;
   border-color: #e3e3e3;
 }
 
-.new-user, .new-session {
+.new-user, .new-session{
   display: block;
   width: 100%;
   margin: 0 50px;
@@ -22,4 +22,32 @@
 
 .bar {
   margin-left: 0;
+}
+
+.new-user input[type="submit"], .new-session input[type="submit"] {
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.new-user input[type="submit"]:hover, .new-session input[type="submit"]:hover {
+  color: #999999;
+}
+
+.new-user input[type="submit"]:active, .new-session input[type="submit"]:active {
+  color: #999999;
+}
+
+@keyframes error {
+  from {color: red;}
+  to {color: back;}
+}
+
+.errors {
+  margin-left: 20px;
+  animation-name: error;
+  animation-duration: 0.5s;
+}
+
+#sign-up{
+  height: 39px;
 }

@@ -31837,7 +31837,7 @@
 	    // console.log(thisUser)
 	    var profileProps = [];
 	    if (thisUser.image_url) {
-	      var thumbnail = React.createElement('img', { className: 'profile', src: thisUser.image_url.insertPictureParams() });
+	      var thumbnail = React.createElement('img', { className: 'profile', src: thisUser.image_url });
 	    } else {
 	      var thumbnail = React.createElement('img', { className: 'blank', src: "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png" });
 	    }
@@ -31883,6 +31883,13 @@
 	        )
 	      ));
 	    }
+	    if (profileProps.length < 1) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        null,
+	        'Nothing here yet'
+	      ));
+	    }
 	    return React.createElement(
 	      'div',
 	      null,
@@ -31911,10 +31918,10 @@
 	  }
 	});
 	
-	String.prototype.insertPictureParams = function () {
-	  var pos = this.indexOf("upload/") + 7;
-	  return [this.slice(0, pos), "w_125,h_125,r_25px/", this.slice(pos)].join("");
-	};
+	// String.prototype.insertPictureParams = function() {
+	//   var pos = this.indexOf("upload/") + 7;
+	//   return [this.slice(0,pos), "w_150,h_150,r_max/",this.slice(pos)].join("");
+	// }
 	
 	module.exports = UserShow;
 
@@ -32028,7 +32035,7 @@
 	      var name = users[userIdx].username.split(" ");
 	      for (var i = 0; i < name.length; i++) {
 	        for (var j = 0; j < string.length; j++) {
-	          if (name[i] === string[j]) {
+	          if (name[i].toLowerCase() === string[j].toLowerCase()) {
 	            results.push(users[userIdx]);
 	          }
 	        }
@@ -32054,9 +32061,23 @@
 	    return list;
 	  },
 	
+	  allUsers: function (event) {
+	    event.preventDefault();
+	    var results = UserStore.all();
+	    this.setState({ matches: results });
+	    // var list = [];
+	    // {UserStore.all().map(function (user) {
+	    //   list.push(<UserItem key={user.id} user={user}/>)
+	    // })}
+	    // if (list.length === 0) {
+	    //   list.push(<p className="search-results">No results</p>)
+	    // }
+	    // return list;
+	  },
+	
 	  render: function () {
 	    var list = this.searchList();
-	    if (list.length === 0) {
+	    if (this.searchList().length === 0) {
 	      list = React.createElement('p', null);
 	    }
 	    return React.createElement(
@@ -32070,6 +32091,11 @@
 	          'button',
 	          { className: 'search-button', onClick: this.search },
 	          'Search Users'
+	        ),
+	        React.createElement(
+	          'button',
+	          { className: 'all-button', onClick: this.allUsers },
+	          'Browse All Users'
 	        )
 	      ),
 	      React.createElement(

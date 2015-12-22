@@ -18,7 +18,7 @@ var SearchBar = React.createClass({
       var name = users[userIdx].username.split(" ");
       for (var i = 0; i < name.length; i++) {
         for (var j = 0; j < string.length; j++) {
-          if (name[i] === string[j]) {
+          if (name[i].toLowerCase() === string[j].toLowerCase()) {
             results.push(users[userIdx]);
           }
         }
@@ -38,9 +38,23 @@ var SearchBar = React.createClass({
     return list;
   },
 
+  allUsers: function(event) {
+    event.preventDefault();
+    var results = UserStore.all();
+    this.setState({ matches: results });
+    // var list = [];
+    // {UserStore.all().map(function (user) {
+    //   list.push(<UserItem key={user.id} user={user}/>)
+    // })}
+    // if (list.length === 0) {
+    //   list.push(<p className="search-results">No results</p>)
+    // }
+    // return list;
+  },
+
   render: function () {
     var list = this.searchList();
-    if (list.length === 0) {
+    if (this.searchList().length === 0) {
       list = <p></p>
     }
     return (
@@ -48,6 +62,7 @@ var SearchBar = React.createClass({
         <form className="search-bar">
           <input className="search-text-field" type="text" name="users[username]"></input>
           <button className="search-button" onClick={this.search}>Search Users</button>
+          <button className="all-button" onClick={this.allUsers}>Browse All Users</button>
         </form>
         <ul className="search-results">{list}</ul>
       </div>

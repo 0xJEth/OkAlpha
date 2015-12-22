@@ -16,13 +16,13 @@
 .search-results, li.user-item {
   height: 30px;
   width: 200px;
-  display: inline;
+  display: block;
   white-space: nowrap;
   margin-left: 20px;
   color: black;
 }
 
-.search-button {
+.search-button, .all-button{
   font-family: "Raleway", Arial, Helvetica, sans-serif;
   padding: 10px;
   margin: 5px 5px;
@@ -30,7 +30,7 @@
   border-radius: 5px;
 }
 
-.search-button:hover, .search-button:active {
+.search-button:hover, .search-button:active, .all-button:hover, .all-button:active {
   color: #999999;
 }
 

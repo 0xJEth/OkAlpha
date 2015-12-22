@@ -43,7 +43,7 @@ var UserShow = React.createClass({
     // console.log(thisUser)
     var profileProps = [];
     if (thisUser.image_url) {
-      var thumbnail = <img className="profile" src={thisUser.image_url.insertPictureParams()}/>
+      var thumbnail = <img className="profile" src={thisUser.image_url}/>
     } else {
       var thumbnail = <img className="blank" src={"http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"}/>
     }
@@ -58,6 +58,9 @@ var UserShow = React.createClass({
     }
     if (thisUser.bio) {
       profileProps.push(<div><br/><br/><li>About me:</li><li>{thisUser.bio}</li></div>)
+    }
+    if (profileProps.length < 1) {
+      profileProps.push(<li>Nothing here yet</li>)
     }
     return (
       <div>
@@ -75,9 +78,9 @@ var UserShow = React.createClass({
   }
 });
 
-String.prototype.insertPictureParams = function() {
-  var pos = this.indexOf("upload/") + 7;
-  return [this.slice(0,pos), "w_125,h_125,r_25px/",this.slice(pos)].join("");
-}
+// String.prototype.insertPictureParams = function() {
+//   var pos = this.indexOf("upload/") + 7;
+//   return [this.slice(0,pos), "w_150,h_150,r_max/",this.slice(pos)].join("");
+// }
 
 module.exports = UserShow;

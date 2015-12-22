@@ -6,6 +6,7 @@
 .profile {
   height: 170px;
   width: 170px;
+  object-fit: cover;
   background-color: transparent;
   border-radius: 100%;
 }
@@ -15,4 +16,5 @@
   height: 170px;
   width: 170px;
   background-color: transparent;
+  border-radius: 25px;
 }
