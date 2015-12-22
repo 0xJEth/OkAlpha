@@ -4,28 +4,28 @@ class Api::UsersController < ApplicationController
   end
 
   def index
-    users = User.all
-    render json: users
+    @users = User.all
+    render :index
   end
 
   def create
-    user = User.create!(profile_params)
-    render :create
+    @user = User.create!(profile_params)
+    render :show
   end
 
   def show
+    @user = User.find(params[:id])
     render :show
   end
 
   def edit
-    render :edit
+    render :show
   end
 
   def update
-    p params
-    user = User.find(params[:id])
-    user.update_attributes(profile_params)
-    render json: user
+    @user = User.find(params[:id])
+    @user.update_attributes(profile_params)
+    render :update
   end
 
   private

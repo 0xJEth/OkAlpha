@@ -1,0 +1,35 @@
+.side-scroll-ul {
+  white-space: nowrap;
+  height: 200px;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  display: block;
+  padding-left: 20px;
+  padding-right: 20px;
+  margin-left: 20px;
+  margin-right: 20px;
+}
+
+.side-scroll-li {
+  white-space: nowrap;
+  width: 160px;
+  object-fit: cover;
+  cursor: pointer;
+  display: inline-block;
+}
+
+.side-scroll-img {
+  height: 150px;
+  width: 150px;
+  object-fit: cover;
+  border-radius: 100%;
+  cursor: pointer;
+}
+
+.side-scroll-text {
+  display: block;
+  text-align: center;
+  cursor: pointer;
+  font-size: 12px;
+}

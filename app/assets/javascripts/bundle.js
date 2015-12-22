@@ -51,8 +51,8 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(243),
-	    User = __webpack_require__(244);
+	    UserShow = __webpack_require__(242),
+	    User = __webpack_require__(243);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -24446,8 +24446,8 @@
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
-	    Cloud = __webpack_require__(238),
-	    ApiUtil = __webpack_require__(241);
+	    Cloud = __webpack_require__(237),
+	    ApiUtil = __webpack_require__(240);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -24460,9 +24460,29 @@
 	    preferred_gender: "",
 	    bio: ""
 	  },
+	  getStateFromStore: function () {
+	    return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
+	  },
 	
 	  getInitialState: function () {
-	    return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
+	    return this.getStateFromStore();
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    ApiUtil.fetchUser(parseInt(newProps.routeParams.id));
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._userChanged);
+	    ApiUtil.fetchUser(parseInt(this.props.routeParams.id));
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  _userChanged: function () {
+	    this.setState(this.getStateFromStore());
 	  },
 	
 	  handleProfileSubmit: function (event) {
@@ -24785,7 +24805,7 @@
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
-	    AppDispatcher = __webpack_require__(235);
+	    AppDispatcher = __webpack_require__(234);
 	
 	var UserStore = new Store(AppDispatcher);
 	var _users = {};
@@ -31274,92 +31294,11 @@
 /* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(5),
-	    UserItem = __webpack_require__(245),
-	    UserStore = __webpack_require__(215),
-	    ApiUtil = __webpack_require__(241);
-	
-	var SearchBar = React.createClass({
-	  displayName: 'SearchBar',
-	
-	  getInitialState: function () {
-	    return { matches: [] };
-	  },
-	
-	  search: function (event) {
-	    event.preventDefault();
-	    var string = event.target.form.firstChild.value;
-	    string = string.split(" ");
-	    var users = UserStore.all();
-	    var results = [];
-	    for (var userIdx = 0; userIdx < users.length; userIdx++) {
-	      var name = users[userIdx].username.split(" ");
-	      for (var i = 0; i < name.length; i++) {
-	        for (var j = 0; j < string.length; j++) {
-	          if (name[i] === string[j]) {
-	            results.push(users[userIdx]);
-	          }
-	        }
-	      }
-	    }
-	    this.setState({ matches: results });
-	  },
-	
-	  searchList: function () {
-	    var list = [];
-	    {
-	      this.state.matches.map(function (user) {
-	        list.push(React.createElement(UserItem, { key: user.id, user: user }));
-	      });
-	    }
-	    if (list.length === 0) {
-	      list.push(React.createElement(
-	        'p',
-	        null,
-	        'No results'
-	      ));
-	    }
-	    return list;
-	  },
-	
-	  render: function () {
-	    var list = this.searchList();
-	    if (list.length === 0) {
-	      list = React.createElement('p', null);
-	    }
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'form',
-	        { className: 'search-bar group' },
-	        React.createElement('input', { type: 'text', name: 'users[username]' }),
-	        React.createElement(
-	          'button',
-	          { onClick: this.search },
-	          'Search Users'
-	        )
-	      ),
-	      React.createElement(
-	        'ul',
-	        null,
-	        list
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = SearchBar;
-
-/***/ },
-/* 235 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Dispatcher = __webpack_require__(236).Dispatcher;
+	var Dispatcher = __webpack_require__(235).Dispatcher;
 	module.exports = new Dispatcher();
 
 /***/ },
-/* 236 */
+/* 235 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31371,11 +31310,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Dispatcher = __webpack_require__(237);
+	module.exports.Dispatcher = __webpack_require__(236);
 
 
 /***/ },
-/* 237 */
+/* 236 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -31612,17 +31551,17 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 238 */
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactDOM = __webpack_require__(209),
-	    UploadButton = __webpack_require__(239),
+	    UploadButton = __webpack_require__(238),
 	    History = __webpack_require__(1).History,
-	    Picture = __webpack_require__(240),
+	    Picture = __webpack_require__(239),
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserStore = __webpack_require__(215),
-	    ApiUtil = __webpack_require__(241);
+	    ApiUtil = __webpack_require__(240);
 	
 	var Cloud = React.createClass({
 	  displayName: 'Cloud',
@@ -31653,7 +31592,7 @@
 	module.exports = Cloud;
 
 /***/ },
-/* 239 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5);
@@ -31686,7 +31625,7 @@
 	module.exports = UploadButton;
 
 /***/ },
-/* 240 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5);
@@ -31704,10 +31643,10 @@
 	});
 
 /***/ },
-/* 241 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ApiActions = __webpack_require__(242);
+	var ApiActions = __webpack_require__(241);
 	
 	var ApiUtil = {
 	  fetchUsers: function () {
@@ -31734,10 +31673,9 @@
 	    });
 	  },
 	
-	  fetchUser: function (user, callback) {
+	  fetchUser: function (id, callback) {
 	    $.ajax({
-	      url: "api/users/:id",
-	      data: user,
+	      url: "api/users/" + id,
 	      success: function (user) {
 	        ApiActions.receiveUser(user);
 	        callback && callback(user.id);
@@ -31779,10 +31717,10 @@
 	module.exports = ApiUtil;
 
 /***/ },
-/* 242 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var AppDispatcher = __webpack_require__(235);
+	var AppDispatcher = __webpack_require__(234);
 	var Constants = __webpack_require__(233);
 	
 	var ApiActions = {
@@ -31826,12 +31764,12 @@
 	module.exports = ApiActions;
 
 /***/ },
-/* 243 */
+/* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
-	    ApiUtil = __webpack_require__(241),
+	    ApiUtil = __webpack_require__(240),
 	    UserStore = __webpack_require__(215);
 	
 	var UserShow = React.createClass({
@@ -31863,7 +31801,19 @@
 	  },
 	
 	  render: function () {
-	    var thisUser = this.state.user;
+	    if (!this.state.user) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        'loading'
+	      );
+	    }
+	    // var thisUser = this.state.user;
+	    // debugger
+	    var thisId = parseInt(this.props.routeParams.id);
+	    // console.log(this)
+	    var thisUser = UserStore.find(parseInt(thisId));
+	    // console.log(thisUser)
 	    var profileProps = [];
 	    if (thisUser.image_url) {
 	      var thumbnail = React.createElement('img', { className: 'profile', src: thisUser.image_url.insertPictureParams() });
@@ -31907,39 +31857,44 @@
 	    }
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'user-info' },
 	      thumbnail,
 	      React.createElement('br', null),
 	      React.createElement(
 	        'h3',
 	        null,
-	        thisUser.username.capitalize()
+	        thisUser.username
 	      ),
-	      profileProps
+	      profileProps,
+	      React.createElement(
+	        'footer',
+	        null,
+	        React.createElement(
+	          'a',
+	          { className: 'nav-button', href: '#' },
+	          'Back'
+	        )
+	      )
 	    );
 	  }
 	});
 	
-	String.prototype.capitalize = function () {
-	  return this.charAt(0).toUpperCase() + this.slice(1);
-	};
-	
 	String.prototype.insertPictureParams = function () {
 	  var pos = this.indexOf("upload/") + 7;
-	  return [this.slice(0, pos), "w_125,h_125,r_max/", this.slice(pos)].join("");
+	  return [this.slice(0, pos), "w_125,h_125,r_25px/", this.slice(pos)].join("");
 	};
 	
 	module.exports = UserShow;
 
 /***/ },
-/* 244 */
+/* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(234),
-	    ApiUtil = __webpack_require__(241),
+	    SearchBar = __webpack_require__(244),
+	    ApiUtil = __webpack_require__(240),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
 	    UserItem = __webpack_require__(245);
@@ -31965,12 +31920,12 @@
 	  },
 	
 	  componentDidMount: function () {
-	    this.userListener = UserStore.addListener(this._usersChanged);
+	    this.usersListener = UserStore.addListener(this._usersChanged);
 	    ApiUtil.fetchUsers();
 	  },
 	
 	  componentWillUnmount: function () {
-	    this.userListener.remove();
+	    this.usersListener.remove();
 	  },
 	
 	  searchResults: function (string) {
@@ -31984,17 +31939,30 @@
 	
 	  render: function () {
 	    return React.createElement(
-	      'ul',
+	      'div',
 	      null,
-	      ' Users :',
 	      React.createElement(
-	        'div',
-	        { className: 'side-scroll' },
+	        'ul',
+	        { className: 'side-scroll-ul' },
 	        this.state.users.map((function (user) {
 	          if (user.image_url) {
-	            return React.createElement('img', { onClick: this.showDetail, id: user.id, className: 'side-scroll-img', src: user.image_url });
+	            return React.createElement(
+	              'li',
+	              { onClick: this.showDetail, className: 'side-scroll-li' },
+	              React.createElement('img', { id: user.id, className: 'side-scroll-img', src: user.image_url }),
+	              React.createElement(
+	                'span',
+	                { id: user.id, className: 'side-scroll-text' },
+	                user.username
+	              )
+	            );
 	          }
-	        }).bind(this))
+	        }).bind(this)),
+	        React.createElement(
+	          'span',
+	          { className: 'es-nav-next' },
+	          'Next'
+	        )
 	      ),
 	      React.createElement(SearchBar, null)
 	    );
@@ -32002,6 +31970,91 @@
 	});
 	
 	module.exports = User;
+	
+	String.prototype.capitalize = function () {
+	  return this.charAt(0).toUpperCase() + this.slice(1);
+	};
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    UserItem = __webpack_require__(245),
+	    UserStore = __webpack_require__(215),
+	    ApiUtil = __webpack_require__(240);
+	
+	var SearchBar = React.createClass({
+	  displayName: 'SearchBar',
+	
+	  getInitialState: function () {
+	    return { matches: [] };
+	  },
+	
+	  search: function (event) {
+	    event.preventDefault();
+	    var string = event.target.form.firstChild.value;
+	    string = string.split(" ");
+	    var users = UserStore.all();
+	    var results = [];
+	    for (var userIdx = 0; userIdx < users.length; userIdx++) {
+	      var name = users[userIdx].username.split(" ");
+	      for (var i = 0; i < name.length; i++) {
+	        for (var j = 0; j < string.length; j++) {
+	          if (name[i] === string[j]) {
+	            results.push(users[userIdx]);
+	          }
+	        }
+	      }
+	    }
+	    this.setState({ matches: results });
+	  },
+	
+	  searchList: function () {
+	    var list = [];
+	    {
+	      this.state.matches.map(function (user) {
+	        list.push(React.createElement(UserItem, { className: 'search-results', key: user.id, user: user }));
+	      });
+	    }
+	    if (list.length === 0) {
+	      list.push(React.createElement(
+	        'p',
+	        { className: 'search-results' },
+	        'No results'
+	      ));
+	    }
+	    return list;
+	  },
+	
+	  render: function () {
+	    var list = this.searchList();
+	    if (list.length === 0) {
+	      list = React.createElement('p', null);
+	    }
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'form',
+	        { className: 'search-bar' },
+	        React.createElement('input', { className: 'search-text-field', type: 'text', name: 'users[username]' }),
+	        React.createElement(
+	          'button',
+	          { className: 'search-button', onClick: this.search },
+	          'Search Users'
+	        )
+	      ),
+	      React.createElement(
+	        'ul',
+	        null,
+	        list
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = SearchBar;
 
 /***/ },
 /* 245 */

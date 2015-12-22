@@ -16,9 +16,29 @@ module.exports = React.createClass({
     preferred_gender: "",
     bio: ""
   },
-
-  getInitialState: function(){
+  getStateFromStore: function () {
     return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
+  },
+
+  getInitialState: function () {
+    return this.getStateFromStore();
+  },
+
+  componentWillReceiveProps: function (newProps) {
+    ApiUtil.fetchUser(parseInt(newProps.routeParams.id));
+  },
+
+  componentDidMount: function () {
+    this.userListener = UserStore.addListener(this._userChanged);
+    ApiUtil.fetchUser(parseInt(this.props.routeParams.id));
+  },
+
+  componentWillUnmount: function () {
+    this.userListener.remove();
+  },
+
+  _userChanged: function () {
+    this.setState(this.getStateFromStore());
   },
 
   handleProfileSubmit: function(event){

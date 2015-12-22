@@ -26,12 +26,12 @@ var User = React.createClass({
   },
 
   componentDidMount: function() {
-    this.userListener = UserStore.addListener(this._usersChanged);
+    this.usersListener = UserStore.addListener(this._usersChanged);
     ApiUtil.fetchUsers();
   },
 
   componentWillUnmount: function() {
-    this.userListener.remove();
+    this.usersListener.remove();
   },
 
   searchResults:function(string) {
@@ -45,18 +45,27 @@ var User = React.createClass({
 
   render: function () {
     return (
-      <ul> Users :
-          <div className="side-scroll">
-            {this.state.users.map(function (user) {
-              if (user.image_url) {
-                return (<img onClick={this.showDetail} id={user.id} className="side-scroll-img" src={user.image_url}/>)
-              }
+      <div>
+        <ul className="side-scroll-ul">
+          {this.state.users.map(function(user) {
+            if (user.image_url) {
+              return (
+                <li onClick={this.showDetail} className="side-scroll-li">
+                  <img id={user.id} className="side-scroll-img" src={user.image_url}/>
+                  <span id={user.id} className="side-scroll-text">{user.username}</span>
+                </li>
+              )}
             }.bind(this))}
-          </div>
+            <span className="es-nav-next">Next</span>
+          </ul>
           <SearchBar/>
-      </ul>
+      </div>
     );
   }
 });
 
 module.exports = User;
+
+String.prototype.capitalize = function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+}

@@ -6,10 +6,12 @@
 .profile {
   height: 125px;
   width: 125px;
+  background-color: transparent;
 }
 
 .larger-image {
   object-fit: cover;
   height: 250px;
   width: 250px;
+  background-color: #4242f0;
 }

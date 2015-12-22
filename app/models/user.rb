@@ -29,6 +29,16 @@ class User < ActiveRecord::Base
     self.session_token
   end
 
+  def self.capitalize_username(username)
+    username = username.split(" ")
+    username.each do |word|
+      p word
+      word.capitalize!
+    end
+    p username
+    username = username.join(" ")
+  end
+
   private
   def ensure_session_token
     self.session_token ||= SecureRandom.urlsafe_base64(16)

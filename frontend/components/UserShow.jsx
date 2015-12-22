@@ -32,7 +32,15 @@ var UserShow = React.createClass({
 
 
   render: function () {
-    var thisUser = this.state.user;
+    if (!this.state.user) {
+      return <div>loading</div>
+    }
+    // var thisUser = this.state.user;
+    // debugger
+    var thisId = parseInt(this.props.routeParams.id);
+    // console.log(this)
+    var thisUser = UserStore.find(parseInt(thisId));
+    // console.log(thisUser)
     var profileProps = [];
     if (thisUser.image_url) {
       var thumbnail = <img className="profile" src={thisUser.image_url.insertPictureParams()}/>
@@ -52,23 +60,22 @@ var UserShow = React.createClass({
       profileProps.push(<p><li>{thisUser.bio}</li></p>)
     }
     return (
-      <div>
+      <div className="user-info">
         {thumbnail}
         <br/>
-        <h3>{thisUser.username.capitalize()}</h3>
+        <h3>{thisUser.username}</h3>
         {profileProps}
+        <footer>
+          <a className="nav-button" href="#">Back</a>
+        </footer>
       </div>
     );
   }
 });
 
-String.prototype.capitalize = function() {
-  return this.charAt(0).toUpperCase() + this.slice(1);
-}
-
 String.prototype.insertPictureParams = function() {
   var pos = this.indexOf("upload/") + 7;
-  return [this.slice(0,pos), "w_125,h_125,r_max/",this.slice(pos)].join("");
+  return [this.slice(0,pos), "w_125,h_125,r_25px/",this.slice(pos)].join("");
 }
 
 module.exports = UserShow;

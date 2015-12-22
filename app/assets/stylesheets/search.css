@@ -1,0 +1,20 @@
+.search-text-field {
+  height: 30px;
+  width: 300px;
+  display: inline;
+	border-radius: 10px;
+  white-space: nowrap;
+  background-color: white;
+  margin-top: 20px;
+  margin-left: 20px;
+  color: black;
+}
+
+.search-results {
+  height: 30px;
+  width: 300px;
+  display: inline;
+  white-space: nowrap;
+  margin-left: 20px;
+  color: white;
+}

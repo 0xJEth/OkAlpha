@@ -26,10 +26,9 @@ var ApiUtil = {
     });
   },
 
-  fetchUser: function (user, callback) {
+  fetchUser: function (id, callback) {
     $.ajax({
-      url: "api/users/:id",
-      data: user,
+      url: "api/users/" + id,
       success: function (user) {
         ApiActions.receiveUser(user);
         callback && callback(user.id);

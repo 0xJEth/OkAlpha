@@ -25,6 +25,7 @@ var routes = (
     <IndexRoute component={User}/>
     <Route path="user/:id" component={UserShow}/>
     <Route path="profile/:id" component={UserForm}/>
+
   </Route>
 );
 

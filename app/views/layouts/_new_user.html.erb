@@ -1,4 +1,5 @@
 <div>
+<%= flash[:errors_signup].join("<br>").html_safe if flash[:errors_signup] %>
 <h2>Sign Up</h2>
 
 <form action="<%= users_url %>" method="post">
@@ -19,8 +20,8 @@
 
 <hr><hr>
 
-<h2>Sign In</h2>
-
+<h2>Log In</h2>
+<%= flash[:errors_login].join("<br>").html_safe if flash[:errors_login] %>
 <form action="<%= session_url %>" method="post">
   <%= auth_token_input %>
   <label>
@@ -33,6 +34,6 @@
     <input type="password" name="user[password]" value="">
   </label>
   <br><br>
-  <input type="submit" value="Sign In">
+  <input type="submit" value="Log In">
 </form>
 </div>
