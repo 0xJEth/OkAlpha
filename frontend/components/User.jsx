@@ -48,14 +48,13 @@ var User = React.createClass({
   },
 
   render: function () {
-        console.log(this)
     return (
       <div>
         <ul className="side-scroll-ul">
           {this.state.users.map(function(user) {
-            if (user.image_url && this.state.current_user.id != user.id) {
+            if (user.image_url) {
               return (
-                <li key={user.id} current-user={this.state.current_user} onClick={this.showDetail} className="side-scroll-li">
+                <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
                   <img id={user.id} className="side-scroll-img" src={user.image_url}/>
                   <span className="side-scroll-text">{user.username}</span>
                 </li>

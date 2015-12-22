@@ -6,7 +6,6 @@ var ApiUserUtil = {
     $.ajax({
       url: "api/sessions",
       success: function (current_user) {
-        console.log(current_user)
         ApiUserActions.getCurrentUser(current_user);
       },
       error: function(message) {

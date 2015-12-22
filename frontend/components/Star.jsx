@@ -34,10 +34,10 @@ var Star = React.createClass({
 
   handleLike: function(event) {
     event.preventDefault;
-    var starState = this.getStateFromStore().star;
-    var user_liked = UserStore.find(parseInt(this.props.user.id));
-    var current_user = LikeStore.
-    ApiLikeUtil.updateMyLike(user_liked.id)
+    // var starState = this.getStateFromStore().star;
+    // var user_liked = UserStore.find(parseInt(this.props.user.id));
+    // var current_user = LikeStore
+    // ApiLikeUtil.updateMyLike(user_liked.id)
     // return {star: !starState}
   },
 

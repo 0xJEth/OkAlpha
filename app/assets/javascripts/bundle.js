@@ -31340,7 +31340,6 @@
 	    $.ajax({
 	      url: "api/sessions",
 	      success: function (current_user) {
-	        console.log(current_user);
 	        ApiUserActions.getCurrentUser(current_user);
 	      },
 	      error: function (message) {
@@ -32004,9 +32003,10 @@
 	
 	  handleLike: function (event) {
 	    event.preventDefault;
-	    var starState = this.getStateFromStore().star;
-	    var user_liked = UserStore.find(parseInt(this.props.user.id));
-	    var current_user = LikeStore.ApiLikeUtil.updateMyLike(user_liked.id);
+	    // var starState = this.getStateFromStore().star;
+	    // var user_liked = UserStore.find(parseInt(this.props.user.id));
+	    // var current_user = LikeStore
+	    // ApiLikeUtil.updateMyLike(user_liked.id)
 	    // return {star: !starState}
 	  },
 	
@@ -32312,7 +32312,6 @@
 	  },
 	
 	  render: function () {
-	    console.log(this);
 	    return React.createElement(
 	      'div',
 	      null,
@@ -32320,10 +32319,10 @@
 	        'ul',
 	        { className: 'side-scroll-ul' },
 	        this.state.users.map((function (user) {
-	          if (user.image_url && this.state.current_user.id != user.id) {
+	          if (user.image_url) {
 	            return React.createElement(
 	              'li',
-	              { key: user.id, 'current-user': this.state.current_user, onClick: this.showDetail, className: 'side-scroll-li' },
+	              { key: user.id, onClick: this.showDetail, className: 'side-scroll-li' },
 	              React.createElement('img', { id: user.id, className: 'side-scroll-img', src: user.image_url }),
 	              React.createElement(
 	                'span',

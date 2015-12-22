@@ -7,7 +7,7 @@ var React = require('react'),
 var UserShow = React.createClass({
 
   getStateFromStore: function () {
-    return { user: UserStore.find(parseInt(this.props.params.id)) };
+    return { user: UserStore.find(parseInt(this.props.params.id))};
   },
 
   getInitialState: function () {
