@@ -1,20 +1,43 @@
 .search-text-field {
   height: 30px;
-  width: 300px;
+  width: 200px;
   display: inline;
-	border-radius: 10px;
+	border-radius: 5px;
+  border: solid 1px;
+  border-color: gray;
   white-space: nowrap;
   background-color: white;
   margin-top: 20px;
   margin-left: 20px;
   color: black;
+  font-size: 12pt;
 }
 
-.search-results {
+.search-results, li.user-item {
   height: 30px;
-  width: 300px;
+  width: 200px;
   display: inline;
   white-space: nowrap;
   margin-left: 20px;
-  color: white;
+  color: black;
+}
+
+.search-button {
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  padding: 10px;
+  margin: 5px 5px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.search-button:hover, .search-button:active {
+  color: #999999;
+}
+
+.search-bar {
+  margin-bottom: 20px;
+}
+
+li.user-item {
+  cursor: pointer;
 }

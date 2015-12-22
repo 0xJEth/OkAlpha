@@ -57,15 +57,17 @@ var UserShow = React.createClass({
       profileProps.push(<li>Interested in: {thisUser.preferred_gender}</li>)
     }
     if (thisUser.bio) {
-      profileProps.push(<p><li>{thisUser.bio}</li></p>)
+      profileProps.push(<div><br/><br/><li>About me:</li><li>{thisUser.bio}</li></div>)
     }
     return (
-      <div className="user-info">
-        {thumbnail}
-        <br/>
-        <h3>{thisUser.username}</h3>
-        {profileProps}
-        <footer>
+      <div>
+        <div className="user-info">
+          {thumbnail}
+          <br/>
+          <h2>{thisUser.username}</h2>
+          {profileProps}
+        </div>
+        <footer id="footer">
           <a className="nav-button" href="#">Back</a>
         </footer>
       </div>

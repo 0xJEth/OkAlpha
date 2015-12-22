@@ -56,7 +56,6 @@ var User = React.createClass({
                 </li>
               )}
             }.bind(this))}
-            <span className="es-nav-next">Next</span>
           </ul>
           <SearchBar/>
       </div>

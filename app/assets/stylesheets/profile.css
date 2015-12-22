@@ -1,0 +1,33 @@
+.profile-form {
+  margin-left: 20px;
+  margin-top: 20px;
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+}
+
+.profile-button, button.upload-button {
+  padding: 10px;
+  margin: 10px;
+  border-radius: 5px;
+  color: black;
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+}
+
+.profile-button:hover, button.upload-button:hover {
+  color: #999999;
+}
+
+.profile-button:active, button.upload-button:active {
+  color: #999999;
+}
+
+.profile-form input[type="text"] {
+  border: solid 1px;
+  padding: 5px;
+  margin: 5px;
+  border-color: #e3e3e3;
+}
+
+.profile-label {
+  display: inline-block;
+  width: 135px;
+}

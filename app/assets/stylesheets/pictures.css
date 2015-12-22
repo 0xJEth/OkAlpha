@@ -4,14 +4,15 @@
 }
 
 .profile {
-  height: 125px;
-  width: 125px;
+  height: 170px;
+  width: 170px;
   background-color: transparent;
+  border-radius: 100%;
 }
 
 .larger-image {
   object-fit: cover;
-  height: 250px;
-  width: 250px;
-  background-color: #4242f0;
+  height: 170px;
+  width: 170px;
+  background-color: transparent;
 }

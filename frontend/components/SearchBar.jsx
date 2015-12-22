@@ -30,7 +30,7 @@ var SearchBar = React.createClass({
   searchList: function() {
     var list = [];
     {this.state.matches.map(function (user) {
-      list.push(<UserItem className="search-results" key={user.id} user={user}/>)
+      list.push(<UserItem key={user.id} user={user}/>)
     })}
     if (list.length === 0) {
       list.push(<p className="search-results">No results</p>)
@@ -49,7 +49,7 @@ var SearchBar = React.createClass({
           <input className="search-text-field" type="text" name="users[username]"></input>
           <button className="search-button" onClick={this.search}>Search Users</button>
         </form>
-        <ul>{list}</ul>
+        <ul className="search-results">{list}</ul>
       </div>
     );
   }

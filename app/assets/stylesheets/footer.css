@@ -1,0 +1,11 @@
+footer .nav-button {
+  padding: 10px;
+  font-size: 12pt;
+  background-color: #4242f0;
+  border-radius: 5px;
+  color: white;
+}
+
+footer .nav-button:hover {
+  color: #bfbfbf;
+}

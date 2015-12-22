@@ -1,9 +1,16 @@
+header, nav {
+  background-color: #4242f0;
+  color: white;
+  font-size: 10pt;
+}
+
+
 .header-nav {
   display: block;
-  height: 50px;
+  height: 45px;
   border-color: #e3e3e3;
   border-bottom: solid 1px;
-  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .header-logo {
@@ -33,14 +40,12 @@
   transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
   cursor: pointer;
   display: inline-block;
-  height: 2.5em;
-  line-height: 2.5em;
-  padding: 0 1.0em;
+  padding: 7px 0 15px 15px;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
   font-family: "Raleway", Arial, Helvetica, sans-serif;
-  font-size: 14pt;
+  font-size: 10pt;
   font-weight: 300;
   letter-spacing: 0.09em;
   line-height: 1.65em;
@@ -49,13 +54,27 @@
   box-sizing: border-box;
 }
 
-.header-button:active {
-  color: #ccccff;
+.header-button:active, .header-button:hover {
+  color: #bfbfbf;
+}
+
+.header-list-item, .header-list-welcome, .button_to input {
+  background-color: #4242f0;
+  display: inline-block;
+  text-align: center;
+  line-height: 1.65em;
+  color: white;
 }
 
 .header-list-item {
-  float: right;
-  height: 45px;
-  display: inline-block;
-  text-align: center;
+  padding: 0;
+  margin: 0;
+}
+
+.header-list-item .button_to input:hover {
+  color: #bfbfbf;
+}
+
+.header-list-welcome {
+  padding: 7px 0;
 }

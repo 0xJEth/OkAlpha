@@ -24504,11 +24504,19 @@
 	  },
 	
 	  render: function () {
+	    if (!this.state.user) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        'loading'
+	      );
+	    }
 	
 	    var user = UserStore.find(parseInt(this.props.routeParams.id));
+	
 	    var profileForm = React.createElement(
 	      'div',
-	      null,
+	      { className: 'attr-form' },
 	      React.createElement(
 	        'h3',
 	        null,
@@ -24516,36 +24524,36 @@
 	      ),
 	      React.createElement(
 	        'form',
-	        { className: 'new-profile', onSubmit: this.handleProfileSubmit },
+	        { onSubmit: this.handleProfileSubmit },
 	        React.createElement(
 	          'label',
-	          null,
-	          'Email address '
+	          { className: 'profile-label' },
+	          'Email address :'
 	        ),
 	        React.createElement('input', { type: 'text', valueLink: this.linkState("email") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
-	          null,
-	          'Your gender '
+	          { className: 'profile-label' },
+	          'Your gender :'
 	        ),
 	        React.createElement('input', { type: 'text', valueLink: this.linkState("gender") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
-	          null,
-	          'Gender you\'re interested in: '
+	          { className: 'profile-label' },
+	          'Gender interested in :'
 	        ),
 	        React.createElement('input', { type: 'text', valueLink: this.linkState("preferred_gender") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
-	          null,
-	          'Short bio '
+	          { className: 'profile-label' },
+	          'Short bio :'
 	        ),
 	        React.createElement('input', { type: 'text', valueLink: this.linkState("bio") }),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'submit', value: 'Update' })
+	        React.createElement('input', { className: 'profile-button', type: 'submit', value: 'Update' })
 	      ),
 	      React.createElement('br', null),
 	      React.createElement('br', null),
@@ -24556,15 +24564,28 @@
 	      ),
 	      React.createElement(
 	        'button',
-	        { onClick: this.handleCancel },
+	        { id: 'update-button', className: 'profile-button', onClick: this.handleCancel },
 	        'Cancel'
 	      )
 	    );
 	    return React.createElement(
 	      'div',
 	      null,
-	      React.createElement(Cloud, { key: user.id, user: user }),
-	      profileForm
+	      React.createElement(
+	        'div',
+	        { className: 'profile-form' },
+	        React.createElement(Cloud, { key: user.id, user: user }),
+	        profileForm
+	      ),
+	      React.createElement(
+	        'footer',
+	        { id: 'footer' },
+	        React.createElement(
+	          'a',
+	          { className: 'nav-button', href: '#' },
+	          'Back'
+	        )
+	      )
 	    );
 	  }
 	});
@@ -31615,7 +31636,7 @@
 	      { className: "upload-form" },
 	      React.createElement(
 	        "button",
-	        { onClick: this.upload },
+	        { className: "upload-button", onClick: this.upload },
 	        "Upload Profile Picture"
 	      )
 	    );
@@ -31846,8 +31867,15 @@
 	    }
 	    if (thisUser.bio) {
 	      profileProps.push(React.createElement(
-	        'p',
+	        'div',
 	        null,
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'li',
+	          null,
+	          'About me:'
+	        ),
 	        React.createElement(
 	          'li',
 	          null,
@@ -31857,18 +31885,22 @@
 	    }
 	    return React.createElement(
 	      'div',
-	      { className: 'user-info' },
-	      thumbnail,
-	      React.createElement('br', null),
+	      null,
 	      React.createElement(
-	        'h3',
-	        null,
-	        thisUser.username
+	        'div',
+	        { className: 'user-info' },
+	        thumbnail,
+	        React.createElement('br', null),
+	        React.createElement(
+	          'h2',
+	          null,
+	          thisUser.username
+	        ),
+	        profileProps
 	      ),
-	      profileProps,
 	      React.createElement(
 	        'footer',
-	        null,
+	        { id: 'footer' },
 	        React.createElement(
 	          'a',
 	          { className: 'nav-button', href: '#' },
@@ -31957,12 +31989,7 @@
 	              )
 	            );
 	          }
-	        }).bind(this)),
-	        React.createElement(
-	          'span',
-	          { className: 'es-nav-next' },
-	          'Next'
-	        )
+	        }).bind(this))
 	      ),
 	      React.createElement(SearchBar, null)
 	    );
@@ -32014,7 +32041,7 @@
 	    var list = [];
 	    {
 	      this.state.matches.map(function (user) {
-	        list.push(React.createElement(UserItem, { className: 'search-results', key: user.id, user: user }));
+	        list.push(React.createElement(UserItem, { key: user.id, user: user }));
 	      });
 	    }
 	    if (list.length === 0) {
@@ -32047,7 +32074,7 @@
 	      ),
 	      React.createElement(
 	        'ul',
-	        null,
+	        { className: 'search-results' },
 	        list
 	      )
 	    );

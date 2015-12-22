@@ -1,0 +1,25 @@
+.new-user input[type="text"], .new-session input[type="text"] {
+  border: solid 1px;
+  padding: 0 0 0 5px;
+  margin: 1px;
+  letter-spacing: 0;
+  border-color: #e3e3e3;
+}
+
+.new-user input[type="password"], .new-session input[type="password"] {
+  border: solid 1px;
+  padding: 0 0 0 5px;
+  margin: 1px 1px 1px 6px;
+  letter-spacing: 0;
+  border-color: #e3e3e3;
+}
+
+.new-user, .new-session {
+  display: block;
+  width: 100%;
+  margin: 0 50px;
+}
+
+.bar {
+  margin-left: 0;
+}
