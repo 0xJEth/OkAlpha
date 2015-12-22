@@ -1,11 +1,25 @@
-var ApiActions = require('../actions/api_actions');
+var ApiUserActions = require('../actions/api_user_actions');
 
-var ApiUtil = {
+var ApiUserUtil = {
+
+  fetchCurrentUser: function(){
+    $.ajax({
+      url: "api/sessions",
+      success: function (current_user) {
+        console.log(current_user)
+        ApiUserActions.getCurrentUser(current_user);
+      },
+      error: function(message) {
+        console.log(message);
+      }
+    })
+  },
+
   fetchUsers: function(){
     $.ajax({
       url: "api/users",
       success: function (users) {
-        ApiActions.receiveUsers(users);
+        ApiUserActions.receiveUsers(users);
       },
       error: function(message) {
         console.log(message);
@@ -19,7 +33,7 @@ var ApiUtil = {
       url: "api/interests",
       data: interests,
       success: function(interests){
-        ApiActions.updateInterests(interests);
+        ApiUserActions.updateInterests(interests);
       },
       error: function(message){
       }
@@ -30,7 +44,7 @@ var ApiUtil = {
     $.ajax({
       url: "api/users/" + id,
       success: function (user) {
-        ApiActions.receiveUser(user);
+        ApiUserActions.receiveUser(user);
         callback && callback(user.id);
       },
       error: function (message) {
@@ -45,7 +59,7 @@ var ApiUtil = {
       type: "PATCH",
       data: {user: user},
       success: function (user) {
-        ApiActions.updateUser(user);
+        ApiUserActions.updateUser(user);
         callback && callback(user.id);
       },
       error: function (message) {
@@ -58,7 +72,7 @@ var ApiUtil = {
     $.ajax({
       url: "api/users",
       success: function (users) {
-        ApiActions.receiveSearchParams(searchParams);
+        ApiUserActions.receiveSearchParams(searchParams);
       },
       error: function(message) {
         console.log(message);
@@ -67,4 +81,4 @@ var ApiUtil = {
   }
 
 };
-module.exports = ApiUtil;
+module.exports = ApiUserUtil;

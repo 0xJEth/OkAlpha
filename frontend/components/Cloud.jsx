@@ -5,7 +5,7 @@ var React = require('react'),
     Picture = require('./Image'),
     LinkedStateMixin = require('react-addons-linked-state-mixin'),
     UserStore = require('../stores/users'),
-    ApiUtil = require('../util/app_util');
+    ApiUserUtil = require('../util/api_user_util');
 
 var Cloud = React.createClass({
   mixins: [LinkedStateMixin, History],
@@ -16,7 +16,7 @@ var Cloud = React.createClass({
 
   postImage: function (image) {
     this.state.user.image_url = image.url;
-    ApiUtil.updateProfile(this.state.user, function (id) {
+    ApiUserUtil.updateProfile(this.state.user, function (id) {
       this.history.pushState(null, "/user/" + id, {});
     }.bind(this));
   },

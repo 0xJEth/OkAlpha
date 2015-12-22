@@ -2,14 +2,15 @@ class SessionsController < ApplicationController
   def new
   end
 
+  attr_reader :current_user
+
   def create
-    user = User.find_by_credentials(
+    @current_user = User.find_by_credentials(
       params[:user][:username],
       params[:user][:password]
     )
-    p "USER #{user}"
-    if user
-      sign_in(user)
+    if @current_user
+      sign_in(@current_user)
       redirect_to root_url
     else
       flash.now[:errors_login] = ["Invalid username or password"]

@@ -1,7 +1,7 @@
 var AppDispatcher = require('../dispatcher/dispatcher');
 var Constants = require('../constants/constants');
 
-var ApiActions = {
+var ApiUserActions = {
   updateUser: function(user){
     AppDispatcher.dispatch({
       actionType: Constants.USER_UPDATED,
@@ -30,8 +30,14 @@ var ApiActions = {
     });
   },
 
+  getCurrentUser: function(current_user){
+    AppDispatcher.dispatch({
+      actionType: Constants.CURRENT_USER_RECEIVED,
+      current_user: current_user
+    });
+  },
+
   receiveSearchParams: function(searchParams) {
-    console.log(searchParams)
     AppDispatcher.dispatch({
       actionType: Constants.SEARCH_PARAMS_RECEIVED,
       searchParams: searchParams
@@ -39,4 +45,4 @@ var ApiActions = {
   }
 }
 
-module.exports = ApiActions;
+module.exports = ApiUserActions;

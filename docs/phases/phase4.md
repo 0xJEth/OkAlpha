@@ -15,16 +15,16 @@
 * LikesStore
 
 ### Actions
-* ApiActions.receiveAllYourLikes -> triggered by ApiUtil
-* LikeActions.fetchAllYourLikes -> triggers ApiUtil
-* ApiActions.receiveAllLikesYou -> triggered by ApiUtil
-* LikeActions.fetchAllLikesYou -> triggers ApiUtil
-* ApiActions.receiveAllMutualLikes -> triggered by ApiUtil
-* LikeActions.fetchAllMutualLikes -> triggers ApiUtil
+* ApiUserActions.receiveAllYourLikes -> triggered by ApiUserUtil
+* LikeActions.fetchAllYourLikes -> triggers ApiUserUtil
+* ApiUserActions.receiveAllLikesYou -> triggered by ApiUserUtil
+* LikeActions.fetchAllLikesYou -> triggers ApiUserUtil
+* ApiUserActions.receiveAllMutualLikes -> triggered by ApiUserUtil
+* LikeActions.fetchAllMutualLikes -> triggers ApiUserUtil
 
-### ApiUtil
-* ApiUtil.fetchAllYourLikes
-* ApiUtil.fetchAllLikesYou
-* ApiUtil.fetchAllMutualLikes
+### ApiUserUtil
+* ApiUserUtil.fetchAllYourLikes
+* ApiUserUtil.fetchAllLikesYou
+* ApiUserUtil.fetchAllMutualLikes
 
 ## Gems/Libraries

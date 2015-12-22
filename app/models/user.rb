@@ -3,13 +3,18 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6, allow_nil: true }
   validates :session_token, :username, uniqueness: true
 
+  has_many :likes
+  has_many :fans,
+  primary_key: :id,
+  foreign_key: :liked_id,
+  class_name: "Like"
+
   attr_reader :password
 
   after_initialize :ensure_session_token
 
   def self.find_by_credentials(username, password)
     user = User.find_by(username: username)
-    p "user found by creds #{user}"
     return nil unless user && user.valid_password?(password)
     user
   end

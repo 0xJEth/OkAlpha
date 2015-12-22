@@ -15,10 +15,10 @@
 ### Stores
 
 ### Actions
-* ApiActions.receiveAllSearchResults -> triggered by ApiUtil
-* SearchBarActions.fetchAllSearchResults -> triggers ApiUtil
+* ApiUserActions.receiveAllSearchResults -> triggered by ApiUserUtil
+* SearchBarActions.fetchAllSearchResults -> triggers ApiUserUtil
 
-### ApiUtil
-* ApiUtil.fetchAllSearchResults
+### ApiUserUtil
+* ApiUserUtil.fetchAllSearchResults
 
 ## Gems/Libraries

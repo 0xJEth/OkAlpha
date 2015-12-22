@@ -17,18 +17,18 @@
 * Users
 
 ### Actions
-* ApiActions.receiveAllUsers -> triggered by ApiUtil
-* ApiActions.receiveSingleUser
-* UserActions.fetchAllUsers -> triggers ApiUtil
+* ApiUserActions.receiveAllUsers -> triggered by ApiUserUtil
+* ApiUserActions.receiveSingleUser
+* UserActions.fetchAllUsers -> triggers ApiUserUtil
 * UserActions.fetchSingleUser
 * UserActions.createUser
 * UserActions.editUser
 
-### ApiUtil
-* ApiUtil.fetchAllUsers
-* ApiUtil.fetchSingleUser
-* ApiUtil.createUser
-* ApiUtil.editUser
+### ApiUserUtil
+* ApiUserUtil.fetchAllUsers
+* ApiUserUtil.fetchSingleUser
+* ApiUserUtil.createUser
+* ApiUserUtil.editUser
 
 ## Gems/Libraries
 * Flux Dispatcher (npm)

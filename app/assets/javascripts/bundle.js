@@ -52,7 +52,7 @@
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
 	    UserShow = __webpack_require__(242),
-	    User = __webpack_require__(243);
+	    User = __webpack_require__(247);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -71,8 +71,8 @@
 	  Route,
 	  { path: '/', component: App },
 	  React.createElement(IndexRoute, { component: User }),
-	  React.createElement(Route, { path: 'user/:id', component: UserShow }),
-	  React.createElement(Route, { path: 'profile/:id', component: UserForm })
+	  React.createElement(Route, { path: 'profile/:id', component: UserForm }),
+	  React.createElement(Route, { path: 'user/:id', component: UserShow })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -24446,8 +24446,8 @@
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
-	    Cloud = __webpack_require__(237),
-	    ApiUtil = __webpack_require__(240);
+	    Cloud = __webpack_require__(239),
+	    ApiUserUtil = __webpack_require__(234);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -24469,12 +24469,12 @@
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    ApiUtil.fetchUser(parseInt(newProps.routeParams.id));
+	    ApiUserUtil.fetchUser(parseInt(newProps.routeParams.id));
 	  },
 	
 	  componentDidMount: function () {
 	    this.userListener = UserStore.addListener(this._userChanged);
-	    ApiUtil.fetchUser(parseInt(this.props.routeParams.id));
+	    ApiUserUtil.fetchUser(parseInt(this.props.routeParams.id));
 	  },
 	
 	  componentWillUnmount: function () {
@@ -24493,7 +24493,7 @@
 	        user[key] = this.state[key];
 	      }
 	    }).bind(this));
-	    ApiUtil.updateProfile(user, (function (id) {
+	    ApiUserUtil.updateProfile(user, (function (id) {
 	      this.history.pushState(null, "/user/" + id, {});
 	    }).bind(this));
 	    this.setState(this.blankAttrs);
@@ -24826,7 +24826,8 @@
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
-	    AppDispatcher = __webpack_require__(234);
+	    ApiUserUtil = __webpack_require__(234),
+	    AppDispatcher = __webpack_require__(236);
 	
 	var UserStore = new Store(AppDispatcher);
 	var _users = {};
@@ -24840,6 +24841,10 @@
 	
 	var resetUser = function (user) {
 	  _users[user.id] = user;
+	};
+	
+	var getCurrentUser = function (user) {
+	  current_user = user;
 	};
 	
 	UserStore.all = function () {
@@ -24867,6 +24872,9 @@
 	      break;
 	    case Constants.SEARCH_PARAMS_RECEIVED:
 	      UserStore.fetchSearchResults(payload.searchParams);
+	      break;
+	    case Constants.CURRENT_USER_RECEIVED:
+	      getCurrentUser(payload.current_user);
 	      break;
 	  }
 	  UserStore.__emitChange();
@@ -31306,7 +31314,16 @@
 	  USERS_RECEIVED: "USERS_RECEIVED",
 	  USER_RECEIVED: "USER_RECEIVED",
 	  USER_UPDATED: "USER_UPDATED",
-	  SEARCH_PARAMS_RECEIVED: "SEARCH_PARAMS_RECEIVED"
+	  SEARCH_PARAMS_RECEIVED: "SEARCH_PARAMS_RECEIVED",
+	
+	  MY_LIKES_RECEIVED: "MY_LIKES_RECEIVED",
+	  MY_LIKE_RECEIVED: "MY_LIKE_RECEIVED",
+	  MY_LIKE_UPDATED: "MY_LIKE_UPDATED",
+	  MY_FANS_RECEIVED: "MY_FANS_RECEIVED",
+	  MY_FAN_RECEIVED: "MY_FAN_RECEIVED",
+	  MY_FAN_UPDATED: "MY_FAN_UPDATED",
+	
+	  CURRENT_USER_RECEIVED: "CURRENT_USER_RECEIVED"
 	};
 	
 	module.exports = Constants;
@@ -31315,11 +31332,152 @@
 /* 234 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var Dispatcher = __webpack_require__(235).Dispatcher;
-	module.exports = new Dispatcher();
+	var ApiUserActions = __webpack_require__(235);
+	
+	var ApiUserUtil = {
+	
+	  fetchCurrentUser: function () {
+	    $.ajax({
+	      url: "api/sessions",
+	      success: function (current_user) {
+	        console.log(current_user);
+	        ApiUserActions.getCurrentUser(current_user);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  fetchUsers: function () {
+	    $.ajax({
+	      url: "api/users",
+	      success: function (users) {
+	        ApiUserActions.receiveUsers(users);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateInterests: function (data) {
+	    $.ajax({
+	      type: "POST",
+	      url: "api/interests",
+	      data: interests,
+	      success: function (interests) {
+	        ApiUserActions.updateInterests(interests);
+	      },
+	      error: function (message) {}
+	    });
+	  },
+	
+	  fetchUser: function (id, callback) {
+	    $.ajax({
+	      url: "api/users/" + id,
+	      success: function (user) {
+	        ApiUserActions.receiveUser(user);
+	        callback && callback(user.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateProfile: function (user, callback) {
+	    $.ajax({
+	      url: "api/users/" + user.id,
+	      type: "PATCH",
+	      data: { user: user },
+	      success: function (user) {
+	        ApiUserActions.updateUser(user);
+	        callback && callback(user.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  fetchSearchResults: function (searchParams) {
+	    $.ajax({
+	      url: "api/users",
+	      success: function (users) {
+	        ApiUserActions.receiveSearchParams(searchParams);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	
+	};
+	module.exports = ApiUserUtil;
 
 /***/ },
 /* 235 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiUserActions = {
+	  updateUser: function (user) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.USER_UPDATED,
+	      user: user
+	    });
+	  },
+	
+	  updateInterests: function (users) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTERESTS_RECEIVED,
+	      users: users
+	    });
+	  },
+	
+	  receiveUsers: function (users) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.USERS_RECEIVED,
+	      users: users
+	    });
+	  },
+	
+	  receiveUser: function (user) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.USER_RECEIVED,
+	      user: user
+	    });
+	  },
+	
+	  getCurrentUser: function (current_user) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.CURRENT_USER_RECEIVED,
+	      current_user: current_user
+	    });
+	  },
+	
+	  receiveSearchParams: function (searchParams) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.SEARCH_PARAMS_RECEIVED,
+	      searchParams: searchParams
+	    });
+	  }
+	};
+	
+	module.exports = ApiUserActions;
+
+/***/ },
+/* 236 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Dispatcher = __webpack_require__(237).Dispatcher;
+	module.exports = new Dispatcher();
+
+/***/ },
+/* 237 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/**
@@ -31331,11 +31489,11 @@
 	 * of patent rights can be found in the PATENTS file in the same directory.
 	 */
 	
-	module.exports.Dispatcher = __webpack_require__(236);
+	module.exports.Dispatcher = __webpack_require__(238);
 
 
 /***/ },
-/* 236 */
+/* 238 */
 /***/ function(module, exports, __webpack_require__) {
 
 	/* WEBPACK VAR INJECTION */(function(process) {/**
@@ -31572,17 +31730,17 @@
 	/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(3)))
 
 /***/ },
-/* 237 */
+/* 239 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactDOM = __webpack_require__(209),
-	    UploadButton = __webpack_require__(238),
+	    UploadButton = __webpack_require__(240),
 	    History = __webpack_require__(1).History,
-	    Picture = __webpack_require__(239),
+	    Picture = __webpack_require__(241),
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserStore = __webpack_require__(215),
-	    ApiUtil = __webpack_require__(240);
+	    ApiUserUtil = __webpack_require__(234);
 	
 	var Cloud = React.createClass({
 	  displayName: 'Cloud',
@@ -31595,7 +31753,7 @@
 	
 	  postImage: function (image) {
 	    this.state.user.image_url = image.url;
-	    ApiUtil.updateProfile(this.state.user, (function (id) {
+	    ApiUserUtil.updateProfile(this.state.user, (function (id) {
 	      this.history.pushState(null, "/user/" + id, {});
 	    }).bind(this));
 	  },
@@ -31613,7 +31771,7 @@
 	module.exports = Cloud;
 
 /***/ },
-/* 238 */
+/* 240 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5);
@@ -31646,7 +31804,7 @@
 	module.exports = UploadButton;
 
 /***/ },
-/* 239 */
+/* 241 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5);
@@ -31664,133 +31822,13 @@
 	});
 
 /***/ },
-/* 240 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiActions = __webpack_require__(241);
-	
-	var ApiUtil = {
-	  fetchUsers: function () {
-	    $.ajax({
-	      url: "api/users",
-	      success: function (users) {
-	        ApiActions.receiveUsers(users);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateInterests: function (data) {
-	    $.ajax({
-	      type: "POST",
-	      url: "api/interests",
-	      data: interests,
-	      success: function (interests) {
-	        ApiActions.updateInterests(interests);
-	      },
-	      error: function (message) {}
-	    });
-	  },
-	
-	  fetchUser: function (id, callback) {
-	    $.ajax({
-	      url: "api/users/" + id,
-	      success: function (user) {
-	        ApiActions.receiveUser(user);
-	        callback && callback(user.id);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateProfile: function (user, callback) {
-	    $.ajax({
-	      url: "api/users/" + user.id,
-	      type: "PATCH",
-	      data: { user: user },
-	      success: function (user) {
-	        ApiActions.updateUser(user);
-	        callback && callback(user.id);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  fetchSearchResults: function (searchParams) {
-	    $.ajax({
-	      url: "api/users",
-	      success: function (users) {
-	        ApiActions.receiveSearchParams(searchParams);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  }
-	
-	};
-	module.exports = ApiUtil;
-
-/***/ },
-/* 241 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(234);
-	var Constants = __webpack_require__(233);
-	
-	var ApiActions = {
-	  updateUser: function (user) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.USER_UPDATED,
-	      user: user
-	    });
-	  },
-	
-	  updateInterests: function (users) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.INTERESTS_RECEIVED,
-	      users: users
-	    });
-	  },
-	
-	  receiveUsers: function (users) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.USERS_RECEIVED,
-	      users: users
-	    });
-	  },
-	
-	  receiveUser: function (user) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.USER_RECEIVED,
-	      user: user
-	    });
-	  },
-	
-	  receiveSearchParams: function (searchParams) {
-	    console.log(searchParams);
-	    AppDispatcher.dispatch({
-	      actionType: Constants.SEARCH_PARAMS_RECEIVED,
-	      searchParams: searchParams
-	    });
-	  }
-	};
-	
-	module.exports = ApiActions;
-
-/***/ },
 /* 242 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
-	    ApiUtil = __webpack_require__(240),
+	    ApiUserUtil = __webpack_require__(234),
+	    Star = __webpack_require__(243),
 	    UserStore = __webpack_require__(215);
 	
 	var UserShow = React.createClass({
@@ -31805,12 +31843,12 @@
 	  },
 	
 	  componentWillReceiveProps: function (newProps) {
-	    ApiUtil.fetchUser(parseInt(newProps.params.id));
+	    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
 	  },
 	
 	  componentDidMount: function () {
 	    this.userListener = UserStore.addListener(this._userChanged);
-	    ApiUtil.fetchUser(parseInt(this.props.params.id));
+	    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
 	  },
 	
 	  componentWillUnmount: function () {
@@ -31829,12 +31867,8 @@
 	        'loading'
 	      );
 	    }
-	    // var thisUser = this.state.user;
-	    // debugger
 	    var thisId = parseInt(this.props.routeParams.id);
-	    // console.log(this)
 	    var thisUser = UserStore.find(parseInt(thisId));
-	    // console.log(thisUser)
 	    var profileProps = [];
 	    if (thisUser.image_url) {
 	      var thumbnail = React.createElement('img', { className: 'profile', src: thisUser.image_url });
@@ -31844,7 +31878,7 @@
 	    if (thisUser.email) {
 	      profileProps.push(React.createElement(
 	        'li',
-	        null,
+	        { key: 'profile-email' },
 	        'Email: ',
 	        thisUser.email
 	      ));
@@ -31852,7 +31886,7 @@
 	    if (thisUser.gender) {
 	      profileProps.push(React.createElement(
 	        'li',
-	        null,
+	        { key: 'profile-gender' },
 	        'Gender: ',
 	        thisUser.gender
 	      ));
@@ -31860,7 +31894,7 @@
 	    if (thisUser.preferred_gender) {
 	      profileProps.push(React.createElement(
 	        'li',
-	        null,
+	        { key: 'profile-pref-gender' },
 	        'Interested in: ',
 	        thisUser.preferred_gender
 	      ));
@@ -31868,13 +31902,13 @@
 	    if (thisUser.bio) {
 	      profileProps.push(React.createElement(
 	        'div',
-	        null,
+	        { key: 'profile-bio' },
 	        React.createElement('br', null),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'li',
 	          null,
-	          'About me:'
+	          'About me :'
 	        ),
 	        React.createElement(
 	          'li',
@@ -31886,7 +31920,7 @@
 	    if (profileProps.length < 1) {
 	      profileProps.push(React.createElement(
 	        'li',
-	        null,
+	        { key: 'profile-empty' },
 	        'Nothing here yet'
 	      ));
 	    }
@@ -31903,7 +31937,10 @@
 	          null,
 	          thisUser.username
 	        ),
-	        profileProps
+	        profileProps,
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(Star, { key: thisUser.id, user: thisUser })
 	      ),
 	      React.createElement(
 	        'footer',
@@ -31931,12 +31968,306 @@
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiLikeUtil = __webpack_require__(244),
+	    LikeStore = __webpack_require__(246),
+	    UserStore = __webpack_require__(215);
+	
+	var Star = React.createClass({
+	  displayName: 'Star',
+	
+	  getStateFromStore: function () {
+	    for (var id in LikeStore.allMyLikes()) {
+	      if (myLikes[id].liked_id === this.props.user.id) {
+	        return { star: true };
+	      }
+	    }
+	    return { star: false };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.myLikeListener = LikeStore.addListener(this._myLikeChanged);
+	    ApiLikeUtil.fetchMyLike(parseInt(this.props.user.id));
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.myLikeListener.remove();
+	  },
+	
+	  _myLikeChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  handleLike: function (event) {
+	    event.preventDefault;
+	    var starState = this.getStateFromStore().star;
+	    var user_liked = UserStore.find(parseInt(this.props.user.id));
+	    var current_user = LikeStore.ApiLikeUtil.updateMyLike(user_liked.id);
+	    // return {star: !starState}
+	  },
+	
+	  render: function () {
+	    if (typeof this.state.star === 'undefined') {
+	      return React.createElement('div', null);
+	    }
+	    return React.createElement(
+	      'form',
+	      { className: 'star-form' },
+	      React.createElement('input', { onClick: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' }),
+	      'Like!'
+	    );
+	  }
+	});
+	
+	module.exports = Star;
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ApiLikeActions = __webpack_require__(245);
+	
+	var ApiLikeUtil = {
+	  fetchMyLikes: function () {
+	    $.ajax({
+	      url: "api/likes",
+	      success: function (likes) {
+	        ApiLikeActions.receiveMyLikes(likes);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  fetchMyFans: function () {
+	    $.ajax({
+	      url: "api/likes",
+	      success: function (likes) {
+	        ApiLikeActions.receiveMyFans(likes);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  fetchMyLike: function (id, callback) {
+	    $.ajax({
+	      url: "api/users/" + id,
+	      success: function (like) {
+	        ApiLikeActions.receiveMyLike(like);
+	        callback && callback(like.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  fetchMyFan: function (id, callback) {
+	    $.ajax({
+	      url: "api/users/" + id,
+	      success: function (like) {
+	        ApiLikeActions.receiveMyFan(like);
+	        callback && callback(like.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateMyLike: function (id, callback) {
+	    $.ajax({
+	      url: "api/users/" + id,
+	      success: function (like) {
+	        ApiLikeActions.updateMyLike(like);
+	        callback && callback(like.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateMyFan: function (id, callback) {
+	    $.ajax({
+	      url: "api/users/" + id,
+	      success: function (like) {
+	        ApiLikeActions.updateMyFan(like);
+	        callback && callback(like.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	};
+	
+	module.exports = ApiLikeUtil;
+
+/***/ },
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiLikeActions = {
+	
+	  receiveMyLikes: function (likes) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MY_LIKES_RECEIVED,
+	      likes: likes
+	    });
+	  },
+	
+	  receiveMyLike: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MY_LIKE_RECEIVED,
+	      like: like
+	    });
+	  },
+	
+	  updateMyLike: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MY_LIKE_UPDATED,
+	      like: like
+	    });
+	  },
+	
+	  receiveMyFans: function (likes) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MY_FANS_RECEIVED,
+	      likes: likes
+	    });
+	  },
+	
+	  receiveMyFan: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MY_FAN_RECEIVED,
+	      like: like
+	    });
+	  },
+	
+	  updateMyFan: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MY_FAN_UPDATED,
+	      like: like
+	    });
+	  }
+	};
+	
+	module.exports = ApiLikeActions;
+
+/***/ },
+/* 246 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(216).Store,
+	    Constants = __webpack_require__(233),
+	    AppDispatcher = __webpack_require__(236);
+	
+	var LikeStore = new Store(AppDispatcher);
+	var _likes = {};
+	
+	var resetMyLikes = function (likes) {
+	  _likes = {};
+	  likes.forEach(function (like) {
+	    _likes[like.id] = like;
+	  });
+	};
+	
+	var resetMyLike = function (like) {
+	  _likes[like.id] = like;
+	};
+	
+	var updateMyLike = function (like) {
+	  console.log(this);
+	};
+	
+	var resetFanLikes = function (likes) {
+	  _likes = {};
+	  likes.forEach(function (like) {
+	    _likes[like.id] = like;
+	  });
+	};
+	
+	var resetFanLike = function (like) {
+	  _likes[like.id] = like;
+	};
+	
+	var updateFanLike = function (like) {
+	  _likes[like.id] = like;
+	};
+	
+	LikeStore.allMyLikes = function (user_id) {
+	  var myLikes = [];
+	  for (var id in _likes) {
+	    if (_likes[id].user_id = user_id) {
+	      likes.push(_likes[id]);
+	    }
+	  }
+	  return myLikes;
+	};
+	
+	LikeStore.allMyFans = function (user_id) {
+	  var myFans = [];
+	  for (var id in _likes) {
+	    if (_likes[id].liked_id = user_id) {
+	      likes.push(_likes[id]);
+	    }
+	  }
+	  return myFans;
+	};
+	
+	LikeStore.find = function (id) {
+	  return _likes[id];
+	};
+	
+	LikeStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case Constants.MY_LIKES_RECEIVED:
+	      resetMyLikes(payload.likes);
+	      break;
+	    case Constants.MY_LIKE_RECEIVED:
+	      resetMyLike(payload.like);
+	      break;
+	    case Constants.MY_LIKE_UPDATED:
+	      updateMyLike(payload.like);
+	      break;
+	    case Constants.MY_FANS_RECEIVED:
+	      resetFanLikes(payload.likes);
+	      break;
+	    case Constants.MY_FAN_RECEIVED:
+	      resetFanLike(payload.like);
+	      break;
+	    case Constants.MY_FAN_UPDATED:
+	      updateFanLike(payload.like);
+	      break;
+	  }
+	  LikeStore.__emitChange();
+	};
+	
+	module.exports = LikeStore;
+
+/***/ },
+/* 247 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(244),
-	    ApiUtil = __webpack_require__(240),
+	    SearchBar = __webpack_require__(248),
+	    ApiUserUtil = __webpack_require__(234),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
-	    UserItem = __webpack_require__(245);
+	    UserItem = __webpack_require__(249);
 	
 	function _getAllUsers() {
 	  return UserStore.all();
@@ -31950,17 +32281,21 @@
 	  getInitialState: function () {
 	    return {
 	      users: _getAllUsers(),
-	      clickedLoc: null
+	      current_user: this.getCurrentUser()
 	    };
 	  },
 	
+	  getCurrentUser: function () {
+	    var current_user = ApiUserUtil.fetchCurrentUser();
+	  },
+	
 	  _usersChanged: function () {
-	    this.setState({ users: UserStore.all() });
+	    this.setState({ users: UserStore.all(), current_user: current_user });
 	  },
 	
 	  componentDidMount: function () {
 	    this.usersListener = UserStore.addListener(this._usersChanged);
-	    ApiUtil.fetchUsers();
+	    ApiUserUtil.fetchUsers();
 	  },
 	
 	  componentWillUnmount: function () {
@@ -31968,7 +32303,7 @@
 	  },
 	
 	  searchResults: function (string) {
-	    ApiUtil.fetchSearchResults(string);
+	    ApiUserUtil.fetchSearchResults(string);
 	  },
 	
 	  showDetail: function (event) {
@@ -31977,6 +32312,7 @@
 	  },
 	
 	  render: function () {
+	    console.log(this);
 	    return React.createElement(
 	      'div',
 	      null,
@@ -31984,14 +32320,14 @@
 	        'ul',
 	        { className: 'side-scroll-ul' },
 	        this.state.users.map((function (user) {
-	          if (user.image_url) {
+	          if (user.image_url && this.state.current_user.id != user.id) {
 	            return React.createElement(
 	              'li',
-	              { onClick: this.showDetail, className: 'side-scroll-li' },
+	              { key: user.id, 'current-user': this.state.current_user, onClick: this.showDetail, className: 'side-scroll-li' },
 	              React.createElement('img', { id: user.id, className: 'side-scroll-img', src: user.image_url }),
 	              React.createElement(
 	                'span',
-	                { id: user.id, className: 'side-scroll-text' },
+	                { className: 'side-scroll-text' },
 	                user.username
 	              )
 	            );
@@ -32010,13 +32346,13 @@
 	};
 
 /***/ },
-/* 244 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
-	    UserItem = __webpack_require__(245),
+	    UserItem = __webpack_require__(249),
 	    UserStore = __webpack_require__(215),
-	    ApiUtil = __webpack_require__(240);
+	    ApiUserUtil = __webpack_require__(234);
 	
 	var SearchBar = React.createClass({
 	  displayName: 'SearchBar',
@@ -32054,7 +32390,7 @@
 	    if (list.length === 0) {
 	      list.push(React.createElement(
 	        'p',
-	        { className: 'search-results' },
+	        { key: -1, className: 'search-results' },
 	        'No results'
 	      ));
 	    }
@@ -32065,14 +32401,6 @@
 	    event.preventDefault();
 	    var results = UserStore.all();
 	    this.setState({ matches: results });
-	    // var list = [];
-	    // {UserStore.all().map(function (user) {
-	    //   list.push(<UserItem key={user.id} user={user}/>)
-	    // })}
-	    // if (list.length === 0) {
-	    //   list.push(<p className="search-results">No results</p>)
-	    // }
-	    // return list;
 	  },
 	
 	  render: function () {
@@ -32110,7 +32438,7 @@
 	module.exports = SearchBar;
 
 /***/ },
-/* 245 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),

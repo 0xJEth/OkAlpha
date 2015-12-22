@@ -1,6 +1,7 @@
 var React = require('react'),
     ReactRouter = require('react-router'),
-    ApiUtil = require('../util/app_util'),
+    ApiUserUtil = require('../util/api_user_util'),
+    Star = require('./Star'),
     UserStore = require('../stores/users');
 
 var UserShow = React.createClass({
@@ -14,12 +15,12 @@ var UserShow = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps) {
-    ApiUtil.fetchUser(parseInt(newProps.params.id));
+    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
   },
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
-    ApiUtil.fetchUser(parseInt(this.props.params.id));
+    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
   },
 
   componentWillUnmount: function () {
@@ -35,12 +36,8 @@ var UserShow = React.createClass({
     if (!this.state.user) {
       return <div>loading</div>
     }
-    // var thisUser = this.state.user;
-    // debugger
     var thisId = parseInt(this.props.routeParams.id);
-    // console.log(this)
     var thisUser = UserStore.find(parseInt(thisId));
-    // console.log(thisUser)
     var profileProps = [];
     if (thisUser.image_url) {
       var thumbnail = <img className="profile" src={thisUser.image_url}/>
@@ -48,19 +45,19 @@ var UserShow = React.createClass({
       var thumbnail = <img className="blank" src={"http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"}/>
     }
     if (thisUser.email) {
-      profileProps.push(<li>Email: {thisUser.email}</li>)
+      profileProps.push(<li key="profile-email">Email: {thisUser.email}</li>)
     }
     if (thisUser.gender) {
-      profileProps.push(<li>Gender: {thisUser.gender}</li>)
+      profileProps.push(<li key="profile-gender">Gender: {thisUser.gender}</li>)
     }
     if (thisUser.preferred_gender) {
-      profileProps.push(<li>Interested in: {thisUser.preferred_gender}</li>)
+      profileProps.push(<li key="profile-pref-gender">Interested in: {thisUser.preferred_gender}</li>)
     }
     if (thisUser.bio) {
-      profileProps.push(<div><br/><br/><li>About me:</li><li>{thisUser.bio}</li></div>)
+      profileProps.push(<div key="profile-bio"><br/><br/><li>About me :</li><li>{thisUser.bio}</li></div>)
     }
     if (profileProps.length < 1) {
-      profileProps.push(<li>Nothing here yet</li>)
+      profileProps.push(<li key="profile-empty">Nothing here yet</li>)
     }
     return (
       <div>
@@ -69,6 +66,8 @@ var UserShow = React.createClass({
           <br/>
           <h2>{thisUser.username}</h2>
           {profileProps}
+          <br/><br/>
+          <Star key={thisUser.id} user={thisUser}/>
         </div>
         <footer id="footer">
           <a className="nav-button" href="#">Back</a>

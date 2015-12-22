@@ -4,7 +4,7 @@ var React = require('react'),
     UserStore = require('../stores/users'),
     History = require('react-router').History,
     Cloud = require('./Cloud'),
-    ApiUtil = require('../util/app_util');
+    ApiUserUtil = require('../util/api_user_util');
 
 
 module.exports = React.createClass({
@@ -25,12 +25,12 @@ module.exports = React.createClass({
   },
 
   componentWillReceiveProps: function (newProps) {
-    ApiUtil.fetchUser(parseInt(newProps.routeParams.id));
+    ApiUserUtil.fetchUser(parseInt(newProps.routeParams.id));
   },
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
-    ApiUtil.fetchUser(parseInt(this.props.routeParams.id));
+    ApiUserUtil.fetchUser(parseInt(this.props.routeParams.id));
   },
 
   componentWillUnmount: function () {
@@ -49,7 +49,7 @@ module.exports = React.createClass({
         user[key] = this.state[key]
       }
     }.bind(this))
-    ApiUtil.updateProfile(user, function (id) {
+    ApiUserUtil.updateProfile(user, function (id) {
       this.history.pushState(null, "/user/" + id, {});
     }.bind(this));
     this.setState(this.blankAttrs);

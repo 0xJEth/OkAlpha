@@ -20,19 +20,19 @@
 * Messages
 
 ### Actions
-* ApiActions.receiveAllReceivedMessages -> triggered by ApiUtil
-* LikeActions.fetchAllReceivedMessages -> triggers ApiUtil
-* ApiActions.receiveSingleReceivedMessage -> triggered by ApiUtil
-* LikeActions.fetchSingleReceivedMessage -> triggers ApiUtil
-* ApiActions.receiveAllSentMessages -> triggered by ApiUtil
-* LikeActions.fetchAllSentMessages -> triggers ApiUtil
-* ApiActions.receiveSingleSentMessage -> triggered by ApiUtil
-* LikeActions.fetchSingleSentMessage -> triggers ApiUtil
+* ApiUserActions.receiveAllReceivedMessages -> triggered by ApiUserUtil
+* LikeActions.fetchAllReceivedMessages -> triggers ApiUserUtil
+* ApiUserActions.receiveSingleReceivedMessage -> triggered by ApiUserUtil
+* LikeActions.fetchSingleReceivedMessage -> triggers ApiUserUtil
+* ApiUserActions.receiveAllSentMessages -> triggered by ApiUserUtil
+* LikeActions.fetchAllSentMessages -> triggers ApiUserUtil
+* ApiUserActions.receiveSingleSentMessage -> triggered by ApiUserUtil
+* LikeActions.fetchSingleSentMessage -> triggers ApiUserUtil
 
-### ApiUtil
-* ApiUtil.fetchAllReceivedMessages
-* ApiUtil.fetchSingleReceivedMessage
-* ApiUtil.fetchAllSentMessages
-* ApiUtil.fetchSingleSentMessage
+### ApiUserUtil
+* ApiUserUtil.fetchAllReceivedMessages
+* ApiUserUtil.fetchSingleReceivedMessage
+* ApiUserUtil.fetchAllSentMessages
+* ApiUserUtil.fetchSingleSentMessage
 
 ## Gems/Libraries

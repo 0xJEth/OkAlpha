@@ -40,4 +40,10 @@
 
 li.user-item {
   cursor: pointer;
+  height: 25px;
+  padding: 10px;
+}
+
+li.user-item:hover {
+  background-color: #b3d1ff;
 }

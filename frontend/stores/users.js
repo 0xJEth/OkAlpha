@@ -1,5 +1,6 @@
 var Store = require('flux/utils').Store,
     Constants = require('../constants/constants'),
+    ApiUserUtil = require('../util/api_user_util'),
     AppDispatcher = require('../dispatcher/dispatcher');
 
 var UserStore = new Store(AppDispatcher);
@@ -14,6 +15,10 @@ var resetUsers = function(users){
 
 var resetUser = function (user) {
   _users[user.id] = user;
+};
+
+var getCurrentUser = function(user) {
+  current_user = user;
 };
 
 UserStore.all = function () {
@@ -41,6 +46,9 @@ UserStore.__onDispatch = function (payload) {
       break;
     case Constants.SEARCH_PARAMS_RECEIVED:
       UserStore.fetchSearchResults(payload.searchParams);
+      break;
+    case Constants.CURRENT_USER_RECEIVED:
+      getCurrentUser(payload.current_user);
       break;
   }
   UserStore.__emitChange();

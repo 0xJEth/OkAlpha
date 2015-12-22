@@ -8,3 +8,20 @@
   padding: 2px;
   height: 20px;
 }
+
+.star-form {
+  margin-top: 20px;
+  display: inline;
+  width: 20px;
+  height: 20px;
+  color: black;
+  padding: 5px;
+}
+
+#star-checkbox {
+  margin-top: -5px;
+  display: inline;
+  width: 20px;
+  height: 20px;
+  padding: 10px;
+}

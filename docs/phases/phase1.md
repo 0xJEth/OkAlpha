@@ -21,7 +21,7 @@
 
 ### Actions
 
-### ApiUtil
+### ApiUserUtil
 
 ## Gems/Libraries
 * BCrypt (Gem)

@@ -16,10 +16,10 @@
 ### Stores
 
 ### Actions
-* ApiActions.receiveAllAIMatches -> triggered by ApiUtil
-* LikeActions.fetchAllAIMatches -> triggers ApiUtil
+* ApiUserActions.receiveAllAIMatches -> triggered by ApiUserUtil
+* LikeActions.fetchAllAIMatches -> triggers ApiUserUtil
 
-### ApiUtil
-* ApiUtil.fetchAllAIMatches
+### ApiUserUtil
+* ApiUserUtil.fetchAllAIMatches
 
 ## Gems/Libraries

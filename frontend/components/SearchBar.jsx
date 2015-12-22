@@ -1,7 +1,7 @@
 var React = require("react"),
     UserItem = require('./UserItem'),
     UserStore = require('../stores/users'),
-    ApiUtil = require("../util/app_util");
+    ApiUserUtil = require("../util/api_user_util");
 
 var SearchBar = React.createClass({
   getInitialState:function(){
@@ -33,7 +33,7 @@ var SearchBar = React.createClass({
       list.push(<UserItem key={user.id} user={user}/>)
     })}
     if (list.length === 0) {
-      list.push(<p className="search-results">No results</p>)
+      list.push(<p key={-1} className="search-results">No results</p>)
     }
     return list;
   },
@@ -42,14 +42,6 @@ var SearchBar = React.createClass({
     event.preventDefault();
     var results = UserStore.all();
     this.setState({ matches: results });
-    // var list = [];
-    // {UserStore.all().map(function (user) {
-    //   list.push(<UserItem key={user.id} user={user}/>)
-    // })}
-    // if (list.length === 0) {
-    //   list.push(<p className="search-results">No results</p>)
-    // }
-    // return list;
   },
 
   render: function () {

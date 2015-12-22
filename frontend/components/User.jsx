@@ -2,7 +2,7 @@ var React = require('react'),
     ReactRouter = require('react-router'),
     UserForm = require('./UserForm'),
     SearchBar = require('./SearchBar'),
-    ApiUtil = require('../util/app_util'),
+    ApiUserUtil = require('../util/api_user_util'),
     UserStore = require('../stores/users'),
     History = require('react-router').History,
     UserItem = require('./UserItem');
@@ -17,17 +17,21 @@ var User = React.createClass({
   getInitialState: function (){
     return {
       users: _getAllUsers(),
-      clickedLoc: null,
+      current_user: this.getCurrentUser()
     };
   },
 
+  getCurrentUser: function() {
+    var current_user = ApiUserUtil.fetchCurrentUser();
+  },
+
   _usersChanged: function() {
-    this.setState({users: UserStore.all()});
+    this.setState({users: UserStore.all(), current_user: current_user});
   },
 
   componentDidMount: function() {
     this.usersListener = UserStore.addListener(this._usersChanged);
-    ApiUtil.fetchUsers();
+    ApiUserUtil.fetchUsers();
   },
 
   componentWillUnmount: function() {
@@ -35,7 +39,7 @@ var User = React.createClass({
   },
 
   searchResults:function(string) {
-    ApiUtil.fetchSearchResults(string)
+    ApiUserUtil.fetchSearchResults(string)
   },
 
   showDetail: function (event) {
@@ -44,20 +48,22 @@ var User = React.createClass({
   },
 
   render: function () {
+        console.log(this)
     return (
       <div>
         <ul className="side-scroll-ul">
           {this.state.users.map(function(user) {
-            if (user.image_url) {
+            if (user.image_url && this.state.current_user.id != user.id) {
               return (
-                <li onClick={this.showDetail} className="side-scroll-li">
+                <li key={user.id} current-user={this.state.current_user} onClick={this.showDetail} className="side-scroll-li">
                   <img id={user.id} className="side-scroll-img" src={user.image_url}/>
-                  <span id={user.id} className="side-scroll-text">{user.username}</span>
+                  <span className="side-scroll-text">{user.username}</span>
                 </li>
-              )}
-            }.bind(this))}
-          </ul>
-          <SearchBar/>
+              )
+            }
+          }.bind(this))}
+        </ul>
+        <SearchBar/>
       </div>
     );
   }

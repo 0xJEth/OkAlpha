@@ -23,9 +23,8 @@ var App = React.createClass({
 var routes = (
   <Route path="/" component={App}>
     <IndexRoute component={User}/>
-    <Route path="user/:id" component={UserShow}/>
     <Route path="profile/:id" component={UserForm}/>
-
+    <Route path="user/:id" component={UserShow}/>
   </Route>
 );
 

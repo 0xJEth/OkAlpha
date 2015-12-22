@@ -1,6 +1,5 @@
 class Api::UsersController < ApplicationController
   def new
-    render json: user
   end
 
   def index
