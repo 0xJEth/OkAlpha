@@ -60,7 +60,7 @@ var UserShow = React.createClass({
       profileProps.push(<li key="profile-empty">Nothing here yet</li>)
     }
     return (
-      <div>
+      <div className="user-container">
         <div className="user-info">
           {thumbnail}
           <br/>
@@ -76,10 +76,5 @@ var UserShow = React.createClass({
     );
   }
 });
-
-// String.prototype.insertPictureParams = function() {
-//   var pos = this.indexOf("upload/") + 7;
-//   return [this.slice(0,pos), "w_150,h_150,r_max/",this.slice(pos)].join("");
-// }
 
 module.exports = UserShow;

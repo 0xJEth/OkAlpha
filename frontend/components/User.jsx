@@ -14,19 +14,18 @@ function _getAllUsers() {
 var User = React.createClass({
   mixins: [History],
 
-  getInitialState: function (){
+  getInitialState: function () {
     return {
-      users: _getAllUsers(),
-      current_user: this.getCurrentUser()
+      users: _getAllUsers()
     };
   },
 
-  getCurrentUser: function() {
-    var current_user = ApiUserUtil.fetchCurrentUser();
-  },
+  // getCurrentUser: function() {
+  //   var current_user = ApiUserUtil.fetchCurrentUser();
+  // },
 
   _usersChanged: function() {
-    this.setState({users: UserStore.all(), current_user: current_user});
+    this.setState({users: UserStore.all()});
   },
 
   componentDidMount: function() {
@@ -50,19 +49,21 @@ var User = React.createClass({
   render: function () {
     return (
       <div>
-        <ul className="side-scroll-ul">
-          {this.state.users.map(function(user) {
-            if (user.image_url) {
-              return (
-                <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
-                  <img id={user.id} className="side-scroll-img" src={user.image_url}/>
-                  <span className="side-scroll-text">{user.username}</span>
-                </li>
-              )
-            }
-          }.bind(this))}
-        </ul>
-        <SearchBar/>
+        <div className="container">
+          <ul className="side-scroll-ul">
+            {this.state.users.map(function(user) {
+              if (user.image_url) {
+                return (
+                  <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
+                    <img id={user.id} className="side-scroll-img" src={user.image_url}/>
+                    <span className="side-scroll-text">{user.username}</span>
+                  </li>
+                )
+              }
+            }.bind(this))}
+          </ul>
+        </div>
+        <SearchBar className="search-container"/>
       </div>
     );
   }

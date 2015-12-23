@@ -1,7 +1,14 @@
-.user-info {
+.user-container {
+  width: 100%;
   background-color: #4242f0;
+}
+
+.user-info {
   padding: 10px 10px 10px 20px;
   height: 150px;
+  position: relative;
+  width: 750px;
+  margin: 0 0 auto auto;
 }
 
 .user-info li, .user-info span {

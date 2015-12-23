@@ -31925,7 +31925,7 @@
 	    }
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'user-container' },
 	      React.createElement(
 	        'div',
 	        { className: 'user-info' },
@@ -31954,11 +31954,6 @@
 	  }
 	});
 	
-	// String.prototype.insertPictureParams = function() {
-	//   var pos = this.indexOf("upload/") + 7;
-	//   return [this.slice(0,pos), "w_150,h_150,r_max/",this.slice(pos)].join("");
-	// }
-	
 	module.exports = UserShow;
 
 /***/ },
@@ -31976,6 +31971,7 @@
 	  displayName: 'Star',
 	
 	  getStateFromStore: function () {
+	    // move logic to store
 	    for (var id in LikeStore.allMyLikes()) {
 	      if (myLikes[id].liked_id === this.props.user.id) {
 	        return { star: true };
@@ -32280,17 +32276,16 @@
 	
 	  getInitialState: function () {
 	    return {
-	      users: _getAllUsers(),
-	      current_user: this.getCurrentUser()
+	      users: _getAllUsers()
 	    };
 	  },
 	
-	  getCurrentUser: function () {
-	    var current_user = ApiUserUtil.fetchCurrentUser();
-	  },
+	  // getCurrentUser: function() {
+	  //   var current_user = ApiUserUtil.fetchCurrentUser();
+	  // },
 	
 	  _usersChanged: function () {
-	    this.setState({ users: UserStore.all(), current_user: current_user });
+	    this.setState({ users: UserStore.all() });
 	  },
 	
 	  componentDidMount: function () {
@@ -32316,24 +32311,28 @@
 	      'div',
 	      null,
 	      React.createElement(
-	        'ul',
-	        { className: 'side-scroll-ul' },
-	        this.state.users.map((function (user) {
-	          if (user.image_url) {
-	            return React.createElement(
-	              'li',
-	              { key: user.id, onClick: this.showDetail, className: 'side-scroll-li' },
-	              React.createElement('img', { id: user.id, className: 'side-scroll-img', src: user.image_url }),
-	              React.createElement(
-	                'span',
-	                { className: 'side-scroll-text' },
-	                user.username
-	              )
-	            );
-	          }
-	        }).bind(this))
+	        'div',
+	        { className: 'container' },
+	        React.createElement(
+	          'ul',
+	          { className: 'side-scroll-ul' },
+	          this.state.users.map((function (user) {
+	            if (user.image_url) {
+	              return React.createElement(
+	                'li',
+	                { key: user.id, onClick: this.showDetail, className: 'side-scroll-li' },
+	                React.createElement('img', { id: user.id, className: 'side-scroll-img', src: user.image_url }),
+	                React.createElement(
+	                  'span',
+	                  { className: 'side-scroll-text' },
+	                  user.username
+	                )
+	              );
+	            }
+	          }).bind(this))
+	        )
 	      ),
-	      React.createElement(SearchBar, null)
+	      React.createElement(SearchBar, { className: 'search-container' })
 	    );
 	  }
 	});
@@ -32366,6 +32365,7 @@
 	    string = string.split(" ");
 	    var users = UserStore.all();
 	    var results = [];
+	    // use regex or maybe gem on back end?
 	    for (var userIdx = 0; userIdx < users.length; userIdx++) {
 	      var name = users[userIdx].username.split(" ");
 	      for (var i = 0; i < name.length; i++) {
@@ -32409,7 +32409,7 @@
 	    }
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'search-div' },
 	      React.createElement(
 	        'form',
 	        { className: 'search-bar' },

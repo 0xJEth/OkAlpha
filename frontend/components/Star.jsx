@@ -7,6 +7,7 @@ var React = require('react'),
 
 var Star = React.createClass({
   getStateFromStore: function () {
+    // move logic to store
     for (var id in LikeStore.allMyLikes()) {
       if (myLikes[id].liked_id === this.props.user.id) {
         return {star: true};

@@ -14,6 +14,7 @@ var SearchBar = React.createClass({
     string = string.split(" ");
     var users = UserStore.all();
     var results = [];
+    // use regex or maybe gem on back end?
     for (var userIdx = 0; userIdx < users.length; userIdx++) {
       var name = users[userIdx].username.split(" ");
       for (var i = 0; i < name.length; i++) {
@@ -50,7 +51,7 @@ var SearchBar = React.createClass({
       list = <p></p>
     }
     return (
-      <div>
+      <div className="search-div">
         <form className="search-bar">
           <input className="search-text-field" type="text" name="users[username]"></input>
           <button className="search-button" onClick={this.search}>Search Users</button>
