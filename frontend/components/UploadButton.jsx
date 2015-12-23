@@ -1,5 +1,4 @@
-var React = require("react"),
-    cloudinary = require('cloudinary');
+var React = require("react");
 
 var UploadButton = React.createClass({
   upload: function (event) {
