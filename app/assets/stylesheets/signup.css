@@ -1,3 +1,18 @@
+/*html {
+  background-image: url(http://res.cloudinary.com/jolinar1013/image/upload/v1450830981/482260-space_o6vvsf.jpg);
+  background-repeat: no-repeat;
+  fit: stretch;
+}*/
+
+.splash-body {
+  width:500px;
+  position:relative;
+  padding: 20px;
+  margin: 100px auto;
+  border-radius: 5px;
+  background-color: white;
+}
+
 .new-user input[type="text"], .new-session input[type="text"] {
   border: solid 1px;
   padding: 0 0 0 5px;
