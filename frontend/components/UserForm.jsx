@@ -16,6 +16,7 @@ module.exports = React.createClass({
     preferred_gender: "",
     bio: ""
   },
+  
   getStateFromStore: function () {
     return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
   },

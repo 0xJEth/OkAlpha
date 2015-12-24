@@ -5,7 +5,7 @@ var Store = require('flux/utils').Store,
 
 var UserStore = new Store(AppDispatcher);
 var _users = {};
-var current_user;
+var current_user = {};
 
 var resetUsers = function(users){
   _users = {};

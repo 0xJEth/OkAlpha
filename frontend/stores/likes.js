@@ -52,6 +52,16 @@ LikeStore.allMyLikes = function (user_id) {
   return likes;
 };
 
+LikeStore.allMyFans = function (user_id) {
+  var likes = [];
+  for (var id in _likes) {
+    if (_likes[id].liked_id === user_id) {
+      likes.push(_likes[id]) ;
+    }
+  }
+  return likes;
+};
+
 LikeStore.find = function (id) {
   return _likes[id];
 };

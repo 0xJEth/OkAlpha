@@ -6,6 +6,7 @@ var ReactRouter = require('react-router'),
     IndexRoute = ReactRouter.IndexRoute,
     UserForm = require('./components/UserForm'),
     UserShow = require('./components/UserShow'),
+    Likes = require('./components/Likes'),
     User = require('./components/User');
 
 var App = React.createClass({
@@ -25,6 +26,7 @@ var routes = (
     <IndexRoute component={User}/>
     <Route path="profile/:id" component={UserForm}/>
     <Route path="user/:id" component={UserShow}/>
+    <Route path="likes/:id" component={Likes}/>
   </Route>
 );
 

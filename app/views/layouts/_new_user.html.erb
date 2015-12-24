@@ -3,9 +3,20 @@
 <br/><br/>
 <div class="new-page">
 <br>
+
+<h2 class="guest-user">Try with a demo account!</h2>
+<br>
+<form class="guest-user" action="<%= session_url %>" method="post">
+  <%= auth_token_input %>
+  <input type="hidden" name="user[username]" value="Guest">
+  <input type="hidden" name="user[password]" value="password">
+  <input type="submit" value="Log in as Guest">
+</form>
+<hr class="bar"><hr class="bar">
+<br><br>
 <div class="errors" id="sign-up">
   <%= flash[:errors_signup].join("<br>").html_safe if flash[:errors_signup] %>
-  <br/><br/>
+  <br/>
 </div>
 <h2 class="new-user">Sign Up</h2>
 <br>

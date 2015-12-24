@@ -13,8 +13,8 @@ var Star = React.createClass({
     if (likes.length === 0) {
       var starState = false;
     } else {
-      for (var id in likes) {
-        if (likes[id].liked_id === this.props.user.id) {
+      for (var i in likes) {
+        if (likes[i].liked_id === this.props.user.id) {
           var starState = true;
           break;
         } else {
@@ -22,7 +22,20 @@ var Star = React.createClass({
         }
       }
     }
-    return ({liked_id: this.props.user.id, user_id: current_user.id, star: starState})
+    var fans = LikeStore.allMyFans(current_user.id)
+    if (fans.length === 0) {
+      var fansState = false;
+    } else {
+      for (var i in fans) {
+        if (fans[i].user_id === this.props.user.id) {
+          var fanState = true;
+          break;
+        } else {
+          var fanState = false;
+        }
+      }
+    }
+    return ({liked_id: this.props.user.id, user_id: current_user.id, star: starState, fan: fanState})
   },
 
   getInitialState: function () {
@@ -32,6 +45,7 @@ var Star = React.createClass({
   componentDidMount: function () {
     this.likeListener = LikeStore.addListener(this._likeChanged);
     ApiLikeUtil.fetchLikes();
+    ApiUserUtil.fetchUsers();
   },
 
   componentWillUnmount: function () {
@@ -64,10 +78,21 @@ var Star = React.createClass({
       var checkbox = <input onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star"/>
       var text = "Like!"
     }
+    if (this.state.fan) {
+      var fanView = <p>{this.props.user.username}has liked you!</p>;
+    } else {
+      var fanView = <p></p>
+    }
     return (
-      <form className="star-form">
-        {checkbox}{text}
-      </form>
+      <div>
+        <form className="star-form">
+          {checkbox}{text}
+        </form>
+        <div className="fan-boolean">
+          <br/><br/>
+          {fanView}
+        </div>
+      </div>
     );
   }
 });

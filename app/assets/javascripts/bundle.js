@@ -52,6 +52,7 @@
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
 	    UserShow = __webpack_require__(242),
+	    Likes = __webpack_require__(250),
 	    User = __webpack_require__(247);
 	
 	var App = React.createClass({
@@ -72,7 +73,8 @@
 	  { path: '/', component: App },
 	  React.createElement(IndexRoute, { component: User }),
 	  React.createElement(Route, { path: 'profile/:id', component: UserForm }),
-	  React.createElement(Route, { path: 'user/:id', component: UserShow })
+	  React.createElement(Route, { path: 'user/:id', component: UserShow }),
+	  React.createElement(Route, { path: 'likes/:id', component: Likes })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -24460,6 +24462,7 @@
 	    preferred_gender: "",
 	    bio: ""
 	  },
+	
 	  getStateFromStore: function () {
 	    return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
 	  },
@@ -24832,7 +24835,7 @@
 	
 	var UserStore = new Store(AppDispatcher);
 	var _users = {};
-	var current_user;
+	var current_user = {};
 	
 	var resetUsers = function (users) {
 	  _users = {};
@@ -31980,8 +31983,8 @@
 	    if (likes.length === 0) {
 	      var starState = false;
 	    } else {
-	      for (var id in likes) {
-	        if (likes[id].liked_id === this.props.user.id) {
+	      for (var i in likes) {
+	        if (likes[i].liked_id === this.props.user.id) {
 	          var starState = true;
 	          break;
 	        } else {
@@ -31989,7 +31992,20 @@
 	        }
 	      }
 	    }
-	    return { liked_id: this.props.user.id, user_id: current_user.id, star: starState };
+	    var fans = LikeStore.allMyFans(current_user.id);
+	    if (fans.length === 0) {
+	      var fansState = false;
+	    } else {
+	      for (var i in fans) {
+	        if (fans[i].user_id === this.props.user.id) {
+	          var fanState = true;
+	          break;
+	        } else {
+	          var fanState = false;
+	        }
+	      }
+	    }
+	    return { liked_id: this.props.user.id, user_id: current_user.id, star: starState, fan: fanState };
 	  },
 	
 	  getInitialState: function () {
@@ -31999,6 +32015,7 @@
 	  componentDidMount: function () {
 	    this.likeListener = LikeStore.addListener(this._likeChanged);
 	    ApiLikeUtil.fetchLikes();
+	    ApiUserUtil.fetchUsers();
 	  },
 	
 	  componentWillUnmount: function () {
@@ -32031,11 +32048,32 @@
 	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' });
 	      var text = "Like!";
 	    }
+	    if (this.state.fan) {
+	      var fanView = React.createElement(
+	        'p',
+	        null,
+	        this.props.user.username,
+	        'has liked you!'
+	      );
+	    } else {
+	      var fanView = React.createElement('p', null);
+	    }
 	    return React.createElement(
-	      'form',
-	      { className: 'star-form' },
-	      checkbox,
-	      text
+	      'div',
+	      null,
+	      React.createElement(
+	        'form',
+	        { className: 'star-form' },
+	        checkbox,
+	        text
+	      ),
+	      React.createElement(
+	        'div',
+	        { className: 'fan-boolean' },
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        fanView
+	      )
 	    );
 	  }
 	});
@@ -32178,6 +32216,16 @@
 	  var likes = [];
 	  for (var id in _likes) {
 	    if (_likes[id].user_id === user_id) {
+	      likes.push(_likes[id]);
+	    }
+	  }
+	  return likes;
+	};
+	
+	LikeStore.allMyFans = function (user_id) {
+	  var likes = [];
+	  for (var id in _likes) {
+	    if (_likes[id].liked_id === user_id) {
 	      likes.push(_likes[id]);
 	    }
 	  }
@@ -32418,6 +32466,140 @@
 	    );
 	  }
 	});
+
+/***/ },
+/* 250 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiLikeUtil = __webpack_require__(244),
+	    LikeStore = __webpack_require__(246),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(249),
+	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215);
+	
+	// function {
+	//   var current_user = UserStore.currentUser();
+	//   return {
+	//     current_user: current_user,
+	//     myLikes: LikeStore.allMyLikes(current_user.id),
+	//     myFans: LikeStore.allMyFans(current_user.id)
+	//   }
+	//}
+	
+	var Likes = React.createClass({
+	  displayName: 'Likes',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.routeParams.id);
+	    return {
+	      current_user_id: current_user_id,
+	      myLikes: LikeStore.allMyLikes(current_user_id),
+	      myFans: LikeStore.allMyFans(current_user_id)
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.likeListener = LikeStore.addListener(this._likeChanged);
+	    this.userListener = UserStore.addListener(this._likeChanged);
+	    ApiLikeUtil.fetchLikes();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.likeListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _likeChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    if (!this.state.myLikes || !this.state.myFans) {
+	      return React.createElement('div', null);
+	    } else {
+	
+	      var likesContainer = [];
+	      this.state.myLikes.forEach(function (like) {
+	        var user = UserStore.find(like.liked_id);
+	        likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      });
+	
+	      var fansContainer = [];
+	      this.state.myFans.forEach(function (fan) {
+	        var user = UserStore.find(fan.user_id);
+	        fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      });
+	
+	      var mutualContainer = [];
+	      if (!this.state.myFans) {
+	        mutualContainer.push(React.createElement('div', null));
+	      } else {
+	        this.state.myLikes.forEach((function (like) {
+	          this.state.myFans.forEach(function (fan) {
+	            if (like.liked_id === fan.user_id) {
+	              var user = UserStore.find(like.liked_id);
+	              mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	            }
+	          });
+	        }).bind(this));
+	      }
+	
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'ul',
+	          { className: 'likesDiv' },
+	          React.createElement(
+	            'h3',
+	            null,
+	            'People I\'ve liked:'
+	          ),
+	          likesContainer
+	        ),
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'ul',
+	          { className: 'likesDiv' },
+	          React.createElement(
+	            'h3',
+	            null,
+	            'People who\'ve liked me:'
+	          ),
+	          fansContainer
+	        ),
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'ul',
+	          { className: 'likesDiv' },
+	          React.createElement(
+	            'h3',
+	            null,
+	            'My mutual likes:'
+	          ),
+	          mutualContainer
+	        )
+	      );
+	    }
+	  }
+	});
+	
+	module.exports = Likes;
 
 /***/ }
 /******/ ]);

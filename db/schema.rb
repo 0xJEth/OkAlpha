@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20151222173043) do
+ActiveRecord::Schema.define(version: 20151224180425) do
 
   create_table "likes", force: :cascade do |t|
     t.integer  "user_id",    null: false
@@ -21,16 +21,16 @@ ActiveRecord::Schema.define(version: 20151222173043) do
   end
 
   create_table "users", force: :cascade do |t|
-    t.string   "username",         null: false
+    t.string   "username",                                                                                               null: false
     t.string   "gender"
     t.string   "preferred_gender"
     t.string   "email"
-    t.string   "image_url"
+    t.string   "image_url",        default: "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"
     t.string   "bio"
-    t.string   "session_token",    null: false
-    t.string   "password_digest",  null: false
-    t.datetime "created_at",       null: false
-    t.datetime "updated_at",       null: false
+    t.string   "session_token",                                                                                          null: false
+    t.string   "password_digest",                                                                                        null: false
+    t.datetime "created_at",                                                                                             null: false
+    t.datetime "updated_at",                                                                                             null: false
   end
 
   add_index "users", ["username", "session_token"], name: "index_users_on_username_and_session_token", unique: true
