@@ -1,11 +1,11 @@
 var ApiLikeActions = require('../actions/api_like_actions');
 
 var ApiLikeUtil = {
-  fetchMyLikes: function(){
+  fetchLikes: function(){
     $.ajax({
       url: "api/likes",
       success: function (likes) {
-        ApiLikeActions.receiveMyLikes(likes);
+        ApiLikeActions.receiveLikes(likes);
       },
       error: function(message) {
         console.log(message);
@@ -13,24 +13,14 @@ var ApiLikeUtil = {
     })
   },
 
-  fetchMyFans: function(){
+  updateLike: function (like, callback) {
     $.ajax({
-      url: "api/likes",
-      success: function (likes) {
-        ApiLikeActions.receiveMyFans(likes);
-      },
-      error: function(message) {
-        console.log(message);
-      }
-    })
-  },
-
-  fetchMyLike: function (id, callback) {
-    $.ajax({
-      url: "api/users/" + id,
+      url: "api/likes/",
+      type: "POST",
+      data: {like: like},
       success: function (like) {
-        ApiLikeActions.receiveMyLike(like);
-        callback && callback(like.id);
+        ApiLikeActions.receiveLike(like);
+        callback && callback(like);
       },
       error: function (message) {
         console.log(message);
@@ -38,44 +28,21 @@ var ApiLikeUtil = {
     });
   },
 
-  fetchMyFan: function (id, callback) {
+  deleteLike: function (like, callback) {
     $.ajax({
-      url: "api/users/" + id,
+      url: "api/likes/" + like.id,
+      type: "POST",
+      data: {_method: "DELETE", like: like},
       success: function (like) {
-        ApiLikeActions.receiveMyFan(like);
-        callback && callback(like.id);
-      },
-      error: function (message) {
-        console.log(message);
-      }
-    });
-  },
-
-  updateMyLike: function (id, callback) {
-    $.ajax({
-      url: "api/users/" + id,
-      success: function (like) {
-        ApiLikeActions.updateMyLike(like);
-        callback && callback(like.id);
-      },
-      error: function (message) {
-        console.log(message);
-      }
-    });
-  },
-
-  updateMyFan: function (id, callback) {
-    $.ajax({
-      url: "api/users/" + id,
-      success: function (like) {
-        ApiLikeActions.updateMyFan(like);
-        callback && callback(like.id);
+        ApiLikeActions.removeLike(like);
+        callback && callback(like);
       },
       error: function (message) {
         console.log(message);
       }
     });
   }
+
 };
 
 module.exports = ApiLikeUtil;

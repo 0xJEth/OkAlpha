@@ -3,44 +3,23 @@ var Constants = require('../constants/constants');
 
 var ApiLikeActions = {
 
-  receiveMyLikes: function(likes){
+  receiveLikes: function(likes) {
     AppDispatcher.dispatch({
-      actionType: Constants.MY_LIKES_RECEIVED,
+      actionType: Constants.LIKES_RECEIVED,
       likes: likes
     });
   },
 
-  receiveMyLike: function(like){
+  receiveLike: function(like) {
     AppDispatcher.dispatch({
-      actionType: Constants.MY_LIKE_RECEIVED,
+      actionType: Constants.LIKE_RECEIVED,
       like: like
     });
   },
 
-  updateMyLike: function(like){
+  removeLike: function(like) {
     AppDispatcher.dispatch({
-      actionType: Constants.MY_LIKE_UPDATED,
-      like: like
-    });
-  },
-
-  receiveMyFans: function(likes){
-    AppDispatcher.dispatch({
-      actionType: Constants.MY_FANS_RECEIVED,
-      likes: likes
-    });
-  },
-
-  receiveMyFan: function(like){
-    AppDispatcher.dispatch({
-      actionType: Constants.MY_FAN_RECEIVED,
-      like: like
-    });
-  },
-
-  updateMyFan: function(like){
-    AppDispatcher.dispatch({
-      actionType: Constants.MY_FAN_UPDATED,
+      actionType: Constants.LIKE_REMOVED,
       like: like
     });
   }

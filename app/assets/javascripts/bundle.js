@@ -24831,6 +24831,7 @@
 	
 	var UserStore = new Store(AppDispatcher);
 	var _users = {};
+	var current_user;
 	
 	var resetUsers = function (users) {
 	  _users = {};
@@ -24845,6 +24846,10 @@
 	
 	var getCurrentUser = function (user) {
 	  current_user = user;
+	};
+	
+	UserStore.currentUser = function () {
+	  return current_user;
 	};
 	
 	UserStore.all = function () {
@@ -31316,12 +31321,9 @@
 	  USER_UPDATED: "USER_UPDATED",
 	  SEARCH_PARAMS_RECEIVED: "SEARCH_PARAMS_RECEIVED",
 	
-	  MY_LIKES_RECEIVED: "MY_LIKES_RECEIVED",
-	  MY_LIKE_RECEIVED: "MY_LIKE_RECEIVED",
-	  MY_LIKE_UPDATED: "MY_LIKE_UPDATED",
-	  MY_FANS_RECEIVED: "MY_FANS_RECEIVED",
-	  MY_FAN_RECEIVED: "MY_FAN_RECEIVED",
-	  MY_FAN_UPDATED: "MY_FAN_UPDATED",
+	  LIKES_RECEIVED: "LIKES_RECEIVED",
+	  LIKE_RECEIVED: "LIKE_RECEIVED",
+	  LIKE_REMOVED: "LIKE_REMOVED",
 	
 	  CURRENT_USER_RECEIVED: "CURRENT_USER_RECEIVED"
 	};
@@ -31834,7 +31836,7 @@
 	  displayName: 'UserShow',
 	
 	  getStateFromStore: function () {
-	    return { user: UserStore.find(parseInt(this.props.params.id)) };
+	    return { user: UserStore.find(parseInt(this.props.params.id)), current_user: UserStore.currentUser() };
 	  },
 	
 	  getInitialState: function () {
@@ -31939,7 +31941,7 @@
 	        profileProps,
 	        React.createElement('br', null),
 	        React.createElement('br', null),
-	        React.createElement(Star, { key: thisUser.id, user: thisUser })
+	        React.createElement(Star, { key: thisUser.id, user: thisUser, currentUser: this.state.current_user })
 	      ),
 	      React.createElement(
 	        'footer',
@@ -31971,13 +31973,22 @@
 	  displayName: 'Star',
 	
 	  getStateFromStore: function () {
+	    var current_user = UserStore.currentUser();
 	    // move logic to store
-	    for (var id in LikeStore.allMyLikes()) {
-	      if (myLikes[id].liked_id === this.props.user.id) {
-	        return { star: true };
+	    var likes = LikeStore.allMyLikes(current_user.id);
+	    console.log(likes);
+	    if (likes.length === 0) {
+	      var starState = false;
+	    } else {
+	      for (var id in likes) {
+	        if (likes[id].liked_id === this.props.user.id) {
+	          var starState = true;
+	        } else {
+	          var starState = false;
+	        }
 	      }
 	    }
-	    return { star: false };
+	    return { liked_id: this.props.user.id, user_id: current_user.id, star: starState };
 	  },
 	
 	  getInitialState: function () {
@@ -31985,36 +31996,49 @@
 	  },
 	
 	  componentDidMount: function () {
-	    this.myLikeListener = LikeStore.addListener(this._myLikeChanged);
-	    ApiLikeUtil.fetchMyLike(parseInt(this.props.user.id));
+	    this.likeListener = LikeStore.addListener(this._likeChanged);
+	    ApiLikeUtil.fetchLikes();
 	  },
 	
 	  componentWillUnmount: function () {
-	    this.myLikeListener.remove();
+	    this.likeListener.remove();
 	  },
 	
-	  _myLikeChanged: function () {
+	  _likeChanged: function () {
 	    this.setState(this.getStateFromStore());
 	  },
 	
 	  handleLike: function (event) {
+	    console.log(this.state.star);
 	    event.preventDefault;
-	    // var starState = this.getStateFromStore().star;
-	    // var user_liked = UserStore.find(parseInt(this.props.user.id));
-	    // var current_user = LikeStore
-	    // ApiLikeUtil.updateMyLike(user_liked.id)
-	    // return {star: !starState}
+	    if (this.state.star) {
+	      var like = LikeStore.findLike(this.state.user_id, this.state.liked_id);
+	      ApiLikeUtil.deleteLike(like);
+	    } else {
+	      var like = { user_id: this.state.user_id, liked_id: this.state.liked_id };
+	      ApiLikeUtil.updateLike(like);
+	    }
 	  },
 	
 	  render: function () {
-	    if (typeof this.state.star === 'undefined') {
+	    console.log(this.getStateFromStore());
+	    if (typeof this.state.star === 'undefined' && !!this.state.star) {
 	      return React.createElement('div', null);
+	    }
+	    if (this.state.star) {
+	      console.log("liked");
+	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star', checked: true });
+	      var text = "Unlike";
+	    } else if (!this.state.star) {
+	      console.log("not liked");
+	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' });
+	      var text = "Like!";
 	    }
 	    return React.createElement(
 	      'form',
 	      { className: 'star-form' },
-	      React.createElement('input', { onClick: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' }),
-	      'Like!'
+	      checkbox,
+	      text
 	    );
 	  }
 	});
@@ -32028,11 +32052,11 @@
 	var ApiLikeActions = __webpack_require__(245);
 	
 	var ApiLikeUtil = {
-	  fetchMyLikes: function () {
+	  fetchLikes: function () {
 	    $.ajax({
 	      url: "api/likes",
 	      success: function (likes) {
-	        ApiLikeActions.receiveMyLikes(likes);
+	        ApiLikeActions.receiveLikes(likes);
 	      },
 	      error: function (message) {
 	        console.log(message);
@@ -32040,24 +32064,14 @@
 	    });
 	  },
 	
-	  fetchMyFans: function () {
+	  updateLike: function (like, callback) {
 	    $.ajax({
-	      url: "api/likes",
-	      success: function (likes) {
-	        ApiLikeActions.receiveMyFans(likes);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  fetchMyLike: function (id, callback) {
-	    $.ajax({
-	      url: "api/users/" + id,
+	      url: "api/likes/",
+	      type: "POST",
+	      data: { like: like },
 	      success: function (like) {
-	        ApiLikeActions.receiveMyLike(like);
-	        callback && callback(like.id);
+	        ApiLikeActions.receiveLike(like);
+	        callback && callback(like);
 	      },
 	      error: function (message) {
 	        console.log(message);
@@ -32065,44 +32079,21 @@
 	    });
 	  },
 	
-	  fetchMyFan: function (id, callback) {
+	  deleteLike: function (like, callback) {
 	    $.ajax({
-	      url: "api/users/" + id,
+	      url: "api/likes/" + like.id,
+	      type: "POST",
+	      data: { _method: "DELETE", like: like },
 	      success: function (like) {
-	        ApiLikeActions.receiveMyFan(like);
-	        callback && callback(like.id);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateMyLike: function (id, callback) {
-	    $.ajax({
-	      url: "api/users/" + id,
-	      success: function (like) {
-	        ApiLikeActions.updateMyLike(like);
-	        callback && callback(like.id);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateMyFan: function (id, callback) {
-	    $.ajax({
-	      url: "api/users/" + id,
-	      success: function (like) {
-	        ApiLikeActions.updateMyFan(like);
-	        callback && callback(like.id);
+	        ApiLikeActions.removeLike(like);
+	        callback && callback(like);
 	      },
 	      error: function (message) {
 	        console.log(message);
 	      }
 	    });
 	  }
+	
 	};
 	
 	module.exports = ApiLikeUtil;
@@ -32116,44 +32107,23 @@
 	
 	var ApiLikeActions = {
 	
-	  receiveMyLikes: function (likes) {
+	  receiveLikes: function (likes) {
 	    AppDispatcher.dispatch({
-	      actionType: Constants.MY_LIKES_RECEIVED,
+	      actionType: Constants.LIKES_RECEIVED,
 	      likes: likes
 	    });
 	  },
 	
-	  receiveMyLike: function (like) {
+	  receiveLike: function (like) {
 	    AppDispatcher.dispatch({
-	      actionType: Constants.MY_LIKE_RECEIVED,
+	      actionType: Constants.LIKE_RECEIVED,
 	      like: like
 	    });
 	  },
 	
-	  updateMyLike: function (like) {
+	  removeLike: function (like) {
 	    AppDispatcher.dispatch({
-	      actionType: Constants.MY_LIKE_UPDATED,
-	      like: like
-	    });
-	  },
-	
-	  receiveMyFans: function (likes) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MY_FANS_RECEIVED,
-	      likes: likes
-	    });
-	  },
-	
-	  receiveMyFan: function (like) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MY_FAN_RECEIVED,
-	      like: like
-	    });
-	  },
-	
-	  updateMyFan: function (like) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MY_FAN_UPDATED,
+	      actionType: Constants.LIKE_REMOVED,
 	      like: like
 	    });
 	  }
@@ -32167,59 +32137,53 @@
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
+	    UserStore = __webpack_require__(215),
 	    AppDispatcher = __webpack_require__(236);
 	
 	var LikeStore = new Store(AppDispatcher);
 	var _likes = {};
 	
-	var resetMyLikes = function (likes) {
+	var resetLikes = function (likes) {
 	  _likes = {};
 	  likes.forEach(function (like) {
 	    _likes[like.id] = like;
 	  });
 	};
 	
-	var resetMyLike = function (like) {
+	var resetLike = function (like) {
 	  _likes[like.id] = like;
 	};
 	
-	var updateMyLike = function (like) {
-	  console.log(this);
+	var removeLike = function () {
+	  var likes = LikeStore.allLikes();
 	};
 	
-	var resetFanLikes = function (likes) {
-	  _likes = {};
-	  likes.forEach(function (like) {
-	    _likes[like.id] = like;
-	  });
+	LikeStore.findLike = function (user_id, liked_id) {
+	  var myLikes = LikeStore.allMyLikes(user_id);
+	  for (var i = 0; i < myLikes.length; i++) {
+	    if (myLikes[i].liked_id === liked_id) {
+	      return myLikes[i];
+	    }
+	  }
+	  return {};
 	};
 	
-	var resetFanLike = function (like) {
-	  _likes[like.id] = like;
-	};
-	
-	var updateFanLike = function (like) {
-	  _likes[like.id] = like;
+	LikeStore.allLikes = function () {
+	  var likes = [];
+	  for (var id in _likes) {
+	    likes.push(_likes[id]);
+	  }
+	  return likes;
 	};
 	
 	LikeStore.allMyLikes = function (user_id) {
-	  var myLikes = [];
+	  var likes = [];
 	  for (var id in _likes) {
 	    if (_likes[id].user_id = user_id) {
 	      likes.push(_likes[id]);
 	    }
 	  }
-	  return myLikes;
-	};
-	
-	LikeStore.allMyFans = function (user_id) {
-	  var myFans = [];
-	  for (var id in _likes) {
-	    if (_likes[id].liked_id = user_id) {
-	      likes.push(_likes[id]);
-	    }
-	  }
-	  return myFans;
+	  return likes;
 	};
 	
 	LikeStore.find = function (id) {
@@ -32228,23 +32192,14 @@
 	
 	LikeStore.__onDispatch = function (payload) {
 	  switch (payload.actionType) {
-	    case Constants.MY_LIKES_RECEIVED:
-	      resetMyLikes(payload.likes);
+	    case Constants.LIKES_RECEIVED:
+	      resetLikes(payload.likes);
 	      break;
-	    case Constants.MY_LIKE_RECEIVED:
-	      resetMyLike(payload.like);
+	    case Constants.LIKE_RECEIVED:
+	      resetLike(payload.like);
 	      break;
-	    case Constants.MY_LIKE_UPDATED:
-	      updateMyLike(payload.like);
-	      break;
-	    case Constants.MY_FANS_RECEIVED:
-	      resetFanLikes(payload.likes);
-	      break;
-	    case Constants.MY_FAN_RECEIVED:
-	      resetFanLike(payload.like);
-	      break;
-	    case Constants.MY_FAN_UPDATED:
-	      updateFanLike(payload.like);
+	    case Constants.LIKE_REMOVED:
+	      removeLike(payload.like);
 	      break;
 	  }
 	  LikeStore.__emitChange();
@@ -32268,6 +32223,9 @@
 	function _getAllUsers() {
 	  return UserStore.all();
 	}
+	function _getCurrentUser() {
+	  return UserStore.currentUser();
+	}
 	
 	var User = React.createClass({
 	  displayName: 'User',
@@ -32276,21 +32234,19 @@
 	
 	  getInitialState: function () {
 	    return {
-	      users: _getAllUsers()
+	      users: _getAllUsers(),
+	      current_user: _getCurrentUser()
 	    };
 	  },
 	
-	  // getCurrentUser: function() {
-	  //   var current_user = ApiUserUtil.fetchCurrentUser();
-	  // },
-	
 	  _usersChanged: function () {
-	    this.setState({ users: UserStore.all() });
+	    this.setState({ users: _getAllUsers(), current_user: _getCurrentUser() });
 	  },
 	
 	  componentDidMount: function () {
 	    this.usersListener = UserStore.addListener(this._usersChanged);
 	    ApiUserUtil.fetchUsers();
+	    ApiUserUtil.fetchCurrentUser();
 	  },
 	
 	  componentWillUnmount: function () {
@@ -32302,8 +32258,9 @@
 	  },
 	
 	  showDetail: function (event) {
-	    user = UserStore.find(event.target.id);
-	    this.history.pushState(this.state, '/user/' + user.id);
+	    var current_user = this.state.current_user;
+	    var user = UserStore.find(event.target.id);
+	    this.history.pushState(current_user, '/user/' + user.id);
 	  },
 	
 	  render: function () {
@@ -32317,7 +32274,7 @@
 	          'ul',
 	          { className: 'side-scroll-ul' },
 	          this.state.users.map((function (user) {
-	            if (user.image_url) {
+	            if (this.state.current_user && user.image_url && this.state.current_user.id != user.id) {
 	              return React.createElement(
 	                'li',
 	                { key: user.id, onClick: this.showDetail, className: 'side-scroll-li' },
@@ -32332,16 +32289,16 @@
 	          }).bind(this))
 	        )
 	      ),
-	      React.createElement(SearchBar, { className: 'search-container' })
+	      React.createElement(SearchBar, { currentUser: this.state.current_user, className: 'search-container' })
 	    );
 	  }
 	});
 	
 	module.exports = User;
 	
-	String.prototype.capitalize = function () {
-	  return this.charAt(0).toUpperCase() + this.slice(1);
-	};
+	function capitalize(string) {
+	  return string.charAt(0).toUpperCase() + string.slice(1);
+	}
 
 /***/ },
 /* 248 */
@@ -32382,9 +32339,11 @@
 	  searchList: function () {
 	    var list = [];
 	    {
-	      this.state.matches.map(function (user) {
-	        list.push(React.createElement(UserItem, { key: user.id, user: user }));
-	      });
+	      this.state.matches.map((function (user) {
+	        if (user.id != this.props.currentUser.id) {
+	          list.push(React.createElement(UserItem, { key: user.id, user: user }));
+	        }
+	      }).bind(this));
 	    }
 	    if (list.length === 0) {
 	      list.push(React.createElement(

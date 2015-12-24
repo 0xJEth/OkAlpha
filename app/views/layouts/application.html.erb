@@ -14,14 +14,14 @@
 		<%= stylesheet_link_tag 'application', media: 'all'%>
 	  <%= csrf_meta_tags %>
 	</head>
-	<body>
-		<% if signed_in? %>
+	<% if signed_in? %>
+		<body>
 	    <header>
 	      <nav class="header-nav">
 
 	        <h1 class="header-logo">
 	          <a class="header-button" href="#">OkAlpha</a>
-	          <a class="header-button" href= "<%="#/profile/#{current_user.id}"%> " id="user_form">My Profile </a>
+	          <a class="header-button" href= "<%="#/profile/#{current_user.id}"%> " id="user_form"> Profile </a>
 	        </h1>
 	        <ul class="header-list">
 	          <li class="header-list-welcome">Welcome <%= current_user.username.capitalize %></li>
@@ -32,13 +32,10 @@
 
 	    </header>
 	    <%= yield %>
-
-	  <% else %>
-		<div class="sign-up-sheet">
-
+		</body>
+	<% else %>
+		<body class="sign-in-page">
 	    <%= render "layouts/new_user" %>
-		</div>
-	  <% end %>
-
-	</body>
+		</body>
+  <% end %>
 </html>

@@ -5,6 +5,7 @@ var Store = require('flux/utils').Store,
 
 var UserStore = new Store(AppDispatcher);
 var _users = {};
+var current_user;
 
 var resetUsers = function(users){
   _users = {};
@@ -21,6 +22,10 @@ var getCurrentUser = function(user) {
   current_user = user;
 };
 
+UserStore.currentUser = function() {
+  return current_user;
+};
+
 UserStore.all = function () {
   var users = [];
   for (var id in _users) {
@@ -31,7 +36,7 @@ UserStore.all = function () {
 
 UserStore.find = function (id) {
   return _users[id];
-}
+};
 
 UserStore.__onDispatch = function (payload) {
   switch(payload.actionType) {

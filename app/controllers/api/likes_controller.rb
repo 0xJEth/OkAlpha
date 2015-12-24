@@ -6,19 +6,21 @@ class Api::LikesController < ApplicationController
   end
 
   def create
-    @like = Like.create!(profile_params)
+    @like = Like.create!(like_params)
     render :show
   end
 
   def destroy
     @like = Like.find(params[:id])
-    @like.update_attributes(like_params)
-    render :update
+    # @like[:user_id], @like[:liked_id] = nil
+    # @like.update_attributes(like_params)
+    @like.destroy
+    render :index
   end
 
   private
 
-  def profile_params
-    params.require(:user).permit(:id, :user_id, :liked_id)
+  def like_params
+    params.require(:like).permit(:user_id, :liked_id)
   end
 end

@@ -7,7 +7,7 @@ var React = require('react'),
 var UserShow = React.createClass({
 
   getStateFromStore: function () {
-    return { user: UserStore.find(parseInt(this.props.params.id))};
+    return { user: UserStore.find(parseInt(this.props.params.id)), current_user: UserStore.currentUser()};
   },
 
   getInitialState: function () {
@@ -67,7 +67,7 @@ var UserShow = React.createClass({
           <h2>{thisUser.username}</h2>
           {profileProps}
           <br/><br/>
-          <Star key={thisUser.id} user={thisUser}/>
+          <Star key={thisUser.id} user={thisUser} currentUser={this.state.current_user}/>
         </div>
         <footer id="footer">
           <a className="nav-button" href="#">Back</a>

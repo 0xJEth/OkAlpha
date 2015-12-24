@@ -1,83 +1,68 @@
 var Store = require('flux/utils').Store,
     Constants = require('../constants/constants'),
+    UserStore = require('./users'),
     AppDispatcher = require('../dispatcher/dispatcher');
 
 var LikeStore = new Store(AppDispatcher);
 var _likes = {};
 
-var resetMyLikes = function(likes){
+var resetLikes = function(likes){
   _likes = {};
   likes.forEach(function (like) {
     _likes[like.id] = like;
   });
 };
 
-var resetMyLike = function (like) {
+var resetLike = function (like) {
   _likes[like.id] = like;
 };
 
-var updateMyLike = function (like) {
-  console.log(this);
+var removeLike = function () {
+  var likes = LikeStore.allLikes();
 };
 
-var resetFanLikes = function(likes){
-  _likes = {};
-  likes.forEach(function (like) {
-    _likes[like.id] = like;
-  });
+LikeStore.findLike = function(user_id, liked_id) {
+  var myLikes = LikeStore.allMyLikes(user_id);
+  for (var i = 0; i < myLikes.length; i++) {
+     if (myLikes[i].liked_id === liked_id) {
+       return myLikes[i];
+     }
+   }
+   return {};
 };
 
-var resetFanLike = function (like) {
-  _likes[like.id] = like;
-};
-
-var updateFanLike = function (like) {
-  _likes[like.id] = like;
+LikeStore.allLikes = function () {
+  var likes = [];
+  for (var id in _likes) {
+    likes.push(_likes[id]) ;
+  }
+  return likes;
 };
 
 LikeStore.allMyLikes = function (user_id) {
-  var myLikes = [];
+  var likes = [];
   for (var id in _likes) {
     if (_likes[id].user_id = user_id) {
       likes.push(_likes[id]) ;
     }
   }
-  return myLikes;
-};
-
-LikeStore.allMyFans = function (user_id) {
-  var myFans = [];
-  for (var id in _likes) {
-    if (_likes[id].liked_id = user_id) {
-      likes.push(_likes[id]) ;
-    }
-  }
-  return myFans;
+  return likes;
 };
 
 LikeStore.find = function (id) {
   return _likes[id];
-}
+};
 
 LikeStore.__onDispatch = function (payload) {
   switch(payload.actionType) {
-    case Constants.MY_LIKES_RECEIVED:
-      resetMyLikes(payload.likes);
+    case Constants.LIKES_RECEIVED:
+      resetLikes(payload.likes);
       break;
-    case Constants.MY_LIKE_RECEIVED:
-      resetMyLike(payload.like);
+    case Constants.LIKE_RECEIVED:
+      resetLike(payload.like);
       break;
-    case Constants.MY_LIKE_UPDATED:
-      updateMyLike(payload.like);
-      break;
-    case Constants.MY_FANS_RECEIVED:
-      resetFanLikes(payload.likes);
-      break;
-    case Constants.MY_FAN_RECEIVED:
-      resetFanLike(payload.like);
-      break;
-    case Constants.MY_FAN_UPDATED:
-      updateFanLike(payload.like);
+    case Constants.LIKE_REMOVED:
+      removeLike(payload.like);
       break;
   }
   LikeStore.__emitChange();

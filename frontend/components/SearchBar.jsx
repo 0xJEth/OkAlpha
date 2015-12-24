@@ -31,8 +31,10 @@ var SearchBar = React.createClass({
   searchList: function() {
     var list = [];
     {this.state.matches.map(function (user) {
-      list.push(<UserItem key={user.id} user={user}/>)
-    })}
+      if (user.id != this.props.currentUser.id) {
+        list.push(<UserItem key={user.id} user={user}/>)
+      }
+    }.bind(this))}
     if (list.length === 0) {
       list.push(<p key={-1} className="search-results">No results</p>)
     }

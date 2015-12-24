@@ -3,12 +3,15 @@ class User < ActiveRecord::Base
   validates :password, length: { minimum: 6, allow_nil: true }
   validates :session_token, :username, uniqueness: true
 
-  has_many :likes
+  has_many :likes,
+  primary_key: :id,
+  foreign_key: :user_id,
+  class_name: "Like"
+
   has_many :fans,
   primary_key: :id,
   foreign_key: :liked_id,
   class_name: "Like"
-
   attr_reader :password
 
   after_initialize :ensure_session_token

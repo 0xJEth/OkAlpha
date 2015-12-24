@@ -13,7 +13,7 @@
 
 ActiveRecord::Schema.define(version: 20151222173043) do
 
-  create_table "api_likes", force: :cascade do |t|
+  create_table "likes", force: :cascade do |t|
     t.integer  "user_id",    null: false
     t.integer  "liked_id",   null: false
     t.datetime "created_at", null: false

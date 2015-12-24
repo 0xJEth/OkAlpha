@@ -10,27 +10,28 @@ var React = require('react'),
 function _getAllUsers() {
   return UserStore.all();
 }
+function _getCurrentUser() {
+  return UserStore.currentUser();
+}
 
 var User = React.createClass({
   mixins: [History],
 
   getInitialState: function () {
     return {
-      users: _getAllUsers()
+      users: _getAllUsers(),
+      current_user: _getCurrentUser()
     };
   },
 
-  // getCurrentUser: function() {
-  //   var current_user = ApiUserUtil.fetchCurrentUser();
-  // },
-
   _usersChanged: function() {
-    this.setState({users: UserStore.all()});
+    this.setState({users: _getAllUsers(), current_user: _getCurrentUser()});
   },
 
   componentDidMount: function() {
     this.usersListener = UserStore.addListener(this._usersChanged);
     ApiUserUtil.fetchUsers();
+    ApiUserUtil.fetchCurrentUser();
   },
 
   componentWillUnmount: function() {
@@ -42,8 +43,9 @@ var User = React.createClass({
   },
 
   showDetail: function (event) {
-    user = UserStore.find(event.target.id)
-    this.history.pushState(this.state, '/user/' + user.id)
+    var current_user = this.state.current_user;
+    var user = UserStore.find(event.target.id)
+    this.history.pushState(current_user, '/user/' + user.id)
   },
 
   render: function () {
@@ -52,7 +54,7 @@ var User = React.createClass({
         <div className="container">
           <ul className="side-scroll-ul">
             {this.state.users.map(function(user) {
-              if (user.image_url) {
+              if (this.state.current_user && user.image_url && this.state.current_user.id != user.id) {
                 return (
                   <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
                     <img id={user.id} className="side-scroll-img" src={user.image_url}/>
@@ -63,7 +65,7 @@ var User = React.createClass({
             }.bind(this))}
           </ul>
         </div>
-        <SearchBar className="search-container"/>
+        <SearchBar currentUser={this.state.current_user}className="search-container"/>
       </div>
     );
   }
@@ -71,6 +73,6 @@ var User = React.createClass({
 
 module.exports = User;
 
-String.prototype.capitalize = function() {
-  return this.charAt(0).toUpperCase() + this.slice(1);
+function capitalize(string) {
+  return string.charAt(0).toUpperCase() + string.slice(1);
 }
