@@ -1,6 +1,7 @@
 var Store = require('flux/utils').Store,
     Constants = require('../constants/constants'),
     UserStore = require('./users'),
+    ApiLikeUtil = require('../util/api_like_util'),
     AppDispatcher = require('../dispatcher/dispatcher');
 
 var LikeStore = new Store(AppDispatcher);
@@ -18,7 +19,9 @@ var resetLike = function (like) {
 };
 
 var removeLike = function () {
-  var likes = LikeStore.allLikes();
+  var likes = [];
+  ApiLikeUtil.fetchLikes();
+  likes = LikeStore.allLikes();
 };
 
 LikeStore.findLike = function(user_id, liked_id) {
@@ -42,7 +45,7 @@ LikeStore.allLikes = function () {
 LikeStore.allMyLikes = function (user_id) {
   var likes = [];
   for (var id in _likes) {
-    if (_likes[id].user_id = user_id) {
+    if (_likes[id].user_id === user_id) {
       likes.push(_likes[id]) ;
     }
   }

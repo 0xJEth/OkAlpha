@@ -24530,28 +24530,29 @@
 	          { className: 'profile-label' },
 	          'Email address :'
 	        ),
-	        React.createElement('input', { type: 'text', valueLink: this.linkState("email") }),
+	        React.createElement('input', { type: 'text', defaultValue: user.email, valueLink: this.linkState("email") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          { className: 'profile-label' },
 	          'Your gender :'
 	        ),
-	        React.createElement('input', { type: 'text', valueLink: this.linkState("gender") }),
+	        React.createElement('input', { type: 'text', defaultValue: user.gender, valueLink: this.linkState("gender") }),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          { className: 'profile-label' },
 	          'Gender interested in :'
 	        ),
-	        React.createElement('input', { type: 'text', valueLink: this.linkState("preferred_gender") }),
+	        React.createElement('input', { type: 'text', defaultValue: user.preferred_gender, valueLink: this.linkState("preferred_gender") }),
+	        React.createElement('br', null),
 	        React.createElement('br', null),
 	        React.createElement(
 	          'label',
 	          { className: 'profile-label' },
-	          'Short bio :'
+	          'About me :'
 	        ),
-	        React.createElement('input', { type: 'text', valueLink: this.linkState("bio") }),
+	        React.createElement('textarea', { cols: '40', rows: '5', defaultValue: user.bio, valueLink: this.linkState("bio") }),
 	        React.createElement('br', null),
 	        React.createElement('input', { className: 'profile-button', type: 'submit', value: 'Update' })
 	      ),
@@ -31976,13 +31977,13 @@
 	    var current_user = UserStore.currentUser();
 	    // move logic to store
 	    var likes = LikeStore.allMyLikes(current_user.id);
-	    console.log(likes);
 	    if (likes.length === 0) {
 	      var starState = false;
 	    } else {
 	      for (var id in likes) {
 	        if (likes[id].liked_id === this.props.user.id) {
 	          var starState = true;
+	          break;
 	        } else {
 	          var starState = false;
 	        }
@@ -32009,7 +32010,6 @@
 	  },
 	
 	  handleLike: function (event) {
-	    console.log(this.state.star);
 	    event.preventDefault;
 	    if (this.state.star) {
 	      var like = LikeStore.findLike(this.state.user_id, this.state.liked_id);
@@ -32021,16 +32021,13 @@
 	  },
 	
 	  render: function () {
-	    console.log(this.getStateFromStore());
 	    if (typeof this.state.star === 'undefined' && !!this.state.star) {
 	      return React.createElement('div', null);
 	    }
 	    if (this.state.star) {
-	      console.log("liked");
 	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star', checked: true });
 	      var text = "Unlike";
 	    } else if (!this.state.star) {
-	      console.log("not liked");
 	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' });
 	      var text = "Like!";
 	    }
@@ -32079,14 +32076,12 @@
 	    });
 	  },
 	
-	  deleteLike: function (like, callback) {
+	  deleteLike: function (like) {
 	    $.ajax({
 	      url: "api/likes/" + like.id,
-	      type: "POST",
-	      data: { _method: "DELETE", like: like },
-	      success: function (like) {
-	        ApiLikeActions.removeLike(like);
-	        callback && callback(like);
+	      type: "DELETE",
+	      success: function () {
+	        ApiLikeActions.removeLike();
 	      },
 	      error: function (message) {
 	        console.log(message);
@@ -32138,6 +32133,7 @@
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
 	    UserStore = __webpack_require__(215),
+	    ApiLikeUtil = __webpack_require__(244),
 	    AppDispatcher = __webpack_require__(236);
 	
 	var LikeStore = new Store(AppDispatcher);
@@ -32155,7 +32151,9 @@
 	};
 	
 	var removeLike = function () {
-	  var likes = LikeStore.allLikes();
+	  var likes = [];
+	  ApiLikeUtil.fetchLikes();
+	  likes = LikeStore.allLikes();
 	};
 	
 	LikeStore.findLike = function (user_id, liked_id) {
@@ -32179,7 +32177,7 @@
 	LikeStore.allMyLikes = function (user_id) {
 	  var likes = [];
 	  for (var id in _likes) {
-	    if (_likes[id].user_id = user_id) {
+	    if (_likes[id].user_id === user_id) {
 	      likes.push(_likes[id]);
 	    }
 	  }

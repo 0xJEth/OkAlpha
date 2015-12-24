@@ -28,14 +28,12 @@ var ApiLikeUtil = {
     });
   },
 
-  deleteLike: function (like, callback) {
+  deleteLike: function (like) {
     $.ajax({
       url: "api/likes/" + like.id,
-      type: "POST",
-      data: {_method: "DELETE", like: like},
-      success: function (like) {
-        ApiLikeActions.removeLike(like);
-        callback && callback(like);
+      type: "DELETE",
+      success: function () {
+        ApiLikeActions.removeLike();
       },
       error: function (message) {
         console.log(message);

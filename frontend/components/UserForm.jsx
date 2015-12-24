@@ -71,16 +71,16 @@ module.exports = React.createClass({
         <h3>Tell us about yourself!</h3>
         <form onSubmit={this.handleProfileSubmit}>
           <label className="profile-label">Email address :</label>
-          <input type="text" valueLink={this.linkState("email")}/>
+          <input type="text" defaultValue={user.email} valueLink={this.linkState("email")}/>
           <br/>
           <label className="profile-label">Your gender :</label>
-          <input type="text" valueLink={this.linkState("gender")}/>
+          <input type="text" defaultValue={user.gender} valueLink={this.linkState("gender")}/>
           <br/>
           <label className="profile-label">Gender interested in :</label>
-          <input type="text" valueLink={this.linkState("preferred_gender")}/>
-          <br/>
-          <label className="profile-label">Short bio :</label>
-          <input type="text" valueLink={this.linkState("bio")}/>
+          <input type="text" defaultValue={user.preferred_gender} valueLink={this.linkState("preferred_gender")}/>
+          <br/><br/>
+          <label className="profile-label">About me :</label>
+          <textarea cols="40" rows="5" defaultValue={user.bio} valueLink={this.linkState("bio")}></textarea>
           <br/>
           <input className="profile-button" type="submit" value="Update"/>
         </form>

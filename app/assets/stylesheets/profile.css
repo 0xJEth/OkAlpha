@@ -20,14 +20,19 @@
   color: #999999;
 }
 
-.profile-form input[type="text"] {
+.profile-form input[type="text"], textarea {
   border: solid 1px;
   padding: 5px;
   margin: 5px;
   border-color: #e3e3e3;
 }
 
+.profile-form textarea {
+  vertical-align: top;
+}
+
 .profile-label {
   display: inline-block;
   width: 135px;
+  text-align: right;
 }

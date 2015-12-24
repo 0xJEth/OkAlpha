@@ -10,13 +10,13 @@ var Star = React.createClass({
     var current_user = UserStore.currentUser();
     // move logic to store
     var likes = LikeStore.allMyLikes(current_user.id)
-    console.log(likes);
     if (likes.length === 0) {
       var starState = false;
     } else {
       for (var id in likes) {
         if (likes[id].liked_id === this.props.user.id) {
           var starState = true;
+          break;
         } else {
           var starState = false;
         }
@@ -43,7 +43,6 @@ var Star = React.createClass({
   },
 
   handleLike: function(event) {
-    console.log(this.state.star);
     event.preventDefault;
     if (this.state.star) {
       var like = LikeStore.findLike(this.state.user_id, this.state.liked_id)
@@ -55,16 +54,13 @@ var Star = React.createClass({
   },
 
   render: function () {
-    console.log(this.getStateFromStore());
     if (typeof this.state.star === 'undefined' && !!this.state.star) {
       return <div></div>
     }
     if (this.state.star) {
-      console.log("liked")
       var checkbox = <input onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star" checked/>
       var text = "Unlike"
     } else if (!this.state.star) {
-      console.log("not liked");
       var checkbox = <input onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star"/>
       var text = "Like!"
     }
