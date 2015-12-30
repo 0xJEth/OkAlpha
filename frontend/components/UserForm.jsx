@@ -4,6 +4,7 @@ var React = require('react'),
     UserStore = require('../stores/users'),
     History = require('react-router').History,
     Cloud = require('./Cloud'),
+    Interests = require('./Interests'),
     ApiUserUtil = require('../util/api_user_util');
 
 
@@ -16,7 +17,7 @@ module.exports = React.createClass({
     preferred_gender: "",
     bio: ""
   },
-  
+
   getStateFromStore: function () {
     return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
   },
@@ -51,13 +52,9 @@ module.exports = React.createClass({
       }
     }.bind(this))
     ApiUserUtil.updateProfile(user, function (id) {
-      this.history.pushState(null, "/user/" + id, {});
+      // this.history.pushState(null, "/user/" + id, {});
     }.bind(this));
     this.setState(this.blankAttrs);
-  },
-
-  handleCancel: function(event){
-    event.preventDefault();
   },
 
   render: function () {
@@ -85,9 +82,6 @@ module.exports = React.createClass({
           <br/>
           <input className="profile-button" type="submit" value="Update"/>
         </form>
-        <br/><br/>
-        <h4>What are you interested in?</h4>
-        <button id="update-button" className="profile-button" onClick={this.handleCancel}>Cancel</button>
       </div>
   );
     return (
@@ -95,6 +89,8 @@ module.exports = React.createClass({
         <div className="profile-form">
           <Cloud key={user.id} user={user}/>
           {profileForm}
+          <br/><br/>
+          <Interests user={user}/>
         </div>
         <footer id="footer">
           <a className="nav-button" href="#">Back</a>

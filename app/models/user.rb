@@ -12,6 +12,9 @@ class User < ActiveRecord::Base
   primary_key: :id,
   foreign_key: :liked_id,
   class_name: "Like"
+  
+  has_many :interests
+
   attr_reader :password
 
   after_initialize :ensure_session_token

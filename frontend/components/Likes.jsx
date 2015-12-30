@@ -8,16 +8,6 @@ var React = require('react'),
     History = require('react-router').History,
     UserStore = require('../stores/users');
 
-
-// function {
-//   var current_user = UserStore.currentUser();
-//   return {
-//     current_user: current_user,
-//     myLikes: LikeStore.allMyLikes(current_user.id),
-//     myFans: LikeStore.allMyFans(current_user.id)
-//   }
-//}
-
 var Likes = React.createClass({
   mixins: [LinkedStateMixin, History],
 
@@ -82,20 +72,17 @@ var Likes = React.createClass({
       }
 
       return (
-        <div>
-          <br/><br/>
-          <ul className="likesDiv">
-            <h3>People I've liked:</h3>
+        <div className="likes-container">
+          <ul className="likes-div">
+            <h3 className="h3" >People I've liked:</h3>
             {likesContainer}
           </ul>
-          <br/><br/>
-          <ul className="likesDiv">
-            <h3>People who've liked me:</h3>
+          <ul className="likes-div">
+            <h3 className="h3">People who've liked me:</h3>
             {fansContainer}
           </ul>
-          <br/><br/>
-          <ul className="likesDiv">
-            <h3>My mutual likes:</h3>
+          <ul className="likes-div">
+            <h3 className="h3">My mutual likes:</h3>
             {mutualContainer}
           </ul>
         </div>

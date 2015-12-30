@@ -1,0 +1,29 @@
+.likes-container {
+  margin-left: 75px;
+  display: block;
+  width: 800px;
+  height: 100%;
+  position: relative;
+}
+
+.likes-div {
+  // margin-top: 50px;
+  margin:50px 10px 10px 10px;
+  display: inline-block;
+  vertical-align: top;
+  width: 30%;
+  border: solid 1px;
+  border-radius: 10px;
+  padding: 20px;
+  height: 500px;
+}
+
+.like-list-item {
+  padding: 2px;
+  height: 20px;
+  display: inline-block;
+}
+
+div.likes {
+  height:100%;
+}

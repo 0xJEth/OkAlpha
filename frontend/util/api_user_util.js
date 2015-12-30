@@ -26,19 +26,6 @@ var ApiUserUtil = {
     })
   },
 
-  updateInterests: function(data) {
-    $.ajax({
-      type: "POST",
-      url: "api/interests",
-      data: interests,
-      success: function(interests){
-        ApiUserActions.updateInterests(interests);
-      },
-      error: function(message){
-      }
-    });
-  },
-
   fetchUser: function (id, callback) {
     $.ajax({
       url: "api/users/" + id,
@@ -66,6 +53,7 @@ var ApiUserUtil = {
       }
     });
   },
+
 
   fetchSearchResults: function (searchParams) {
     $.ajax({

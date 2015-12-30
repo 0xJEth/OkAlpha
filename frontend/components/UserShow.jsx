@@ -1,33 +1,43 @@
 var React = require('react'),
     ReactRouter = require('react-router'),
     ApiUserUtil = require('../util/api_user_util'),
+    ApiInterestUtil = require('../util/api_interest_util'),
     Star = require('./Star'),
+    InterestStore = require('../stores/interests'),
     UserStore = require('../stores/users');
 
 var UserShow = React.createClass({
 
   getStateFromStore: function () {
-    return { user: UserStore.find(parseInt(this.props.params.id)), current_user: UserStore.currentUser()};
+    var id = parseInt(this.props.params.id)
+    return { user: UserStore.find(id),
+             current_user: UserStore.currentUser(),
+             interests: InterestStore.allMyInterests(id)};
   },
 
   getInitialState: function () {
     return this.getStateFromStore();
   },
 
-  componentWillReceiveProps: function (newProps) {
-    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
-  },
+  // componentWillReceiveProps: function (newProps) {
+  //   ApiUserUtil.fetchUser(parseInt(newProps.params.id));
+  //   ApiInterestUtil.fetchInterests();
+  // },
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
+    this.interestsListener = InterestStore.addListener(this.userChanged);
     ApiUserUtil.fetchUser(parseInt(this.props.params.id));
+    ApiInterestUtil.fetchInterests();
   },
 
   componentWillUnmount: function () {
     this.userListener.remove();
+    this.interestsListener.remove();
   },
 
   _userChanged: function () {
+
     this.setState(this.getStateFromStore());
   },
 
@@ -59,6 +69,17 @@ var UserShow = React.createClass({
     if (profileProps.length < 1) {
       profileProps.push(<li key="profile-empty">Nothing here yet</li>)
     }
+
+    if (this.state.interests.length === 0) {
+      var interestsContainer = <li>No interests yet!</li>
+    } else {
+      var interestsContainer = [];
+      this.state.interests.forEach(function(interest) {
+        var interestCapitalized = interest.interest.charAt(0).toUpperCase() + interest.interest.slice(1);
+        interestsContainer.push(<li key={interest.id} className="interest-item">{interestCapitalized}</li>)
+      })
+    }
+
     return (
       <div className="user-container">
         <div className="user-info">
@@ -66,6 +87,10 @@ var UserShow = React.createClass({
           <br/>
           <h2>{thisUser.username}</h2>
           {profileProps}
+          <br/><br/>
+          <h4>{thisUser.username + "'s Interests:"} </h4>
+          <br/>
+          {interestsContainer}
           <br/><br/>
           <Star key={thisUser.id} user={thisUser} currentUser={this.state.current_user}/>
         </div>

@@ -51,9 +51,9 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(242),
-	    Likes = __webpack_require__(250),
-	    User = __webpack_require__(247);
+	    UserShow = __webpack_require__(243),
+	    Likes = __webpack_require__(248),
+	    User = __webpack_require__(250);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -24449,6 +24449,7 @@
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
 	    Cloud = __webpack_require__(239),
+	    Interests = __webpack_require__(242),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	module.exports = React.createClass({
@@ -24497,13 +24498,9 @@
 	      }
 	    }).bind(this));
 	    ApiUserUtil.updateProfile(user, (function (id) {
-	      this.history.pushState(null, "/user/" + id, {});
+	      // this.history.pushState(null, "/user/" + id, {});
 	    }).bind(this));
 	    this.setState(this.blankAttrs);
-	  },
-	
-	  handleCancel: function (event) {
-	    event.preventDefault();
 	  },
 	
 	  render: function () {
@@ -24558,18 +24555,6 @@
 	        React.createElement('textarea', { cols: '40', rows: '5', defaultValue: user.bio, valueLink: this.linkState("bio") }),
 	        React.createElement('br', null),
 	        React.createElement('input', { className: 'profile-button', type: 'submit', value: 'Update' })
-	      ),
-	      React.createElement('br', null),
-	      React.createElement('br', null),
-	      React.createElement(
-	        'h4',
-	        null,
-	        'What are you interested in?'
-	      ),
-	      React.createElement(
-	        'button',
-	        { id: 'update-button', className: 'profile-button', onClick: this.handleCancel },
-	        'Cancel'
 	      )
 	    );
 	    return React.createElement(
@@ -24579,7 +24564,10 @@
 	        'div',
 	        { className: 'profile-form' },
 	        React.createElement(Cloud, { key: user.id, user: user }),
-	        profileForm
+	        profileForm,
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(Interests, { user: user })
 	      ),
 	      React.createElement(
 	        'footer',
@@ -31329,6 +31317,10 @@
 	  LIKE_RECEIVED: "LIKE_RECEIVED",
 	  LIKE_REMOVED: "LIKE_REMOVED",
 	
+	  INTERESTS_RECEIVED: "INTERESTS_RECEIVED",
+	  INTEREST_RECEIVED: "INTEREST_RECEIVED",
+	  INTEREST_REMOVED: "INTEREST_REMOVED",
+	
 	  CURRENT_USER_RECEIVED: "CURRENT_USER_RECEIVED"
 	};
 	
@@ -31363,18 +31355,6 @@
 	      error: function (message) {
 	        console.log(message);
 	      }
-	    });
-	  },
-	
-	  updateInterests: function (data) {
-	    $.ajax({
-	      type: "POST",
-	      url: "api/interests",
-	      data: interests,
-	      success: function (interests) {
-	        ApiUserActions.updateInterests(interests);
-	      },
-	      error: function (message) {}
 	    });
 	  },
 	
@@ -31832,35 +31812,155 @@
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    Star = __webpack_require__(243),
-	    UserStore = __webpack_require__(215);
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserStore = __webpack_require__(215),
+	    InterestStore = __webpack_require__(252),
+	    History = __webpack_require__(1).History,
+	    ApiInterestUtil = __webpack_require__(253),
+	    ApiUserUtil = __webpack_require__(234);
 	
-	var UserShow = React.createClass({
-	  displayName: 'UserShow',
+	var Interests = React.createClass({
+	  displayName: 'Interests',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  blankInt: {
+	    interest: ""
+	  },
 	
 	  getStateFromStore: function () {
-	    return { user: UserStore.find(parseInt(this.props.params.id)), current_user: UserStore.currentUser() };
+	    var current_user_id = parseInt(this.props.user.id);
+	    return {
+	      interests: InterestStore.allMyInterests(current_user_id),
+	      user_id: current_user_id
+	    };
 	  },
 	
 	  getInitialState: function () {
 	    return this.getStateFromStore();
 	  },
 	
-	  componentWillReceiveProps: function (newProps) {
-	    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
+	  componentDidMount: function () {
+	    this.interestListener = InterestStore.addListener(this._interestChanged);
+	    this.userListener = UserStore.addListener(this._interestChanged);
+	    ApiInterestUtil.fetchInterests();
+	    ApiUserUtil.fetchUsers();
 	  },
+	
+	  componentWillUnmount: function () {
+	    this.interestListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _interestChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  handleInterestSubmit: function (event) {
+	    event.preventDefault();
+	    this.state.interests.push(this.state.interest);
+	    var interest = { user_id: this.props.user.id, interest: this.state.interest };
+	    ApiInterestUtil.updateInterest(interest);
+	    this.setState(this.blankInt);
+	  },
+	
+	  render: function () {
+	    if (!this.state.interests) {
+	      return React.createElement('div', null);
+	    } else {
+	
+	      var interestsContainer = [];
+	      this.state.interests.forEach(function (interest) {
+	        if (typeof interest.interest === "undefined") {
+	          var interestCapitalized = "";
+	        } else {
+	          var interestCapitalized = interest.interest.charAt(0).toUpperCase() + interest.interest.slice(1);
+	        }
+	        interestsContainer.push(React.createElement(
+	          'li',
+	          { key: interest.id, className: 'interest-item' },
+	          interestCapitalized
+	        ));
+	      });
+	
+	      var interestForm = React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'h3',
+	          null,
+	          'What are you interested in?'
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'interest-list' },
+	          interestsContainer
+	        ),
+	        React.createElement(
+	          'form',
+	          { onSubmit: this.handleInterestSubmit },
+	          React.createElement('input', { className: 'profile-button', type: 'submit', value: 'Add Interest' }),
+	          React.createElement('input', { type: 'text', valueLink: this.linkState("interest") })
+	        )
+	      );
+	
+	      return React.createElement(
+	        'div',
+	        { className: 'interest-form' },
+	        interestForm
+	      );
+	    }
+	  }
+	
+	});
+	
+	module.exports = Interests;
+
+/***/ },
+/* 243 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiInterestUtil = __webpack_require__(253),
+	    Star = __webpack_require__(244),
+	    InterestStore = __webpack_require__(252),
+	    UserStore = __webpack_require__(215);
+	
+	var UserShow = React.createClass({
+	  displayName: 'UserShow',
+	
+	  getStateFromStore: function () {
+	    var id = parseInt(this.props.params.id);
+	    return { user: UserStore.find(id),
+	      current_user: UserStore.currentUser(),
+	      interests: InterestStore.allMyInterests(id) };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  // componentWillReceiveProps: function (newProps) {
+	  //   ApiUserUtil.fetchUser(parseInt(newProps.params.id));
+	  //   ApiInterestUtil.fetchInterests();
+	  // },
 	
 	  componentDidMount: function () {
 	    this.userListener = UserStore.addListener(this._userChanged);
+	    this.interestsListener = InterestStore.addListener(this.userChanged);
 	    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
+	    ApiInterestUtil.fetchInterests();
 	  },
 	
 	  componentWillUnmount: function () {
 	    this.userListener.remove();
+	    this.interestsListener.remove();
 	  },
 	
 	  _userChanged: function () {
+	
 	    this.setState(this.getStateFromStore());
 	  },
 	
@@ -31929,6 +32029,25 @@
 	        'Nothing here yet'
 	      ));
 	    }
+	
+	    if (this.state.interests.length === 0) {
+	      var interestsContainer = React.createElement(
+	        'li',
+	        null,
+	        'No interests yet!'
+	      );
+	    } else {
+	      var interestsContainer = [];
+	      this.state.interests.forEach(function (interest) {
+	        var interestCapitalized = interest.interest.charAt(0).toUpperCase() + interest.interest.slice(1);
+	        interestsContainer.push(React.createElement(
+	          'li',
+	          { key: interest.id, className: 'interest-item' },
+	          interestCapitalized
+	        ));
+	      });
+	    }
+	
 	    return React.createElement(
 	      'div',
 	      { className: 'user-container' },
@@ -31943,6 +32062,16 @@
 	          thisUser.username
 	        ),
 	        profileProps,
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'h4',
+	          null,
+	          thisUser.username + "'s Interests:",
+	          ' '
+	        ),
+	        React.createElement('br', null),
+	        interestsContainer,
 	        React.createElement('br', null),
 	        React.createElement('br', null),
 	        React.createElement(Star, { key: thisUser.id, user: thisUser, currentUser: this.state.current_user })
@@ -31963,14 +32092,14 @@
 	module.exports = UserShow;
 
 /***/ },
-/* 243 */
+/* 244 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(244),
-	    LikeStore = __webpack_require__(246),
+	    ApiLikeUtil = __webpack_require__(245),
+	    LikeStore = __webpack_require__(247),
 	    UserStore = __webpack_require__(215);
 	
 	var Star = React.createClass({
@@ -32081,10 +32210,10 @@
 	module.exports = Star;
 
 /***/ },
-/* 244 */
+/* 245 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ApiLikeActions = __webpack_require__(245);
+	var ApiLikeActions = __webpack_require__(246);
 	
 	var ApiLikeUtil = {
 	  fetchLikes: function () {
@@ -32132,7 +32261,7 @@
 	module.exports = ApiLikeUtil;
 
 /***/ },
-/* 245 */
+/* 246 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(236);
@@ -32165,13 +32294,13 @@
 	module.exports = ApiLikeActions;
 
 /***/ },
-/* 246 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
 	    UserStore = __webpack_require__(215),
-	    ApiLikeUtil = __webpack_require__(244),
+	    ApiLikeUtil = __webpack_require__(245),
 	    AppDispatcher = __webpack_require__(236);
 	
 	var LikeStore = new Store(AppDispatcher);
@@ -32185,6 +32314,7 @@
 	};
 	
 	var resetLike = function (like) {
+	  console.log(like);
 	  _likes[like.id] = like;
 	};
 	
@@ -32254,13 +32384,158 @@
 	module.exports = LikeStore;
 
 /***/ },
-/* 247 */
+/* 248 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiLikeUtil = __webpack_require__(245),
+	    LikeStore = __webpack_require__(247),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(249),
+	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215);
+	
+	var Likes = React.createClass({
+	  displayName: 'Likes',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.routeParams.id);
+	    return {
+	      current_user_id: current_user_id,
+	      myLikes: LikeStore.allMyLikes(current_user_id),
+	      myFans: LikeStore.allMyFans(current_user_id)
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.likeListener = LikeStore.addListener(this._likeChanged);
+	    this.userListener = UserStore.addListener(this._likeChanged);
+	    ApiLikeUtil.fetchLikes();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.likeListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _likeChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    if (!this.state.myLikes || !this.state.myFans) {
+	      return React.createElement('div', null);
+	    } else {
+	
+	      var likesContainer = [];
+	      this.state.myLikes.forEach(function (like) {
+	        var user = UserStore.find(like.liked_id);
+	        likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      });
+	
+	      var fansContainer = [];
+	      this.state.myFans.forEach(function (fan) {
+	        var user = UserStore.find(fan.user_id);
+	        fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      });
+	
+	      var mutualContainer = [];
+	      if (!this.state.myFans) {
+	        mutualContainer.push(React.createElement('div', null));
+	      } else {
+	        this.state.myLikes.forEach((function (like) {
+	          this.state.myFans.forEach(function (fan) {
+	            if (like.liked_id === fan.user_id) {
+	              var user = UserStore.find(like.liked_id);
+	              mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	            }
+	          });
+	        }).bind(this));
+	      }
+	
+	      return React.createElement(
+	        'div',
+	        { className: 'likes-container' },
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'People I\'ve liked:'
+	          ),
+	          likesContainer
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'People who\'ve liked me:'
+	          ),
+	          fansContainer
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'My mutual likes:'
+	          ),
+	          mutualContainer
+	        )
+	      );
+	    }
+	  }
+	});
+	
+	module.exports = Likes;
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    History = __webpack_require__(1).History;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [History],
+	
+	  showDetail: function () {
+	    var state = this.props.user;
+	    this.history.pushState(state, '/user/' + state.id);
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'li',
+	      { onClick: this.showDetail, className: 'user-item' },
+	      this.props.user.username
+	    );
+	  }
+	});
+
+/***/ },
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(248),
+	    SearchBar = __webpack_require__(251),
 	    ApiUserUtil = __webpack_require__(234),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
@@ -32347,7 +32622,7 @@
 	}
 
 /***/ },
-/* 248 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
@@ -32442,164 +32717,168 @@
 	module.exports = SearchBar;
 
 /***/ },
-/* 249 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(5),
-	    History = __webpack_require__(1).History;
+	var Store = __webpack_require__(216).Store,
+	    Constants = __webpack_require__(233),
+	    UserStore = __webpack_require__(215),
+	    ApiInterestUtil = __webpack_require__(253),
+	    AppDispatcher = __webpack_require__(236);
 	
-	module.exports = React.createClass({
-	  displayName: 'exports',
+	var InterestStore = new Store(AppDispatcher);
+	var _interests = {};
 	
-	  mixins: [History],
+	var resetInterests = function (interests) {
+	  _interests = {};
+	  interests.forEach(function (interest) {
+	    _interests[interest.id] = interest;
+	  });
+	};
 	
-	  showDetail: function () {
-	    var state = this.props.user;
-	    this.history.pushState(state, '/user/' + state.id);
-	  },
+	var resetInterest = function (interest) {
+	  _interests[interest.id] = interest;
+	};
 	
-	  render: function () {
-	    return React.createElement(
-	      'li',
-	      { onClick: this.showDetail, className: 'user-item' },
-	      this.props.user.username
-	    );
+	var removeInterest = function () {
+	  var interests = [];
+	  ApiInterestUtil.fetchInterests();
+	  interests = InterestStore.allInterests();
+	};
+	
+	// InterestStore.findInterest = function(user_id, liked_id) {
+	//   var myInterests = InterestStore.allMyInterests(user_id);
+	//   for (var i = 0; i < myInterests.length; i++) {
+	//      if (myInterests[i].liked_id === liked_id) {
+	//        return myInterests[i];
+	//      }
+	//    }
+	//    return {};
+	// };
+	
+	InterestStore.allInterests = function () {
+	  var interests = [];
+	  for (var id in _interests) {
+	    interests.push(_interests[id]);
 	  }
-	});
-
-/***/ },
-/* 250 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(244),
-	    LikeStore = __webpack_require__(246),
-	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(249),
-	    History = __webpack_require__(1).History,
-	    UserStore = __webpack_require__(215);
+	  return interests;
+	};
 	
-	// function {
-	//   var current_user = UserStore.currentUser();
-	//   return {
-	//     current_user: current_user,
-	//     myLikes: LikeStore.allMyLikes(current_user.id),
-	//     myFans: LikeStore.allMyFans(current_user.id)
-	//   }
-	//}
-	
-	var Likes = React.createClass({
-	  displayName: 'Likes',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.routeParams.id);
-	    return {
-	      current_user_id: current_user_id,
-	      myLikes: LikeStore.allMyLikes(current_user_id),
-	      myFans: LikeStore.allMyFans(current_user_id)
-	    };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentDidMount: function () {
-	    this.likeListener = LikeStore.addListener(this._likeChanged);
-	    this.userListener = UserStore.addListener(this._likeChanged);
-	    ApiLikeUtil.fetchLikes();
-	    ApiUserUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.likeListener.remove();
-	    this.userListener.remove();
-	  },
-	
-	  _likeChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  render: function () {
-	    if (!this.state.myLikes || !this.state.myFans) {
-	      return React.createElement('div', null);
-	    } else {
-	
-	      var likesContainer = [];
-	      this.state.myLikes.forEach(function (like) {
-	        var user = UserStore.find(like.liked_id);
-	        likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
-	      });
-	
-	      var fansContainer = [];
-	      this.state.myFans.forEach(function (fan) {
-	        var user = UserStore.find(fan.user_id);
-	        fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
-	      });
-	
-	      var mutualContainer = [];
-	      if (!this.state.myFans) {
-	        mutualContainer.push(React.createElement('div', null));
-	      } else {
-	        this.state.myLikes.forEach((function (like) {
-	          this.state.myFans.forEach(function (fan) {
-	            if (like.liked_id === fan.user_id) {
-	              var user = UserStore.find(like.liked_id);
-	              mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
-	            }
-	          });
-	        }).bind(this));
-	      }
-	
-	      return React.createElement(
-	        'div',
-	        null,
-	        React.createElement('br', null),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'ul',
-	          { className: 'likesDiv' },
-	          React.createElement(
-	            'h3',
-	            null,
-	            'People I\'ve liked:'
-	          ),
-	          likesContainer
-	        ),
-	        React.createElement('br', null),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'ul',
-	          { className: 'likesDiv' },
-	          React.createElement(
-	            'h3',
-	            null,
-	            'People who\'ve liked me:'
-	          ),
-	          fansContainer
-	        ),
-	        React.createElement('br', null),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'ul',
-	          { className: 'likesDiv' },
-	          React.createElement(
-	            'h3',
-	            null,
-	            'My mutual likes:'
-	          ),
-	          mutualContainer
-	        )
-	      );
+	InterestStore.allMyInterests = function (user_id) {
+	  var interests = [];
+	  for (var id in _interests) {
+	    if (_interests[id].user_id === user_id) {
+	      interests.push(_interests[id]);
 	    }
 	  }
-	});
+	  return interests;
+	};
 	
-	module.exports = Likes;
+	InterestStore.find = function (id) {
+	  return _interests[id];
+	};
+	
+	InterestStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case Constants.INTERESTS_RECEIVED:
+	      resetInterests(payload.interests);
+	      break;
+	    case Constants.INTEREST_RECEIVED:
+	      resetInterest(payload.interest);
+	      break;
+	    case Constants.INTEREST_REMOVED:
+	      removeInterest(payload.interest);
+	      break;
+	  }
+	  InterestStore.__emitChange();
+	};
+	
+	module.exports = InterestStore;
+
+/***/ },
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ApiInterestActions = __webpack_require__(254);
+	
+	var ApiInterestUtil = {
+	  fetchInterests: function () {
+	    $.ajax({
+	      url: "api/interests",
+	      success: function (interests) {
+	        ApiInterestActions.receiveInterests(interests);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateInterest: function (interest, callback) {
+	    $.ajax({
+	      url: "api/interests/",
+	      type: "POST",
+	      data: { interest: interest },
+	      success: function (interest) {
+	        ApiInterestActions.receiveInterest(interest);
+	        callback && callback(interest);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  deleteInterest: function (interest) {
+	    $.ajax({
+	      url: "api/interests/" + interest.id,
+	      type: "DELETE",
+	      success: function () {
+	        ApiInterestActions.removeInterest();
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	
+	};
+	
+	module.exports = ApiInterestUtil;
+
+/***/ },
+/* 254 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiInterestUtil = {
+	
+	  receiveInterests: function (interests) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTERESTS_RECEIVED,
+	      interests: interests
+	    });
+	  },
+	
+	  receiveInterest: function (interest) {
+	    console.log(interest);
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTEREST_RECEIVED,
+	      interest: interest
+	    });
+	  },
+	
+	  removeInterest: function (interest) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTEREST_REMOVED,
+	      interest: interest
+	    });
+	  }
+	};
+	
+	module.exports = ApiInterestUtil;
 
 /***/ }
 /******/ ]);

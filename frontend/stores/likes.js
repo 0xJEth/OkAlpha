@@ -15,6 +15,7 @@ var resetLikes = function(likes){
 };
 
 var resetLike = function (like) {
+  console.log(like);
   _likes[like.id] = like;
 };
 
