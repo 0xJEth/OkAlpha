@@ -24,16 +24,6 @@ var removeInterest = function () {
   interests = InterestStore.allInterests();
 };
 
-// InterestStore.findInterest = function(user_id, liked_id) {
-//   var myInterests = InterestStore.allMyInterests(user_id);
-//   for (var i = 0; i < myInterests.length; i++) {
-//      if (myInterests[i].liked_id === liked_id) {
-//        return myInterests[i];
-//      }
-//    }
-//    return {};
-// };
-
 InterestStore.allInterests = function () {
   var interests = [];
   for (var id in _interests) {

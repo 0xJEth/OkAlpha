@@ -60,9 +60,13 @@ module.exports = React.createClass({
   render: function () {
     if (!this.state.user) {
       return <div>loading</div>
-    }
+    };
 
     var user = UserStore.find(parseInt(this.props.routeParams.id));
+
+    if (user.id != UserStore.currentUser().id) {
+      this.history.pushState(null, "/user/" + user.id, {});
+    };
 
     var profileForm = (
       <div className="attr-form">

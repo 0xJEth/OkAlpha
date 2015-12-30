@@ -50,6 +50,12 @@ var Interests = React.createClass({
     this.setState(this.blankInt);
   },
 
+  removeInterest: function(event){
+    event.preventDefault();
+    var interest = InterestStore.find(event.target.id);
+    ApiInterestUtil.deleteInterest(interest);
+  },
+
   render: function () {
     if (!this.state.interests) {
       return <div></div>
@@ -62,11 +68,16 @@ var Interests = React.createClass({
         } else {
           var interestCapitalized = interest.interest.charAt(0).toUpperCase() + interest.interest.slice(1);
         }
-        interestsContainer.push(<li key={interest.id} className="interest-item">{interestCapitalized}</li>)
-      })
+        interestsContainer.push(
+          <li className="interest-item" key={interest.id}>
+            {interestCapitalized}
+            <button title="delete" className="remove-interest" id={interest.id} onClick={this.removeInterest}>X</button>
+          </li>
+        )
+      }.bind(this))
 
-      var interestForm = (
-        <div>
+      return (
+        <div className="interest-form">
           <h3>What are you interested in?</h3>
             <ul className="interest-list">
               {interestsContainer}
@@ -75,12 +86,6 @@ var Interests = React.createClass({
             <input className="profile-button" type="submit" value="Add Interest"/>
             <input type="text" valueLink={this.linkState("interest")}/>
           </form>
-        </div>
-      );
-
-      return (
-        <div className="interest-form">
-          {interestForm}
         </div>
       );
     }

@@ -51,9 +51,9 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(243),
-	    Likes = __webpack_require__(248),
-	    User = __webpack_require__(250);
+	    UserShow = __webpack_require__(246),
+	    Likes = __webpack_require__(251),
+	    User = __webpack_require__(253);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -24510,9 +24510,13 @@
 	        null,
 	        'loading'
 	      );
-	    }
+	    };
 	
 	    var user = UserStore.find(parseInt(this.props.routeParams.id));
+	
+	    if (user.id != UserStore.currentUser().id) {
+	      this.history.pushState(null, "/user/" + user.id, {});
+	    };
 	
 	    var profileForm = React.createElement(
 	      'div',
@@ -31814,9 +31818,9 @@
 	    ReactRouter = __webpack_require__(1),
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserStore = __webpack_require__(215),
-	    InterestStore = __webpack_require__(252),
+	    InterestStore = __webpack_require__(243),
 	    History = __webpack_require__(1).History,
-	    ApiInterestUtil = __webpack_require__(253),
+	    ApiInterestUtil = __webpack_require__(244),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var Interests = React.createClass({
@@ -31864,13 +31868,19 @@
 	    this.setState(this.blankInt);
 	  },
 	
+	  removeInterest: function (event) {
+	    event.preventDefault();
+	    var interest = InterestStore.find(event.target.id);
+	    ApiInterestUtil.deleteInterest(interest);
+	  },
+	
 	  render: function () {
 	    if (!this.state.interests) {
 	      return React.createElement('div', null);
 	    } else {
 	
 	      var interestsContainer = [];
-	      this.state.interests.forEach(function (interest) {
+	      this.state.interests.forEach((function (interest) {
 	        if (typeof interest.interest === "undefined") {
 	          var interestCapitalized = "";
 	        } else {
@@ -31878,14 +31888,19 @@
 	        }
 	        interestsContainer.push(React.createElement(
 	          'li',
-	          { key: interest.id, className: 'interest-item' },
-	          interestCapitalized
+	          { className: 'interest-item', key: interest.id },
+	          interestCapitalized,
+	          React.createElement(
+	            'button',
+	            { title: 'delete', className: 'remove-interest', id: interest.id, onClick: this.removeInterest },
+	            'X'
+	          )
 	        ));
-	      });
+	      }).bind(this));
 	
-	      var interestForm = React.createElement(
+	      return React.createElement(
 	        'div',
-	        null,
+	        { className: 'interest-form' },
 	        React.createElement(
 	          'h3',
 	          null,
@@ -31903,12 +31918,6 @@
 	          React.createElement('input', { type: 'text', valueLink: this.linkState("interest") })
 	        )
 	      );
-	
-	      return React.createElement(
-	        'div',
-	        { className: 'interest-form' },
-	        interestForm
-	      );
 	    }
 	  }
 	
@@ -31920,12 +31929,166 @@
 /* 243 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var Store = __webpack_require__(216).Store,
+	    Constants = __webpack_require__(233),
+	    UserStore = __webpack_require__(215),
+	    ApiInterestUtil = __webpack_require__(244),
+	    AppDispatcher = __webpack_require__(236);
+	
+	var InterestStore = new Store(AppDispatcher);
+	var _interests = {};
+	
+	var resetInterests = function (interests) {
+	  _interests = {};
+	  interests.forEach(function (interest) {
+	    _interests[interest.id] = interest;
+	  });
+	};
+	
+	var resetInterest = function (interest) {
+	  _interests[interest.id] = interest;
+	};
+	
+	var removeInterest = function () {
+	  var interests = [];
+	  ApiInterestUtil.fetchInterests();
+	  interests = InterestStore.allInterests();
+	};
+	
+	InterestStore.allInterests = function () {
+	  var interests = [];
+	  for (var id in _interests) {
+	    interests.push(_interests[id]);
+	  }
+	  return interests;
+	};
+	
+	InterestStore.allMyInterests = function (user_id) {
+	  var interests = [];
+	  for (var id in _interests) {
+	    if (_interests[id].user_id === user_id) {
+	      interests.push(_interests[id]);
+	    }
+	  }
+	  return interests;
+	};
+	
+	InterestStore.find = function (id) {
+	  return _interests[id];
+	};
+	
+	InterestStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case Constants.INTERESTS_RECEIVED:
+	      resetInterests(payload.interests);
+	      break;
+	    case Constants.INTEREST_RECEIVED:
+	      resetInterest(payload.interest);
+	      break;
+	    case Constants.INTEREST_REMOVED:
+	      removeInterest(payload.interest);
+	      break;
+	  }
+	  InterestStore.__emitChange();
+	};
+	
+	module.exports = InterestStore;
+
+/***/ },
+/* 244 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ApiInterestActions = __webpack_require__(245);
+	
+	var ApiInterestUtil = {
+	  fetchInterests: function () {
+	    $.ajax({
+	      url: "api/interests",
+	      success: function (interests) {
+	        ApiInterestActions.receiveInterests(interests);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateInterest: function (interest, callback) {
+	    $.ajax({
+	      url: "api/interests/",
+	      type: "POST",
+	      data: { interest: interest },
+	      success: function (interest) {
+	        ApiInterestActions.receiveInterest(interest);
+	        callback && callback(interest);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  deleteInterest: function (interest) {
+	    $.ajax({
+	      url: "api/interests/" + interest.id,
+	      type: "DELETE",
+	      success: function () {
+	        ApiInterestActions.removeInterest();
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	
+	};
+	
+	module.exports = ApiInterestUtil;
+
+/***/ },
+/* 245 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiInterestUtil = {
+	
+	  receiveInterests: function (interests) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTERESTS_RECEIVED,
+	      interests: interests
+	    });
+	  },
+	
+	  receiveInterest: function (interest) {
+	    console.log(interest);
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTEREST_RECEIVED,
+	      interest: interest
+	    });
+	  },
+	
+	  removeInterest: function (interest) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.INTEREST_REMOVED,
+	      interest: interest
+	    });
+	  }
+	};
+	
+	module.exports = ApiInterestUtil;
+
+/***/ },
+/* 246 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiInterestUtil = __webpack_require__(253),
-	    Star = __webpack_require__(244),
-	    InterestStore = __webpack_require__(252),
+	    ApiInterestUtil = __webpack_require__(244),
+	    Star = __webpack_require__(247),
+	    InterestStore = __webpack_require__(243),
 	    UserStore = __webpack_require__(215);
 	
 	var UserShow = React.createClass({
@@ -32098,14 +32261,14 @@
 	module.exports = UserShow;
 
 /***/ },
-/* 244 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(245),
-	    LikeStore = __webpack_require__(247),
+	    ApiLikeUtil = __webpack_require__(248),
+	    LikeStore = __webpack_require__(250),
 	    UserStore = __webpack_require__(215);
 	
 	var Star = React.createClass({
@@ -32216,10 +32379,10 @@
 	module.exports = Star;
 
 /***/ },
-/* 245 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var ApiLikeActions = __webpack_require__(246);
+	var ApiLikeActions = __webpack_require__(249);
 	
 	var ApiLikeUtil = {
 	  fetchLikes: function () {
@@ -32267,7 +32430,7 @@
 	module.exports = ApiLikeUtil;
 
 /***/ },
-/* 246 */
+/* 249 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var AppDispatcher = __webpack_require__(236);
@@ -32300,13 +32463,13 @@
 	module.exports = ApiLikeActions;
 
 /***/ },
-/* 247 */
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
 	    UserStore = __webpack_require__(215),
-	    ApiLikeUtil = __webpack_require__(245),
+	    ApiLikeUtil = __webpack_require__(248),
 	    AppDispatcher = __webpack_require__(236);
 	
 	var LikeStore = new Store(AppDispatcher);
@@ -32390,16 +32553,16 @@
 	module.exports = LikeStore;
 
 /***/ },
-/* 248 */
+/* 251 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(245),
-	    LikeStore = __webpack_require__(247),
+	    ApiLikeUtil = __webpack_require__(248),
+	    LikeStore = __webpack_require__(250),
 	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(249),
+	    UserItem = __webpack_require__(252),
 	    History = __webpack_require__(1).History,
 	    UserStore = __webpack_require__(215);
 	
@@ -32509,7 +32672,7 @@
 	module.exports = Likes;
 
 /***/ },
-/* 249 */
+/* 252 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
@@ -32535,17 +32698,17 @@
 	});
 
 /***/ },
-/* 250 */
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(251),
+	    SearchBar = __webpack_require__(254),
 	    ApiUserUtil = __webpack_require__(234),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
-	    UserItem = __webpack_require__(249);
+	    UserItem = __webpack_require__(252);
 	
 	function _getAllUsers() {
 	  return UserStore.all();
@@ -32628,11 +32791,11 @@
 	}
 
 /***/ },
-/* 251 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
-	    UserItem = __webpack_require__(249),
+	    UserItem = __webpack_require__(252),
 	    UserStore = __webpack_require__(215),
 	    ApiUserUtil = __webpack_require__(234);
 	
@@ -32703,7 +32866,7 @@
 	        React.createElement(
 	          'button',
 	          { className: 'search-button', onClick: this.search },
-	          'Search Users'
+	          'Search'
 	        ),
 	        React.createElement(
 	          'button',
@@ -32721,170 +32884,6 @@
 	});
 	
 	module.exports = SearchBar;
-
-/***/ },
-/* 252 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(216).Store,
-	    Constants = __webpack_require__(233),
-	    UserStore = __webpack_require__(215),
-	    ApiInterestUtil = __webpack_require__(253),
-	    AppDispatcher = __webpack_require__(236);
-	
-	var InterestStore = new Store(AppDispatcher);
-	var _interests = {};
-	
-	var resetInterests = function (interests) {
-	  _interests = {};
-	  interests.forEach(function (interest) {
-	    _interests[interest.id] = interest;
-	  });
-	};
-	
-	var resetInterest = function (interest) {
-	  _interests[interest.id] = interest;
-	};
-	
-	var removeInterest = function () {
-	  var interests = [];
-	  ApiInterestUtil.fetchInterests();
-	  interests = InterestStore.allInterests();
-	};
-	
-	// InterestStore.findInterest = function(user_id, liked_id) {
-	//   var myInterests = InterestStore.allMyInterests(user_id);
-	//   for (var i = 0; i < myInterests.length; i++) {
-	//      if (myInterests[i].liked_id === liked_id) {
-	//        return myInterests[i];
-	//      }
-	//    }
-	//    return {};
-	// };
-	
-	InterestStore.allInterests = function () {
-	  var interests = [];
-	  for (var id in _interests) {
-	    interests.push(_interests[id]);
-	  }
-	  return interests;
-	};
-	
-	InterestStore.allMyInterests = function (user_id) {
-	  var interests = [];
-	  for (var id in _interests) {
-	    if (_interests[id].user_id === user_id) {
-	      interests.push(_interests[id]);
-	    }
-	  }
-	  return interests;
-	};
-	
-	InterestStore.find = function (id) {
-	  return _interests[id];
-	};
-	
-	InterestStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case Constants.INTERESTS_RECEIVED:
-	      resetInterests(payload.interests);
-	      break;
-	    case Constants.INTEREST_RECEIVED:
-	      resetInterest(payload.interest);
-	      break;
-	    case Constants.INTEREST_REMOVED:
-	      removeInterest(payload.interest);
-	      break;
-	  }
-	  InterestStore.__emitChange();
-	};
-	
-	module.exports = InterestStore;
-
-/***/ },
-/* 253 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiInterestActions = __webpack_require__(254);
-	
-	var ApiInterestUtil = {
-	  fetchInterests: function () {
-	    $.ajax({
-	      url: "api/interests",
-	      success: function (interests) {
-	        ApiInterestActions.receiveInterests(interests);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateInterest: function (interest, callback) {
-	    $.ajax({
-	      url: "api/interests/",
-	      type: "POST",
-	      data: { interest: interest },
-	      success: function (interest) {
-	        ApiInterestActions.receiveInterest(interest);
-	        callback && callback(interest);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  deleteInterest: function (interest) {
-	    $.ajax({
-	      url: "api/interests/" + interest.id,
-	      type: "DELETE",
-	      success: function () {
-	        ApiInterestActions.removeInterest();
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  }
-	
-	};
-	
-	module.exports = ApiInterestUtil;
-
-/***/ },
-/* 254 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(236);
-	var Constants = __webpack_require__(233);
-	
-	var ApiInterestUtil = {
-	
-	  receiveInterests: function (interests) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.INTERESTS_RECEIVED,
-	      interests: interests
-	    });
-	  },
-	
-	  receiveInterest: function (interest) {
-	    console.log(interest);
-	    AppDispatcher.dispatch({
-	      actionType: Constants.INTEREST_RECEIVED,
-	      interest: interest
-	    });
-	  },
-	
-	  removeInterest: function (interest) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.INTEREST_REMOVED,
-	      interest: interest
-	    });
-	  }
-	};
-	
-	module.exports = ApiInterestUtil;
 
 /***/ }
 /******/ ]);
