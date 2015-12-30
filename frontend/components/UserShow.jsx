@@ -80,6 +80,12 @@ var UserShow = React.createClass({
       })
     }
 
+    if (thisUser.id != this.state.current_user.id) {
+      var star = <Star key={thisUser.id} user={thisUser} currentUser={this.state.current_user}/>
+    } else {
+      var star = <p></p>
+    }
+
     return (
       <div className="user-container">
         <div className="user-info">
@@ -92,7 +98,7 @@ var UserShow = React.createClass({
           <br/>
           {interestsContainer}
           <br/><br/>
-          <Star key={thisUser.id} user={thisUser} currentUser={this.state.current_user}/>
+          {star}
         </div>
         <footer id="footer">
           <a className="nav-button" href="#">Back</a>

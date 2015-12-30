@@ -52,7 +52,7 @@ module.exports = React.createClass({
       }
     }.bind(this))
     ApiUserUtil.updateProfile(user, function (id) {
-      // this.history.pushState(null, "/user/" + id, {});
+      this.history.pushState(null, "/user/" + id, {});
     }.bind(this));
     this.setState(this.blankAttrs);
   },

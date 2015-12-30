@@ -24498,7 +24498,7 @@
 	      }
 	    }).bind(this));
 	    ApiUserUtil.updateProfile(user, (function (id) {
-	      // this.history.pushState(null, "/user/" + id, {});
+	      this.history.pushState(null, "/user/" + id, {});
 	    }).bind(this));
 	    this.setState(this.blankAttrs);
 	  },
@@ -32048,6 +32048,12 @@
 	      });
 	    }
 	
+	    if (thisUser.id != this.state.current_user.id) {
+	      var star = React.createElement(Star, { key: thisUser.id, user: thisUser, currentUser: this.state.current_user });
+	    } else {
+	      var star = React.createElement('p', null);
+	    }
+	
 	    return React.createElement(
 	      'div',
 	      { className: 'user-container' },
@@ -32074,7 +32080,7 @@
 	        interestsContainer,
 	        React.createElement('br', null),
 	        React.createElement('br', null),
-	        React.createElement(Star, { key: thisUser.id, user: thisUser, currentUser: this.state.current_user })
+	        star
 	      ),
 	      React.createElement(
 	        'footer',
