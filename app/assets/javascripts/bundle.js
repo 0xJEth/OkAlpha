@@ -31973,6 +31973,19 @@
 	  return interests;
 	};
 	
+	InterestStore.allMyMatches = function (user_id) {
+	  var matches = [];
+	  var myInterests = InterestStore.allMyInterests(user_id);
+	  for (var i in _interests) {
+	    for (var j in myInterests) {
+	      if (_interests[i].interest.toLowerCase() === myInterests[j].interest.toLowerCase() && _interests[i].user_id != user_id) {
+	        matches.push(_interests[i]);
+	      }
+	    }
+	  }
+	  return matches;
+	};
+	
 	InterestStore.find = function (id) {
 	  return _interests[id];
 	};
@@ -32062,7 +32075,6 @@
 	  },
 	
 	  receiveInterest: function (interest) {
-	    console.log(interest);
 	    AppDispatcher.dispatch({
 	      actionType: Constants.INTEREST_RECEIVED,
 	      interest: interest
@@ -32564,6 +32576,7 @@
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserItem = __webpack_require__(252),
 	    History = __webpack_require__(1).History,
+	    Matches = __webpack_require__(255),
 	    UserStore = __webpack_require__(215);
 	
 	var Likes = React.createClass({
@@ -32640,7 +32653,7 @@
 	          React.createElement(
 	            'h3',
 	            { className: 'h3' },
-	            'People I\'ve liked:'
+	            'Users I like:'
 	          ),
 	          likesContainer
 	        ),
@@ -32650,7 +32663,7 @@
 	          React.createElement(
 	            'h3',
 	            { className: 'h3' },
-	            'People who\'ve liked me:'
+	            'Users who like me:'
 	          ),
 	          fansContainer
 	        ),
@@ -32663,7 +32676,8 @@
 	            'My mutual likes:'
 	          ),
 	          mutualContainer
-	        )
+	        ),
+	        React.createElement(Matches, { id: this.state.current_user_id })
 	      );
 	    }
 	  }
@@ -32884,6 +32898,84 @@
 	});
 	
 	module.exports = SearchBar;
+
+/***/ },
+/* 255 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiInterestUtil = __webpack_require__(244),
+	    InterestStore = __webpack_require__(243),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(252),
+	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215);
+	
+	var Matches = React.createClass({
+	  displayName: 'Matches',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.id);
+	    return {
+	      current_user_id: current_user_id,
+	      myMatches: InterestStore.allMyMatches(current_user_id)
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.matchListener = InterestStore.addListener(this._matchChanged);
+	    this.userListener = UserStore.addListener(this._matchChanged);
+	    ApiInterestUtil.fetchInterests();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.matchListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _matchChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    if (!this.state.myMatches) {
+	      return React.createElement('div', null);
+	    } else {
+	      var matchContainer = [];
+	      this.state.myMatches.forEach(function (interest) {
+	        var user = UserStore.find(interest.user_id);
+	        matchContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	        matchContainer.push(React.createElement(
+	          'p',
+	          { className: 'match-text' },
+	          "likes " + interest.interest
+	        ));
+	      });
+	    }
+	
+	    return React.createElement(
+	      'ul',
+	      { className: 'likes-div' },
+	      React.createElement(
+	        'h3',
+	        { className: 'h3' },
+	        'Recommended Matches:'
+	      ),
+	      matchContainer
+	    );
+	  }
+	});
+	
+	module.exports = Matches;
 
 /***/ }
 /******/ ]);

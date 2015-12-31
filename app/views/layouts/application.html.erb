@@ -23,7 +23,7 @@
 	          <a class="header-button" href="#">OkAlpha</a>
 	          <a class="header-button" href= "<%="#/profile/#{current_user.id}"%> " id="user_form"> Profile </a>
 						<a class="header-button" href="<%="#/likes/#{current_user.id}"%>">My Likes</a>
-	        </h1>
+					</h1>
 	        <ul class="header-list">
 	          <li class="header-list-welcome">Welcome <%= current_user.username.capitalize %></li>
 	          <li class="header-list-item"><%= button_to "Sign Out", session_url, :method => :delete %></li>

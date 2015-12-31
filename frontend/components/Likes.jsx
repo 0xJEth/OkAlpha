@@ -6,6 +6,7 @@ var React = require('react'),
     LinkedStateMixin = require('react-addons-linked-state-mixin'),
     UserItem = require('./UserItem'),
     History = require('react-router').History,
+    Matches = require('./Matches'),
     UserStore = require('../stores/users');
 
 var Likes = React.createClass({
@@ -74,17 +75,18 @@ var Likes = React.createClass({
       return (
         <div className="likes-container">
           <ul className="likes-div">
-            <h3 className="h3" >People I've liked:</h3>
+            <h3 className="h3" >Users I like:</h3>
             {likesContainer}
           </ul>
           <ul className="likes-div">
-            <h3 className="h3">People who've liked me:</h3>
+            <h3 className="h3">Users who like me:</h3>
             {fansContainer}
           </ul>
           <ul className="likes-div">
             <h3 className="h3">My mutual likes:</h3>
             {mutualContainer}
           </ul>
+          <Matches id={this.state.current_user_id}/>
         </div>
       );
     }

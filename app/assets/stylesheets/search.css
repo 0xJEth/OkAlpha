@@ -23,7 +23,7 @@
   font-size: 12pt;
 }
 
-.search-results, li.user-item {
+.search-results li.user-item {
   height: 30px;
   width: 200px;
   display: block;

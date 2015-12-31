@@ -42,6 +42,20 @@ InterestStore.allMyInterests = function (user_id) {
   return interests;
 };
 
+InterestStore.allMyMatches = function (user_id) {
+  var matches = [];
+  var myInterests = InterestStore.allMyInterests(user_id)
+  for (var i in _interests) {
+    for (var j in myInterests) {
+      if (_interests[i].interest.toLowerCase() === myInterests[j].interest.toLowerCase()
+            && _interests[i].user_id != user_id) {
+        matches.push(_interests[i]);
+      }
+    }
+  }
+  return matches;
+};
+
 InterestStore.find = function (id) {
   return _interests[id];
 };

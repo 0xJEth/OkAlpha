@@ -11,7 +11,6 @@ var ApiInterestUtil = {
   },
 
   receiveInterest: function(interest) {
-    console.log(interest);
     AppDispatcher.dispatch({
       actionType: Constants.INTEREST_RECEIVED,
       interest: interest
