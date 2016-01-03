@@ -7,6 +7,7 @@ var ReactRouter = require('react-router'),
     UserForm = require('./components/UserForm'),
     UserShow = require('./components/UserShow'),
     Likes = require('./components/Likes'),
+    Messages = require('./components/Messages'),
     User = require('./components/User');
 
 var App = React.createClass({
@@ -27,6 +28,7 @@ var routes = (
     <Route path="profile/:id" component={UserForm}/>
     <Route path="user/:id" component={UserShow}/>
     <Route path="likes/:id" component={Likes}/>
+    <Route path="messages/:id" component={Messages}/>
   </Route>
 );
 

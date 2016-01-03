@@ -39,6 +39,6 @@ column name    | data type | details
 ---------------|-----------|-----------------------
 id             | integer   | not null, primary key
 body           | text      |
-user_id        | integer   | not null, foreign key (references users), indexed
+receiver_id    | integer   | not null, foreign key (references users), indexed
 sender_id      | integer   | not null, foreign key (references users), indexed
 read           | boolean   | not null, default false

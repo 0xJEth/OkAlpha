@@ -12,7 +12,17 @@ class User < ActiveRecord::Base
   primary_key: :id,
   foreign_key: :liked_id,
   class_name: "Like"
-  
+
+  has_many :sent_messages,
+  primary_key: :id,
+  foreign_key: :sender_id,
+  class_name: "Message"
+
+  has_many :received_messages,
+  primary_key: :id,
+  foreign_key: :receiver_id,
+  class_name: "Message"
+
   has_many :interests
 
   attr_reader :password
