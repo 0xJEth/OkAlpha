@@ -19,26 +19,31 @@
 .star-form {
   margin-top: 20px;
   display: inline;
-  width: 20px;
-  height: 20px;
   color: black;
   padding: 5px;
 }
 
-#star-checkbox {
-  margin-top: -5px;
-  margin-left: 0;
-  display: inline;
+input[type="checkbox"] {
+  display: none;
+}
+
+input[type="checkbox"] + label {
+  background: url(http://findicons.com/files/icons/2227/picol/32/star_outline_32.png);
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  display: inline-block;
   width: 20px;
   height: 20px;
+  margin-top: -5px;
+  margin-left: 0;
   padding: 10px;
 }
 
-.user-body {
-  width: 100%;
-  height: 90%;
+input[type="checkbox"]:checked + label {
+  background: url(https://upload.wikimedia.org/wikipedia/en/0/0d/Yellow_star.gif);
+  background-repeat: no-repeat;
 }
-/*.user-body form {
-  position: absolute;
-  bottom: 100px;
-}*/
+
+.star-form span {
+  margin-left: 5px;
+}

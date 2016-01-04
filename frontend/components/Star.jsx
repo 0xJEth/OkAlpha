@@ -91,7 +91,7 @@ var Star = React.createClass({
     return (
       <div>
         <form className="star-form">
-          {checkbox}{text}
+          {checkbox}<label for="like" onClick={this.handleLike}></label>{text}
         </form>
         <div className="fan-boolean">
           <br/>

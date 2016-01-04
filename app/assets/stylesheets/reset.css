@@ -188,7 +188,6 @@
 		text-decoration: none;
 	}
 
-	input[type="checkbox"],
 	input[type="radio"] {
 		display: inline;
 		width: 1em;
@@ -196,7 +195,6 @@
 		margin-left: 150px;
 	}
 
-		input[type="checkbox"] + label,
 		input[type="radio"] + label {
 			text-decoration: none;
 			cursor: pointer;
@@ -216,7 +214,6 @@
 		color: #e3e3e3;
 	}
 
-	input[type="checkbox"] label,
 	input[type="radio"] label {
 		color: black;
 	}

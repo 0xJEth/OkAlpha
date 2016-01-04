@@ -32469,6 +32469,7 @@
 	        'form',
 	        { className: 'star-form' },
 	        checkbox,
+	        React.createElement('label', { 'for': 'like', onClick: this.handleLike }),
 	        text
 	      ),
 	      React.createElement(
