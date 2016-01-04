@@ -16,6 +16,7 @@ var resetLikes = function(likes){
 
 var resetLike = function (like) {
   _likes[like.id] = like;
+  console.log(_likes);
 };
 
 var removeLike = function () {
@@ -44,9 +45,9 @@ LikeStore.allLikes = function () {
 
 LikeStore.allMyLikes = function (user_id) {
   var likes = [];
-  for (var id in _likes) {
-    if (_likes[id].user_id === user_id) {
-      likes.push(_likes[id]) ;
+  for (var i in _likes) {
+    if (_likes[i].user_id === user_id) {
+      likes.push(_likes[i]) ;
     }
   }
   return likes;
@@ -54,9 +55,9 @@ LikeStore.allMyLikes = function (user_id) {
 
 LikeStore.allMyFans = function (user_id) {
   var likes = [];
-  for (var id in _likes) {
-    if (_likes[id].liked_id === user_id) {
-      likes.push(_likes[id]) ;
+  for (var i in _likes) {
+    if (_likes[i].liked_id === user_id) {
+      likes.push(_likes[i]) ;
     }
   }
   return likes;
@@ -67,11 +68,13 @@ LikeStore.find = function (id) {
 };
 
 LikeStore.__onDispatch = function (payload) {
+  console.log(payload);
   switch(payload.actionType) {
     case Constants.LIKES_RECEIVED:
       resetLikes(payload.likes);
       break;
     case Constants.LIKE_RECEIVED:
+      console.log(payload.like);
       resetLike(payload.like);
       break;
     case Constants.LIKE_REMOVED:

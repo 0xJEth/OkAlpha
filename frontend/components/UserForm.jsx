@@ -1,8 +1,8 @@
 var React = require('react'),
     ReactRouter = require('react-router'),
     LinkedStateMixin = require('react-addons-linked-state-mixin'),
-    UserStore = require('../stores/users'),
     History = require('react-router').History,
+    UserStore = require('../stores/users'),
     Cloud = require('./Cloud'),
     Interests = require('./Interests'),
     ApiUserUtil = require('../util/api_user_util');

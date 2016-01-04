@@ -11,6 +11,7 @@ var ApiLikeActions = {
   },
 
   receiveLike: function(like) {
+    console.log(like);
     AppDispatcher.dispatch({
       actionType: Constants.LIKE_RECEIVED,
       like: like

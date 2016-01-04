@@ -3,18 +3,24 @@ var React = require('react'),
     ApiUserUtil = require('../util/api_user_util'),
     ApiLikeUtil = require('../util/api_like_util'),
     LikeStore = require('../stores/likes'),
+    LinkedStateMixin = require('react-addons-linked-state-mixin'),
+    History = require('react-router').History,
     UserStore = require('../stores/users');
 
 var Star = React.createClass({
+  mixins: [LinkedStateMixin, History],
+
   getStateFromStore: function () {
-    var current_user = UserStore.currentUser();
-    // move logic to store
-    var likes = LikeStore.allMyLikes(current_user.id)
+    console.log(this.props);
+    var current_user_id = parseInt(this.props.currentUserId);
+    console.log(current_user_id);
+    var likes = LikeStore.allMyLikes(current_user_id);
+    console.log(likes);
     if (likes.length === 0) {
       var starState = false;
     } else {
       for (var i in likes) {
-        if (likes[i].liked_id === this.props.user.id) {
+        if (likes[i].liked_id === parseInt(this.props.userId)) {
           var starState = true;
           break;
         } else {
@@ -22,12 +28,12 @@ var Star = React.createClass({
         }
       }
     }
-    var fans = LikeStore.allMyFans(current_user.id)
+    var fans = LikeStore.allMyFans(current_user_id)
     if (fans.length === 0) {
       var fansState = false;
     } else {
       for (var i in fans) {
-        if (fans[i].user_id === this.props.user.id) {
+        if (fans[i].user_id === parseInt(this.props.userId)) {
           var fanState = true;
           break;
         } else {
@@ -35,7 +41,7 @@ var Star = React.createClass({
         }
       }
     }
-    return ({liked_id: this.props.user.id, user_id: current_user.id, star: starState, fan: fanState})
+    return ({liked_id: this.props.userId, user_id: current_user_id, star: starState, fan: fanState})
   },
 
   getInitialState: function () {
@@ -44,12 +50,14 @@ var Star = React.createClass({
 
   componentDidMount: function () {
     this.likeListener = LikeStore.addListener(this._likeChanged);
+    this.userListener = UserStore.addListener(this._likeChanged);
     ApiLikeUtil.fetchLikes();
     ApiUserUtil.fetchUsers();
   },
 
   componentWillUnmount: function () {
     this.likeListener.remove();
+    this.userListener.remove();
   },
 
   _likeChanged: function () {
@@ -59,16 +67,17 @@ var Star = React.createClass({
   handleLike: function(event) {
     event.preventDefault;
     if (this.state.star) {
-      var like = LikeStore.findLike(this.state.user_id, this.state.liked_id)
-      ApiLikeUtil.deleteLike(like)
+      var like = LikeStore.findLike(parseInt(this.state.user_id), parseInt(this.state.liked_id));
+      ApiLikeUtil.deleteLike(like);
     } else {
-      var like = {user_id: this.state.user_id, liked_id: this.state.liked_id};
-      ApiLikeUtil.updateLike(like)
+      var like = {user_id: parseInt(this.state.user_id), liked_id: parseInt(this.state.liked_id)};
+      ApiLikeUtil.updateLike(like);
     }
   },
 
   render: function () {
-    if (typeof this.state.star === 'undefined' && !!this.state.star) {
+    console.log(this.state);
+    if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
       return <div></div>
     }
     if (this.state.star) {

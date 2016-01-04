@@ -1,9 +1,11 @@
 .unread {
   font-weight: bold;
+  width: 100%;
 }
 
 .read {
   font-weight: normal;
+  width: 100%;
 }
 
 .message-container {
@@ -23,25 +25,32 @@
 
 .message-list-item {
   padding: 5px;
+  display: inline-block;
   cursor: pointer;
+  width: 90%;
 }
 
-.read span, .unread span {
+.message-list-item * {
   cursor: pointer;
 }
 
 .message-list-item:hover {
   background-color: #b3d1ff;
+
 }
 
 .remove-interest, .read, .unread {
-  display: inline;
+  display: inline-block;
   margin-right: 5px;
 }
 
 .date {
   float: right;
-  margin-left: 75px;
+}
+
+.date-label {
+  margin-right: 10px;
+  float: right;
 }
 
 .message-details, .message-panel {

@@ -2,12 +2,16 @@ var React = require('react'),
     ReactRouter = require('react-router'),
     ApiUserUtil = require('../util/api_user_util'),
     ApiInterestUtil = require('../util/api_interest_util'),
+    LinkedStateMixin = require('react-addons-linked-state-mixin'),
+    History = require('react-router').History,
     Star = require('./Star'),
     NewMessage = require('./NewMessage'),
     InterestStore = require('../stores/interests'),
+    LikeStore = require('../stores/likes'),
     UserStore = require('../stores/users');
 
 var UserShow = React.createClass({
+  mixins: [LinkedStateMixin, History],
 
   getStateFromStore: function () {
     var id = parseInt(this.props.params.id)
@@ -20,33 +24,37 @@ var UserShow = React.createClass({
     return this.getStateFromStore();
   },
 
-  // componentWillReceiveProps: function (newProps) {
-  //   ApiUserUtil.fetchUser(parseInt(newProps.params.id));
-  //   ApiInterestUtil.fetchInterests();
-  // },
+  componentWillReceiveProps: function (newProps) {
+    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
+    ApiInterestUtil.fetchInterests();
+  },
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
-    this.interestsListener = InterestStore.addListener(this.userChanged);
+    this.interestsListener = InterestStore.addListener(this._userChanged);
+    this.likeListener = LikeStore.addListener(this._userChanged);
     ApiUserUtil.fetchUser(parseInt(this.props.params.id));
+    ApiUserUtil.fetchCurrentUser();
     ApiInterestUtil.fetchInterests();
+    ApiLikeUtil.fetchLikes();
   },
 
   componentWillUnmount: function () {
     this.userListener.remove();
     this.interestsListener.remove();
+    this.likeListener.remove();
   },
 
   _userChanged: function () {
-
     this.setState(this.getStateFromStore());
   },
 
 
   render: function () {
-    if (!this.state.user) {
+    if (!this.state.user || !this.state.current_user) {
       return <div>loading</div>
     }
+    console.log(this.state);
     var thisId = parseInt(this.props.routeParams.id);
     var thisUser = UserStore.find(parseInt(thisId));
     var profileProps = [];
@@ -82,7 +90,7 @@ var UserShow = React.createClass({
     }
 
     if (thisUser.id != this.state.current_user.id) {
-      var star = <Star key={thisUser.id} user={thisUser} currentUser={this.state.current_user}/>
+      var star = <Star key={thisUser.id} userId={thisUser.id} currentUserId={this.state.current_user.id}/>
     } else {
       var star = <p></p>
     }

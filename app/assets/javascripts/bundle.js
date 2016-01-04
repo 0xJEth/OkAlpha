@@ -24448,8 +24448,8 @@
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    LinkedStateMixin = __webpack_require__(211),
-	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215),
 	    Cloud = __webpack_require__(239),
 	    Interests = __webpack_require__(242),
 	    ApiUserUtil = __webpack_require__(234);
@@ -32161,13 +32161,18 @@
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
 	    ApiInterestUtil = __webpack_require__(244),
+	    LinkedStateMixin = __webpack_require__(211),
+	    History = __webpack_require__(1).History,
 	    Star = __webpack_require__(247),
 	    NewMessage = __webpack_require__(261),
 	    InterestStore = __webpack_require__(243),
+	    LikeStore = __webpack_require__(250),
 	    UserStore = __webpack_require__(215);
 	
 	var UserShow = React.createClass({
 	  displayName: 'UserShow',
+	
+	  mixins: [LinkedStateMixin, History],
 	
 	  getStateFromStore: function () {
 	    var id = parseInt(this.props.params.id);
@@ -32180,36 +32185,40 @@
 	    return this.getStateFromStore();
 	  },
 	
-	  // componentWillReceiveProps: function (newProps) {
-	  //   ApiUserUtil.fetchUser(parseInt(newProps.params.id));
-	  //   ApiInterestUtil.fetchInterests();
-	  // },
+	  componentWillReceiveProps: function (newProps) {
+	    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
+	    ApiInterestUtil.fetchInterests();
+	  },
 	
 	  componentDidMount: function () {
 	    this.userListener = UserStore.addListener(this._userChanged);
-	    this.interestsListener = InterestStore.addListener(this.userChanged);
+	    this.interestsListener = InterestStore.addListener(this._userChanged);
+	    this.likeListener = LikeStore.addListener(this._userChanged);
 	    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
+	    ApiUserUtil.fetchCurrentUser();
 	    ApiInterestUtil.fetchInterests();
+	    ApiLikeUtil.fetchLikes();
 	  },
 	
 	  componentWillUnmount: function () {
 	    this.userListener.remove();
 	    this.interestsListener.remove();
+	    this.likeListener.remove();
 	  },
 	
 	  _userChanged: function () {
-	
 	    this.setState(this.getStateFromStore());
 	  },
 	
 	  render: function () {
-	    if (!this.state.user) {
+	    if (!this.state.user || !this.state.current_user) {
 	      return React.createElement(
 	        'div',
 	        null,
 	        'loading'
 	      );
 	    }
+	    console.log(this.state);
 	    var thisId = parseInt(this.props.routeParams.id);
 	    var thisUser = UserStore.find(parseInt(thisId));
 	    var profileProps = [];
@@ -32287,7 +32296,7 @@
 	    }
 	
 	    if (thisUser.id != this.state.current_user.id) {
-	      var star = React.createElement(Star, { key: thisUser.id, user: thisUser, currentUser: this.state.current_user });
+	      var star = React.createElement(Star, { key: thisUser.id, userId: thisUser.id, currentUserId: this.state.current_user.id });
 	    } else {
 	      var star = React.createElement('p', null);
 	    }
@@ -32362,20 +32371,26 @@
 	    ApiUserUtil = __webpack_require__(234),
 	    ApiLikeUtil = __webpack_require__(248),
 	    LikeStore = __webpack_require__(250),
+	    LinkedStateMixin = __webpack_require__(211),
+	    History = __webpack_require__(1).History,
 	    UserStore = __webpack_require__(215);
 	
 	var Star = React.createClass({
 	  displayName: 'Star',
 	
+	  mixins: [LinkedStateMixin, History],
+	
 	  getStateFromStore: function () {
-	    var current_user = UserStore.currentUser();
-	    // move logic to store
-	    var likes = LikeStore.allMyLikes(current_user.id);
+	    console.log(this.props);
+	    var current_user_id = parseInt(this.props.currentUserId);
+	    console.log(current_user_id);
+	    var likes = LikeStore.allMyLikes(current_user_id);
+	    console.log(likes);
 	    if (likes.length === 0) {
 	      var starState = false;
 	    } else {
 	      for (var i in likes) {
-	        if (likes[i].liked_id === this.props.user.id) {
+	        if (likes[i].liked_id === parseInt(this.props.userId)) {
 	          var starState = true;
 	          break;
 	        } else {
@@ -32383,12 +32398,12 @@
 	        }
 	      }
 	    }
-	    var fans = LikeStore.allMyFans(current_user.id);
+	    var fans = LikeStore.allMyFans(current_user_id);
 	    if (fans.length === 0) {
 	      var fansState = false;
 	    } else {
 	      for (var i in fans) {
-	        if (fans[i].user_id === this.props.user.id) {
+	        if (fans[i].user_id === parseInt(this.props.userId)) {
 	          var fanState = true;
 	          break;
 	        } else {
@@ -32396,7 +32411,7 @@
 	        }
 	      }
 	    }
-	    return { liked_id: this.props.user.id, user_id: current_user.id, star: starState, fan: fanState };
+	    return { liked_id: this.props.userId, user_id: current_user_id, star: starState, fan: fanState };
 	  },
 	
 	  getInitialState: function () {
@@ -32405,12 +32420,14 @@
 	
 	  componentDidMount: function () {
 	    this.likeListener = LikeStore.addListener(this._likeChanged);
+	    this.userListener = UserStore.addListener(this._likeChanged);
 	    ApiLikeUtil.fetchLikes();
 	    ApiUserUtil.fetchUsers();
 	  },
 	
 	  componentWillUnmount: function () {
 	    this.likeListener.remove();
+	    this.userListener.remove();
 	  },
 	
 	  _likeChanged: function () {
@@ -32420,16 +32437,17 @@
 	  handleLike: function (event) {
 	    event.preventDefault;
 	    if (this.state.star) {
-	      var like = LikeStore.findLike(this.state.user_id, this.state.liked_id);
+	      var like = LikeStore.findLike(parseInt(this.state.user_id), parseInt(this.state.liked_id));
 	      ApiLikeUtil.deleteLike(like);
 	    } else {
-	      var like = { user_id: this.state.user_id, liked_id: this.state.liked_id };
+	      var like = { user_id: parseInt(this.state.user_id), liked_id: parseInt(this.state.liked_id) };
 	      ApiLikeUtil.updateLike(like);
 	    }
 	  },
 	
 	  render: function () {
-	    if (typeof this.state.star === 'undefined' && !!this.state.star) {
+	    console.log(this.state);
+	    if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
 	      return React.createElement('div', null);
 	    }
 	    if (this.state.star) {
@@ -32539,6 +32557,7 @@
 	  },
 	
 	  receiveLike: function (like) {
+	    console.log(like);
 	    AppDispatcher.dispatch({
 	      actionType: Constants.LIKE_RECEIVED,
 	      like: like
@@ -32577,6 +32596,7 @@
 	
 	var resetLike = function (like) {
 	  _likes[like.id] = like;
+	  console.log(_likes);
 	};
 	
 	var removeLike = function () {
@@ -32605,9 +32625,9 @@
 	
 	LikeStore.allMyLikes = function (user_id) {
 	  var likes = [];
-	  for (var id in _likes) {
-	    if (_likes[id].user_id === user_id) {
-	      likes.push(_likes[id]);
+	  for (var i in _likes) {
+	    if (_likes[i].user_id === user_id) {
+	      likes.push(_likes[i]);
 	    }
 	  }
 	  return likes;
@@ -32615,9 +32635,9 @@
 	
 	LikeStore.allMyFans = function (user_id) {
 	  var likes = [];
-	  for (var id in _likes) {
-	    if (_likes[id].liked_id === user_id) {
-	      likes.push(_likes[id]);
+	  for (var i in _likes) {
+	    if (_likes[i].liked_id === user_id) {
+	      likes.push(_likes[i]);
 	    }
 	  }
 	  return likes;
@@ -32628,11 +32648,13 @@
 	};
 	
 	LikeStore.__onDispatch = function (payload) {
+	  console.log(payload);
 	  switch (payload.actionType) {
 	    case Constants.LIKES_RECEIVED:
 	      resetLikes(payload.likes);
 	      break;
 	    case Constants.LIKE_RECEIVED:
+	      console.log(payload.like);
 	      resetLike(payload.like);
 	      break;
 	    case Constants.LIKE_REMOVED:
@@ -32962,16 +32984,6 @@
 	    } else {
 	
 	      var messageReceivedContainer = [];
-	      messageReceivedContainer.push(React.createElement(
-	        'li',
-	        { className: 'message-label' },
-	        'User',
-	        React.createElement(
-	          'span',
-	          { className: 'date' },
-	          'Date'
-	        )
-	      ));
 	      this.state.myReceivedMessages.forEach((function (message) {
 	        var user = UserStore.find(parseInt(message.sender_id));
 	        var date = MessageStore.dateToString(message.created_at);
@@ -32981,27 +32993,41 @@
 	          } else {
 	            var read = "unread";
 	          }
-	          messageReceivedContainer.push(React.createElement(
-	            'li',
-	            { className: 'message-list-item', key: message.id },
+	          messageReceivedContainer.unshift(React.createElement(
+	            'div',
+	            null,
 	            React.createElement(
 	              'button',
 	              { title: 'delete', className: 'remove-interest', id: message.id, onClick: this.deleteMessage },
 	              'X'
 	            ),
 	            React.createElement(
-	              'div',
-	              { onClick: this.showMessage, id: message.id, className: read },
-	              user.username,
+	              'li',
+	              { className: 'message-list-item', key: message.id },
 	              React.createElement(
-	                'span',
-	                { className: 'date' },
-	                date
+	                'div',
+	                { onClick: this.showMessage, id: message.id, className: read },
+	                user.username,
+	                React.createElement(
+	                  'span',
+	                  { className: 'date' },
+	                  date
+	                )
 	              )
 	            )
 	          ));
 	        }
 	      }).bind(this));
+	      messageReceivedContainer.unshift(React.createElement(
+	        'li',
+	        { className: 'message-label' },
+	        'User',
+	        React.createElement(
+	          'span',
+	          { className: 'date-label' },
+	          'Date'
+	        )
+	      ));
 	      if (messageReceivedContainer.length === 1) {
 	        messageReceivedContainer[0] = React.createElement(
 	          'li',
@@ -33011,41 +33037,45 @@
 	      }
 	
 	      var messageSentContainer = [];
-	      messageSentContainer.push(React.createElement(
-	        'li',
-	        { className: 'message-label' },
-	        'User',
-	        React.createElement(
-	          'span',
-	          { className: 'date' },
-	          'Date'
-	        )
-	      ));
 	      this.state.mySentMessages.forEach((function (message) {
 	        var user = UserStore.find(parseInt(message.receiver_id));
 	        var date = MessageStore.dateToString(message.created_at);
 	        if (user) {
-	          messageSentContainer.push(React.createElement(
-	            'li',
-	            { className: 'message-list-item', key: message.id },
+	          messageSentContainer.unshift(React.createElement(
+	            'div',
+	            null,
 	            React.createElement(
 	              'button',
 	              { title: 'delete', className: 'remove-interest', id: message.id, onClick: this.deleteMessage },
 	              'X'
 	            ),
 	            React.createElement(
-	              'div',
-	              { onClick: this.showMessage, id: message.id, className: 'read' },
-	              user.username,
+	              'li',
+	              { className: 'message-list-item', key: message.id },
 	              React.createElement(
-	                'span',
-	                { className: 'date' },
-	                date
+	                'div',
+	                { onClick: this.showMessage, id: message.id, className: 'read' },
+	                user.username,
+	                React.createElement(
+	                  'span',
+	                  { className: 'date' },
+	                  date
+	                )
 	              )
 	            )
 	          ));
 	        }
 	      }).bind(this));
+	      messageSentContainer.unshift(React.createElement(
+	        'li',
+	        { className: 'message-label' },
+	        'User',
+	        React.createElement(
+	          'span',
+	          { className: 'date-label' },
+	          'Date'
+	        )
+	      ));
 	      if (messageSentContainer.length === 1) {
 	        messageSentContainer[0] = React.createElement(
 	          'li',
@@ -33053,7 +33083,6 @@
 	          'No messages'
 	        );
 	      }
-	      console.log(messageSentContainer[0]);
 	    }
 	
 	    return React.createElement(
