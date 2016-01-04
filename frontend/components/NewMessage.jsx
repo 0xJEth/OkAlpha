@@ -55,18 +55,16 @@ var NewMessage = React.createClass({
   findUsername: function(string) {
     string = string.split(" ");
     var users = UserStore.all();
-    var results = [];
     for (var i = 0; i < users.length; i++) {
       var name = users[i].username.split(" ");
       for (var j = 0; j < name.length; j++) {
         for (var k = 0; k < string.length; k++) {
           if (name[j].toLowerCase() === string[k].toLowerCase()) {
-            results.push(users[i]);
+            return users[i];
           }
         }
       }
     }
-    return results
   },
 
   sendMessage: function (event) {
@@ -78,10 +76,10 @@ var NewMessage = React.createClass({
     } else if (receiver.length > 1) {
       alert("Multiple users found with that name");
     } else {
-      var receiver_id = receiver[0].id;
+      var receiver_id = receiver.id;
       var body = event.target[1].value;
       var message = {sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false};
-      var conf = confirm("Confirm send message to " + receiver[0].username + "?");
+      var conf = confirm("Confirm send message to " + receiver.username + "?");
       if (conf) {
         ApiMessageUtil.createMessage(message)
         this.setState(this.blankAttrs);

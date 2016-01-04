@@ -62,6 +62,24 @@ var User = React.createClass({
     this.history.pushState(current_user, '/user/' + user.id)
   },
 
+  randomize: function() {
+    var showUsers = [];
+    if (this.state.users.length > 0) {
+      var copyUsers = this.state.users.slice(0);
+      while(showUsers.length < 6) {
+        var rand = Math.floor(Math.random() * copyUsers.length);
+        var user = copyUsers[rand];
+        copyUsers.splice(rand, 1);
+        if (this.state.current_user && this.state.current_user.id != user.id &&
+          user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png"
+          ) {
+            showUsers.push(user);
+          }
+      }
+    }
+    return showUsers;
+  },
+
   render: function () {
     if (this.state.messageCount > 0) {
       var badge = document.getElementById("badge");
@@ -69,12 +87,13 @@ var User = React.createClass({
       badge.innerHTML = this.state.messageCount;
     }
 
+    var showUsers = this.randomize();
     return (
       <div>
         <div className="container">
           <ul className="side-scroll-ul">
-            {this.state.users.map(function(user) {
-              if (this.state.current_user && user.image_url && this.state.current_user.id != user.id) {
+            {showUsers.map(function(user) {
+              if (this.state.current_user) {
                 return (
                   <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
                     <img id={user.id} className="side-scroll-img" src={user.image_url}/>

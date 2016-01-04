@@ -52,9 +52,9 @@
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
 	    UserShow = __webpack_require__(246),
-	    Likes = __webpack_require__(251),
-	    Messages = __webpack_require__(254),
-	    User = __webpack_require__(260);
+	    Likes = __webpack_require__(256),
+	    Messages = __webpack_require__(258),
+	    User = __webpack_require__(261);
 	
 	var App = React.createClass({
 	  displayName: 'App',
@@ -32161,10 +32161,11 @@
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
 	    ApiInterestUtil = __webpack_require__(244),
+	    ApiLikeUtil = __webpack_require__(248),
 	    LinkedStateMixin = __webpack_require__(211),
 	    History = __webpack_require__(1).History,
 	    Star = __webpack_require__(247),
-	    NewMessage = __webpack_require__(261),
+	    NewMessage = __webpack_require__(251),
 	    InterestStore = __webpack_require__(243),
 	    LikeStore = __webpack_require__(250),
 	    UserStore = __webpack_require__(215);
@@ -32665,12 +32666,353 @@
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
+	    ApiMessageUtil = __webpack_require__(252),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(254),
+	    History = __webpack_require__(1).History,
+	    MessageStore = __webpack_require__(255),
+	    UserStore = __webpack_require__(215);
+	
+	var NewMessage = React.createClass({
+	  displayName: 'NewMessage',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  blankAttrs: {
+	    receiver: "",
+	    body: ""
+	  },
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.currentUserId);
+	
+	    if (this.props.userId) {
+	      var receiver = UserStore.find(parseInt(this.props.userId));
+	    } else {
+	      var receiver = { username: "" };
+	    }
+	
+	    return {
+	      current_user_id: current_user_id,
+	      receiver: receiver,
+	      body: ""
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.messageListener = MessageStore.addListener(this._messageChanged);
+	    this.userListener = UserStore.addListener(this._messageChanged);
+	    ApiMessageUtil.fetchMessages();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.messageListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _messageChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  findUsername: function (string) {
+	    string = string.split(" ");
+	    var users = UserStore.all();
+	    for (var i = 0; i < users.length; i++) {
+	      var name = users[i].username.split(" ");
+	      for (var j = 0; j < name.length; j++) {
+	        for (var k = 0; k < string.length; k++) {
+	          if (name[j].toLowerCase() === string[k].toLowerCase()) {
+	            return users[i];
+	          }
+	        }
+	      }
+	    }
+	  },
+	
+	  sendMessage: function (event) {
+	    event.preventDefault();
+	    var string = event.target[0].value;
+	    var receiver = this.findUsername(string);
+	    if (receiver.length === 0) {
+	      alert("No user found with that name");
+	    } else if (receiver.length > 1) {
+	      alert("Multiple users found with that name");
+	    } else {
+	      var receiver_id = receiver.id;
+	      var body = event.target[1].value;
+	      var message = { sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false };
+	      var conf = confirm("Confirm send message to " + receiver.username + "?");
+	      if (conf) {
+	        ApiMessageUtil.createMessage(message);
+	        this.setState(this.blankAttrs);
+	      }
+	    }
+	  },
+	
+	  render: function () {
+	    if (!this.state.current_user_id) {
+	      return React.createElement('div', null);
+	    }
+	
+	    var username = this.state.receiver.username;
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'form',
+	        { onSubmit: this.sendMessage, className: 'new-message-form' },
+	        React.createElement('input', { placeholder: 'Recipient', type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") }),
+	        React.createElement('br', null),
+	        React.createElement('textarea', { cols: '40', rows: '6', name: 'body', valueLink: this.linkState("body") }),
+	        React.createElement('br', null),
+	        React.createElement('input', { className: 'new-message-button', type: 'submit', value: 'Send Message' })
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = NewMessage;
+
+/***/ },
+/* 252 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ApiMessageActions = __webpack_require__(253);
+	
+	var ApiMessageUtil = {
+	  fetchMessages: function () {
+	    $.ajax({
+	      url: "api/messages",
+	      success: function (messages) {
+	        ApiMessageActions.receiveMessages(messages);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  createMessage: function (message, callback) {
+	    $.ajax({
+	      url: "api/messages/",
+	      type: "POST",
+	      data: { message: message },
+	      success: function (message) {
+	        ApiMessageActions.receiveMessage(message);
+	        callback && callback(message);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateMessage: function (read_messaage, callback) {
+	    $.ajax({
+	      url: "api/messages/" + read_messaage.id,
+	      type: "PATCH",
+	      data: { message: read_messaage },
+	      success: function (message) {
+	        ApiMessageActions.receiveMessage(read_messaage);
+	        callback && callback(read_messaage.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  deleteMessage: function (message) {
+	    $.ajax({
+	      url: "api/messages/" + message.id,
+	      type: "DELETE",
+	      success: function () {
+	        ApiMessageActions.removeMessage();
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	
+	};
+	
+	module.exports = ApiMessageUtil;
+
+/***/ },
+/* 253 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiMessageActions = {
+	
+	  receiveMessages: function (messages) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MESSAGES_RECEIVED,
+	      messages: messages
+	    });
+	  },
+	
+	  receiveMessage: function (message) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MESSAGE_RECEIVED,
+	      message: message
+	    });
+	  },
+	
+	  removeMessage: function (message) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MESSAGE_REMOVED,
+	      message: message
+	    });
+	  }
+	};
+	
+	module.exports = ApiMessageActions;
+
+/***/ },
+/* 254 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    History = __webpack_require__(1).History;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [History],
+	
+	  showDetail: function () {
+	    var state = this.props.user;
+	    this.history.pushState(state, '/user/' + state.id);
+	  },
+	
+	  render: function () {
+	    return React.createElement(
+	      'li',
+	      { onClick: this.showDetail, className: 'user-item' },
+	      this.props.user.username
+	    );
+	  }
+	});
+
+/***/ },
+/* 255 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(216).Store,
+	    Constants = __webpack_require__(233),
+	    UserStore = __webpack_require__(215),
+	    ApiMessageUtil = __webpack_require__(252),
+	    AppDispatcher = __webpack_require__(236);
+	
+	var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+	var DAYS = ['Sunday', 'Mon', 'Tues', 'Wed', 'Thur', 'Friday', 'Sat'];
+	
+	var MessageStore = new Store(AppDispatcher);
+	var _messages = {};
+	
+	var resetMessages = function (messages) {
+	  _messages = {};
+	  messages.forEach(function (message) {
+	    _messages[message.id] = message;
+	  });
+	};
+	
+	var resetMessage = function (message) {
+	  _messages[message.id] = message;
+	};
+	
+	var removeMessage = function () {
+	  var messages = [];
+	  ApiMessageUtil.fetchMessages();
+	  messages = MessageStore.allMessages();
+	};
+	
+	MessageStore.dateToString = function (date) {
+	  var timestamp = new Date(date);
+	  return " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ", " + DAYS[timestamp.getDay()] + " " + MONTHS[timestamp.getMonth()] + " " + timestamp.getDate();
+	};
+	
+	MessageStore.findMessage = function (user_id, message_id) {
+	  var myMessages = MessageStore.allMyMessages(user_id);
+	  for (var i = 0; i < myMessages.length; i++) {
+	    if (myMessages[i].message_id === message_id) {
+	      return myMessages[i];
+	    }
+	  }
+	  return {};
+	};
+	
+	MessageStore.allMessages = function () {
+	  var messages = [];
+	  for (var id in _messages) {
+	    messages.push(_messages[id]);
+	  }
+	  return messages;
+	};
+	
+	MessageStore.allMyReceivedMessages = function (user_id) {
+	  var messages = [];
+	  for (var i in _messages) {
+	    if (_messages[i].receiver_id === user_id) {
+	      messages.push(_messages[i]);
+	    }
+	  }
+	  return messages;
+	};
+	
+	MessageStore.allMySentMessages = function (user_id) {
+	  var messages = [];
+	  for (var id in _messages) {
+	    if (_messages[id].sender_id === user_id) {
+	      messages.push(_messages[id]);
+	    }
+	  }
+	  return messages;
+	};
+	
+	MessageStore.find = function (id) {
+	  return _messages[id];
+	};
+	
+	MessageStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case Constants.MESSAGES_RECEIVED:
+	      resetMessages(payload.messages);
+	      break;
+	    case Constants.MESSAGE_RECEIVED:
+	      resetMessage(payload.message);
+	      break;
+	    case Constants.MESSAGE_REMOVED:
+	      removeMessage(payload.message);
+	      break;
+	  }
+	  MessageStore.__emitChange();
+	};
+	
+	module.exports = MessageStore;
+
+/***/ },
+/* 256 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
 	    ApiLikeUtil = __webpack_require__(248),
 	    LikeStore = __webpack_require__(250),
 	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(252),
+	    UserItem = __webpack_require__(254),
 	    History = __webpack_require__(1).History,
-	    Matches = __webpack_require__(253),
+	    Matches = __webpack_require__(257),
 	    UserStore = __webpack_require__(215);
 	
 	var Likes = React.createClass({
@@ -32792,33 +33134,7 @@
 	module.exports = Likes;
 
 /***/ },
-/* 252 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    History = __webpack_require__(1).History;
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  mixins: [History],
-	
-	  showDetail: function () {
-	    var state = this.props.user;
-	    this.history.pushState(state, '/user/' + state.id);
-	  },
-	
-	  render: function () {
-	    return React.createElement(
-	      'li',
-	      { onClick: this.showDetail, className: 'user-item' },
-	      this.props.user.username
-	    );
-	  }
-	});
-
-/***/ },
-/* 253 */
+/* 257 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
@@ -32827,7 +33143,7 @@
 	    ApiInterestUtil = __webpack_require__(244),
 	    InterestStore = __webpack_require__(243),
 	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(252),
+	    UserItem = __webpack_require__(254),
 	    History = __webpack_require__(1).History,
 	    UserStore = __webpack_require__(215);
 	
@@ -32896,19 +33212,19 @@
 	module.exports = Matches;
 
 /***/ },
-/* 254 */
+/* 258 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(255),
+	    ApiMessageUtil = __webpack_require__(252),
 	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(252),
+	    UserItem = __webpack_require__(254),
 	    History = __webpack_require__(1).History,
-	    MessageStore = __webpack_require__(257),
-	    NewMessage = __webpack_require__(261),
-	    MessageDetails = __webpack_require__(258),
+	    MessageStore = __webpack_require__(255),
+	    NewMessage = __webpack_require__(251),
+	    MessageDetails = __webpack_require__(259),
 	    UserStore = __webpack_require__(215);
 	
 	var Messages = React.createClass({
@@ -33141,215 +33457,19 @@
 	module.exports = Messages;
 
 /***/ },
-/* 255 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiMessageActions = __webpack_require__(256);
-	
-	var ApiMessageUtil = {
-	  fetchMessages: function () {
-	    $.ajax({
-	      url: "api/messages",
-	      success: function (messages) {
-	        ApiMessageActions.receiveMessages(messages);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  createMessage: function (message, callback) {
-	    $.ajax({
-	      url: "api/messages/",
-	      type: "POST",
-	      data: { message: message },
-	      success: function (message) {
-	        ApiMessageActions.receiveMessage(message);
-	        callback && callback(message);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateMessage: function (read_messaage, callback) {
-	    $.ajax({
-	      url: "api/messages/" + read_messaage.id,
-	      type: "PATCH",
-	      data: { message: read_messaage },
-	      success: function (message) {
-	        ApiMessageActions.receiveMessage(read_messaage);
-	        callback && callback(read_messaage.id);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  deleteMessage: function (message) {
-	    $.ajax({
-	      url: "api/messages/" + message.id,
-	      type: "DELETE",
-	      success: function () {
-	        ApiMessageActions.removeMessage();
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  }
-	
-	};
-	
-	module.exports = ApiMessageUtil;
-
-/***/ },
-/* 256 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(236);
-	var Constants = __webpack_require__(233);
-	
-	var ApiMessageActions = {
-	
-	  receiveMessages: function (messages) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MESSAGES_RECEIVED,
-	      messages: messages
-	    });
-	  },
-	
-	  receiveMessage: function (message) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MESSAGE_RECEIVED,
-	      message: message
-	    });
-	  },
-	
-	  removeMessage: function (message) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MESSAGE_REMOVED,
-	      message: message
-	    });
-	  }
-	};
-	
-	module.exports = ApiMessageActions;
-
-/***/ },
-/* 257 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(216).Store,
-	    Constants = __webpack_require__(233),
-	    UserStore = __webpack_require__(215),
-	    ApiMessageUtil = __webpack_require__(255),
-	    AppDispatcher = __webpack_require__(236);
-	
-	var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
-	var DAYS = ['Sunday', 'Mon', 'Tues', 'Wed', 'Thur', 'Friday', 'Sat'];
-	
-	var MessageStore = new Store(AppDispatcher);
-	var _messages = {};
-	
-	var resetMessages = function (messages) {
-	  _messages = {};
-	  messages.forEach(function (message) {
-	    _messages[message.id] = message;
-	  });
-	};
-	
-	var resetMessage = function (message) {
-	  _messages[message.id] = message;
-	};
-	
-	var removeMessage = function () {
-	  var messages = [];
-	  ApiMessageUtil.fetchMessages();
-	  messages = MessageStore.allMessages();
-	};
-	
-	MessageStore.dateToString = function (date) {
-	  var timestamp = new Date(date);
-	  return " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ", " + DAYS[timestamp.getDay()] + " " + MONTHS[timestamp.getMonth()] + " " + timestamp.getDate();
-	};
-	
-	MessageStore.findMessage = function (user_id, message_id) {
-	  var myMessages = MessageStore.allMyMessages(user_id);
-	  for (var i = 0; i < myMessages.length; i++) {
-	    if (myMessages[i].message_id === message_id) {
-	      return myMessages[i];
-	    }
-	  }
-	  return {};
-	};
-	
-	MessageStore.allMessages = function () {
-	  var messages = [];
-	  for (var id in _messages) {
-	    messages.push(_messages[id]);
-	  }
-	  return messages;
-	};
-	
-	MessageStore.allMyReceivedMessages = function (user_id) {
-	  var messages = [];
-	  for (var i in _messages) {
-	    if (_messages[i].receiver_id === user_id) {
-	      messages.push(_messages[i]);
-	    }
-	  }
-	  return messages;
-	};
-	
-	MessageStore.allMySentMessages = function (user_id) {
-	  var messages = [];
-	  for (var id in _messages) {
-	    if (_messages[id].sender_id === user_id) {
-	      messages.push(_messages[id]);
-	    }
-	  }
-	  return messages;
-	};
-	
-	MessageStore.find = function (id) {
-	  return _messages[id];
-	};
-	
-	MessageStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case Constants.MESSAGES_RECEIVED:
-	      resetMessages(payload.messages);
-	      break;
-	    case Constants.MESSAGE_RECEIVED:
-	      resetMessage(payload.message);
-	      break;
-	    case Constants.MESSAGE_REMOVED:
-	      removeMessage(payload.message);
-	      break;
-	  }
-	  MessageStore.__emitChange();
-	};
-	
-	module.exports = MessageStore;
-
-/***/ },
-/* 258 */
+/* 259 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(259),
+	    SearchBar = __webpack_require__(260),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(255),
+	    ApiMessageUtil = __webpack_require__(252),
 	    UserStore = __webpack_require__(215),
-	    MessageStore = __webpack_require__(257),
+	    MessageStore = __webpack_require__(255),
 	    History = __webpack_require__(1).History,
-	    Messages = __webpack_require__(254);
+	    Messages = __webpack_require__(258);
 	
 	var MessageDetails = React.createClass({
 	  displayName: 'MessageDetails',
@@ -33474,11 +33594,11 @@
 	module.exports = MessageDetails;
 
 /***/ },
-/* 259 */
+/* 260 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
-	    UserItem = __webpack_require__(252),
+	    UserItem = __webpack_require__(254),
 	    UserStore = __webpack_require__(215),
 	    ApiUserUtil = __webpack_require__(234);
 	
@@ -33569,19 +33689,19 @@
 	module.exports = SearchBar;
 
 /***/ },
-/* 260 */
+/* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(259),
+	    SearchBar = __webpack_require__(260),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(255),
+	    ApiMessageUtil = __webpack_require__(252),
 	    UserStore = __webpack_require__(215),
-	    MessageStore = __webpack_require__(257),
+	    MessageStore = __webpack_require__(255),
 	    History = __webpack_require__(1).History,
-	    UserItem = __webpack_require__(252);
+	    UserItem = __webpack_require__(254);
 	
 	function _getStateFromStore() {
 	  var current_user = UserStore.currentUser();
@@ -33638,12 +33758,29 @@
 	    this.history.pushState(current_user, '/user/' + user.id);
 	  },
 	
+	  randomize: function () {
+	    var showUsers = [];
+	    if (this.state.users.length > 0) {
+	      var copyUsers = this.state.users.slice(0);
+	      while (showUsers.length < 6) {
+	        var rand = Math.floor(Math.random() * copyUsers.length);
+	        var user = copyUsers[rand];
+	        copyUsers.splice(rand, 1);
+	        if (this.state.current_user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png") {
+	          showUsers.push(user);
+	        }
+	      }
+	    }
+	    return showUsers;
+	  },
+	
 	  render: function () {
 	    if (this.state.messageCount > 0) {
 	      var badge = document.getElementById("badge");
 	      badge.className = "show", badge.innerHTML = this.state.messageCount;
 	    }
 	
+	    var showUsers = this.randomize();
 	    return React.createElement(
 	      'div',
 	      null,
@@ -33653,8 +33790,8 @@
 	        React.createElement(
 	          'ul',
 	          { className: 'side-scroll-ul' },
-	          this.state.users.map((function (user) {
-	            if (this.state.current_user && user.image_url && this.state.current_user.id != user.id) {
+	          showUsers.map((function (user) {
+	            if (this.state.current_user) {
 	              return React.createElement(
 	                'li',
 	                { key: user.id, onClick: this.showDetail, className: 'side-scroll-li' },
@@ -33675,127 +33812,6 @@
 	});
 	
 	module.exports = User;
-
-/***/ },
-/* 261 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(255),
-	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(252),
-	    History = __webpack_require__(1).History,
-	    MessageStore = __webpack_require__(257),
-	    UserStore = __webpack_require__(215);
-	
-	var NewMessage = React.createClass({
-	  displayName: 'NewMessage',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  blankAttrs: {
-	    receiver: "",
-	    body: ""
-	  },
-	
-	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.currentUserId);
-	
-	    if (this.props.userId) {
-	      var receiver = UserStore.find(parseInt(this.props.userId));
-	    } else {
-	      var receiver = { username: "" };
-	    }
-	
-	    return {
-	      current_user_id: current_user_id,
-	      receiver: receiver,
-	      body: ""
-	    };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentDidMount: function () {
-	    this.messageListener = MessageStore.addListener(this._messageChanged);
-	    this.userListener = UserStore.addListener(this._messageChanged);
-	    ApiMessageUtil.fetchMessages();
-	    ApiUserUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.messageListener.remove();
-	    this.userListener.remove();
-	  },
-	
-	  _messageChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  findUsername: function (string) {
-	    string = string.split(" ");
-	    var users = UserStore.all();
-	    var results = [];
-	    for (var i = 0; i < users.length; i++) {
-	      var name = users[i].username.split(" ");
-	      for (var j = 0; j < name.length; j++) {
-	        for (var k = 0; k < string.length; k++) {
-	          if (name[j].toLowerCase() === string[k].toLowerCase()) {
-	            results.push(users[i]);
-	          }
-	        }
-	      }
-	    }
-	    return results;
-	  },
-	
-	  sendMessage: function (event) {
-	    event.preventDefault();
-	    var string = event.target[0].value;
-	    var receiver = this.findUsername(string);
-	    if (receiver.length === 0) {
-	      alert("No user found with that name");
-	    } else if (receiver.length > 1) {
-	      alert("Multiple users found with that name");
-	    } else {
-	      var receiver_id = receiver[0].id;
-	      var body = event.target[1].value;
-	      var message = { sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false };
-	      var conf = confirm("Confirm send message to " + receiver[0].username + "?");
-	      if (conf) {
-	        ApiMessageUtil.createMessage(message);
-	        this.setState(this.blankAttrs);
-	      }
-	    }
-	  },
-	
-	  render: function () {
-	    if (!this.state.current_user_id) {
-	      return React.createElement('div', null);
-	    }
-	
-	    var username = this.state.receiver.username;
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'form',
-	        { onSubmit: this.sendMessage, className: 'new-message-form' },
-	        React.createElement('input', { placeholder: 'Recipient', type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") }),
-	        React.createElement('br', null),
-	        React.createElement('textarea', { cols: '40', rows: '6', name: 'body', valueLink: this.linkState("body") }),
-	        React.createElement('br', null),
-	        React.createElement('input', { className: 'new-message-button', type: 'submit', value: 'Send Message' })
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = NewMessage;
 
 /***/ }
 /******/ ]);
