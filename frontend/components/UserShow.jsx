@@ -54,7 +54,6 @@ var UserShow = React.createClass({
     if (!this.state.user || !this.state.current_user) {
       return <div>loading</div>
     }
-    console.log(this.state);
     var thisId = parseInt(this.props.routeParams.id);
     var thisUser = UserStore.find(parseInt(thisId));
     var profileProps = [];
@@ -90,7 +89,7 @@ var UserShow = React.createClass({
     }
 
     if (thisUser.id != this.state.current_user.id) {
-      var star = <Star key={thisUser.id} userId={thisUser.id} currentUserId={this.state.current_user.id}/>
+      var star = <Star key={thisUser.id} user={thisUser} currentUserId={this.state.current_user.id}/>
     } else {
       var star = <p></p>
     }

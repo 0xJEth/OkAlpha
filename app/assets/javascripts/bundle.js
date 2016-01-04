@@ -32218,7 +32218,6 @@
 	        'loading'
 	      );
 	    }
-	    console.log(this.state);
 	    var thisId = parseInt(this.props.routeParams.id);
 	    var thisUser = UserStore.find(parseInt(thisId));
 	    var profileProps = [];
@@ -32296,7 +32295,7 @@
 	    }
 	
 	    if (thisUser.id != this.state.current_user.id) {
-	      var star = React.createElement(Star, { key: thisUser.id, userId: thisUser.id, currentUserId: this.state.current_user.id });
+	      var star = React.createElement(Star, { key: thisUser.id, user: thisUser, currentUserId: this.state.current_user.id });
 	    } else {
 	      var star = React.createElement('p', null);
 	    }
@@ -32381,16 +32380,13 @@
 	  mixins: [LinkedStateMixin, History],
 	
 	  getStateFromStore: function () {
-	    console.log(this.props);
 	    var current_user_id = parseInt(this.props.currentUserId);
-	    console.log(current_user_id);
 	    var likes = LikeStore.allMyLikes(current_user_id);
-	    console.log(likes);
 	    if (likes.length === 0) {
 	      var starState = false;
 	    } else {
 	      for (var i in likes) {
-	        if (likes[i].liked_id === parseInt(this.props.userId)) {
+	        if (likes[i].liked_id === parseInt(this.props.user.id)) {
 	          var starState = true;
 	          break;
 	        } else {
@@ -32403,7 +32399,7 @@
 	      var fansState = false;
 	    } else {
 	      for (var i in fans) {
-	        if (fans[i].user_id === parseInt(this.props.userId)) {
+	        if (fans[i].user_id === parseInt(this.props.user.id)) {
 	          var fanState = true;
 	          break;
 	        } else {
@@ -32411,7 +32407,7 @@
 	        }
 	      }
 	    }
-	    return { liked_id: this.props.userId, user_id: current_user_id, star: starState, fan: fanState };
+	    return { liked_id: this.props.user.id, user_id: current_user_id, star: starState, fan: fanState };
 	  },
 	
 	  getInitialState: function () {
@@ -32446,7 +32442,6 @@
 	  },
 	
 	  render: function () {
-	    console.log(this.state);
 	    if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
 	      return React.createElement('div', null);
 	    }
@@ -32479,7 +32474,6 @@
 	      React.createElement(
 	        'div',
 	        { className: 'fan-boolean' },
-	        React.createElement('br', null),
 	        React.createElement('br', null),
 	        fanView
 	      )
@@ -32557,7 +32551,6 @@
 	  },
 	
 	  receiveLike: function (like) {
-	    console.log(like);
 	    AppDispatcher.dispatch({
 	      actionType: Constants.LIKE_RECEIVED,
 	      like: like
@@ -32648,13 +32641,11 @@
 	};
 	
 	LikeStore.__onDispatch = function (payload) {
-	  console.log(payload);
 	  switch (payload.actionType) {
 	    case Constants.LIKES_RECEIVED:
 	      resetLikes(payload.likes);
 	      break;
 	    case Constants.LIKE_RECEIVED:
-	      console.log(payload.like);
 	      resetLike(payload.like);
 	      break;
 	    case Constants.LIKE_REMOVED:

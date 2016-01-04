@@ -68,13 +68,11 @@ LikeStore.find = function (id) {
 };
 
 LikeStore.__onDispatch = function (payload) {
-  console.log(payload);
   switch(payload.actionType) {
     case Constants.LIKES_RECEIVED:
       resetLikes(payload.likes);
       break;
     case Constants.LIKE_RECEIVED:
-      console.log(payload.like);
       resetLike(payload.like);
       break;
     case Constants.LIKE_REMOVED:
