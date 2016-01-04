@@ -14,7 +14,7 @@ var App = React.createClass({
 
   render: function(){
     return (
-      <div>
+      <div className="router">
         <header></header>
         {this.props.children}
       </div>

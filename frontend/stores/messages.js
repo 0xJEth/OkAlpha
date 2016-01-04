@@ -57,9 +57,9 @@ MessageStore.allMessages = function () {
 
 MessageStore.allMyReceivedMessages = function (user_id) {
   var messages = [];
-  for (var id in _messages) {
-    if (_messages[id].receiver_id === user_id) {
-      messages.push(_messages[id]) ;
+  for (var i in _messages) {
+    if (_messages[i].receiver_id === user_id) {
+      messages.push(_messages[i]) ;
     }
   }
   return messages;

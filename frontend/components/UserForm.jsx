@@ -7,9 +7,25 @@ var React = require('react'),
     Interests = require('./Interests'),
     ApiUserUtil = require('../util/api_user_util');
 
+var LinkedStateRadioGroupMixin = {
+  radioGroup: function(key) {
+    return {
+      valueLink: function(value) {
+        return {
+          value : this.state[key] == value,
+          requestChange: function() {
+            var s = {};
+            s[key] = value;
+            this.setState(s)
+          }.bind(this)
+        }
+      }.bind(this)
+    }
+  }
+}
 
 module.exports = React.createClass({
-  mixins: [LinkedStateMixin, History],
+  mixins: [LinkedStateMixin, History, LinkedStateRadioGroupMixin],
 
   blankAttrs: {
     email: "",
@@ -19,7 +35,7 @@ module.exports = React.createClass({
   },
 
   getStateFromStore: function () {
-    return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
+    return {user: UserStore.find(parseInt(this.props.routeParams.id))};
   },
 
   getInitialState: function () {
@@ -62,11 +78,10 @@ module.exports = React.createClass({
       return <div>loading</div>
     };
 
-    var user = UserStore.find(parseInt(this.props.routeParams.id));
+    var gender = this.radioGroup("gender");
+    var preferred_gender = this.radioGroup("preferred_gender");
 
-    if (user.id != UserStore.currentUser().id) {
-      this.history.pushState(null, "/user/" + user.id, {});
-    };
+    var user = UserStore.find(parseInt(this.props.routeParams.id));
 
     var profileForm = (
       <div className="attr-form">
@@ -76,11 +91,27 @@ module.exports = React.createClass({
           <input type="text" defaultValue={user.email} valueLink={this.linkState("email")}/>
           <br/>
           <label className="profile-label">Your gender :</label>
-          <input type="text" defaultValue={user.gender} valueLink={this.linkState("gender")}/>
-          <br/>
+            <br/>
+            <input type="radio" checkedLink={gender.valueLink("male")}/>
+            <label>Male</label>
+            <br/>
+            <input type="radio" checkedLink={gender.valueLink("female")}/>
+            <label>Female</label>
+            <br/>
+            <input type="radio" checkedLink={gender.valueLink("other")}/>
+            <label>Other</label>
+            <br/><br/>
           <label className="profile-label">Gender interested in :</label>
-          <input type="text" defaultValue={user.preferred_gender} valueLink={this.linkState("preferred_gender")}/>
-          <br/><br/>
+            <br/>
+            <input type="radio" checkedLink={preferred_gender.valueLink("male")}/>
+            <label>Male</label>
+            <br/>
+            <input type="radio" checkedLink={preferred_gender.valueLink("female")}/>
+            <label>Female</label>
+            <br/>
+            <input type="radio" checkedLink={preferred_gender.valueLink("other")}/>
+            <label>Other</label>
+            <br/><br/>
           <label className="profile-label">About me :</label>
           <textarea cols="40" rows="5" defaultValue={user.bio} valueLink={this.linkState("bio")}></textarea>
           <br/>
@@ -96,7 +127,7 @@ module.exports = React.createClass({
           <br/><br/>
           <Interests user={user}/>
         </div>
-        <footer id="footer">
+        <footer>
           <a className="nav-button" href="#">Back</a>
         </footer>
       </div>

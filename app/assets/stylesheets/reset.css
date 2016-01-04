@@ -11,6 +11,10 @@
 		background_image: none;
 	}
 
+	.router {
+		height: 95%;
+	}
+
 	article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
 		display: inline;
 	}
@@ -186,9 +190,10 @@
 
 	input[type="checkbox"],
 	input[type="radio"] {
-		display: block;
-		float: left;
+		display: inline;
 		width: 1em;
+		height: 1em;
+		margin-left: 150px;
 	}
 
 		input[type="checkbox"] + label,
@@ -198,48 +203,10 @@
 			display: inline-block;
 			font-size: 1em;
 			font-weight: 300;
-			padding-left: 2.4em;
+			padding-left: 0.25em;
 			padding-right: 0.75em;
 			position: relative;
 		}
-
-			input[type="checkbox"] + label:before,
-			input[type="radio"] + label:before {
-				-moz-osx-font-smoothing: grayscale;
-				-webkit-font-smoothing: antialiased;
-				font-family: FontAwesome;
-				font-style: normal;
-				font-weight: normal;
-				text-transform: none !important;
-			}
-
-			input[type="checkbox"] + label:before,
-			input[type="radio"] + label:before {
-				border-radius: 10px;
-				border: solid 1px;
-				content: '';
-				display: inline-block;
-				height: 1.65em;
-				left: 0;
-				line-height: 1.58125em;
-				position: absolute;
-				text-align: center;
-				top: 0;
-				width: 1.65em;
-			}
-
-		input[type="checkbox"]:checked + label:before,
-		input[type="radio"]:checked + label:before {
-			content: '\f00c';
-		}
-
-	input[type="checkbox"] + label:before {
-		border-radius: 10px;
-	}
-
-	input[type="radio"] + label:before {
-		border-radius: 100%;
-	}
 
 	label {
 		color: black;
@@ -249,9 +216,9 @@
 		color: #e3e3e3;
 	}
 
-	input[type="checkbox"] + label,
-	input[type="radio"] + label {
-		color: white;
+	input[type="checkbox"] label,
+	input[type="radio"] label {
+		color: black;
 	}
 
 /* List */

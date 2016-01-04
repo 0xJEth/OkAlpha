@@ -3,39 +3,53 @@ var React = require('react'),
     UserForm = require('./UserForm'),
     SearchBar = require('./SearchBar'),
     ApiUserUtil = require('../util/api_user_util'),
+    ApiMessageUtil = require('../util/api_message_util'),
     UserStore = require('../stores/users'),
+    MessageStore = require('../stores/messages'),
     History = require('react-router').History,
     UserItem = require('./UserItem');
 
-function _getAllUsers() {
-  return UserStore.all();
-}
-function _getCurrentUser() {
-  return UserStore.currentUser();
+function _getStateFromStore() {
+  var current_user = UserStore.currentUser();
+  var myMessages = MessageStore.allMyReceivedMessages(current_user.id);
+
+  return ({
+    current_user: current_user,
+    users: UserStore.all(),
+    messageCount: 0
+  })
 }
 
 var User = React.createClass({
   mixins: [History],
 
   getInitialState: function () {
-    return {
-      users: _getAllUsers(),
-      current_user: _getCurrentUser()
-    };
+    return _getStateFromStore();
   },
 
   _usersChanged: function() {
-    this.setState({users: _getAllUsers(), current_user: _getCurrentUser()});
+    this.setState(_getStateFromStore());
+    var myMessages = MessageStore.allMyReceivedMessages(this.state.current_user.id);
+    var unread_count = 0;
+    myMessages.forEach(function(message){
+      if (!message.read) {
+        unread_count += 1;
+      }
+    })
+    this.setState({messageCount: unread_count});
   },
 
   componentDidMount: function() {
     this.usersListener = UserStore.addListener(this._usersChanged);
+    this.messageListener = MessageStore.addListener(this._messageChanged);
+    ApiMessageUtil.fetchMessages();
     ApiUserUtil.fetchUsers();
     ApiUserUtil.fetchCurrentUser();
   },
 
   componentWillUnmount: function() {
     this.usersListener.remove();
+    this.messageListener.remove();
   },
 
   searchResults:function(string) {
@@ -44,11 +58,17 @@ var User = React.createClass({
 
   showDetail: function (event) {
     var current_user = this.state.current_user;
-    var user = UserStore.find(event.target.id)
+    var user = UserStore.find(parseInt(event.target.id));
     this.history.pushState(current_user, '/user/' + user.id)
   },
 
   render: function () {
+    if (this.state.messageCount > 0) {
+      var badge = document.getElementById("badge");
+      badge.className = "show",
+      badge.innerHTML = this.state.messageCount;
+    }
+
     return (
       <div>
         <div className="container">
@@ -72,7 +92,3 @@ var User = React.createClass({
 });
 
 module.exports = User;
-
-function capitalize(string) {
-  return string.charAt(0).toUpperCase() + string.slice(1);
-}

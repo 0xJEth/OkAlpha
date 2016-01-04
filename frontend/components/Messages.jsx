@@ -6,27 +6,29 @@ var React = require('react'),
     UserItem = require('./UserItem'),
     History = require('react-router').History,
     MessageStore = require('../stores/messages'),
+    NewMessage = require('./NewMessage'),
     MessageDetails = require('./MessageDetails'),
     UserStore = require('../stores/users');
 
 var Messages = React.createClass({
   mixins: [LinkedStateMixin, History],
 
-  blankAttrs: {
-    receiver: "",
-    body: "",
-  },
-
   getStateFromStore: function () {
     var current_user_id = parseInt(this.props.routeParams.id);
+    var messages = MessageStore.allMyReceivedMessages(current_user_id);
+    var count = 0;
+    messages.forEach(function(message){
+      if (!message.read) {
+        count += 1;
+      }
+    })
     return ({
       current_user_id: current_user_id,
       mySentMessages: MessageStore.allMySentMessages(current_user_id),
-      myReceivedMessages: MessageStore.allMyReceivedMessages(current_user_id),
-      receiver: "",
-      body: "",
+      myReceivedMessages: messages,
+      unreadMessageCount: count,
       date: "",
-      messageDetails: null
+      messageDetails: ""
     })
   },
 
@@ -50,46 +52,15 @@ var Messages = React.createClass({
     this.setState(this.getStateFromStore());
   },
 
-  findUsername: function(string) {
-    string = string.split(" ");
-    var users = UserStore.all();
-    var results = [];
-    for (var i = 0; i < users.length; i++) {
-      var name = users[i].username.split(" ");
-      for (var j = 0; j < name.length; j++) {
-        for (var k = 0; k < string.length; k++) {
-          if (name[j].toLowerCase() === string[k].toLowerCase()) {
-            results.push(users[i]);
-          }
-        }
-      }
-    }
-    return results
-  },
-
-  sendMessage: function (event) {
-    event.preventDefault();
-    var string = event.target[0].value;
-    var receiver = this.findUsername(string);
-    if (receiver.length === 0) {
-      alert("No user found with that name");
-    } else if (receiver.length > 1) {
-      alert("Multiple users found with that name");
-    } else {
-      var receiver_id = receiver[0].id;
-      var body = event.target[1].value;
-      var message = {sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false};
-      var conf = confirm("Confirm send message to " + receiver[0].username + "?");
-      if (conf) {
-        ApiMessageUtil.createMessage(message)
-        this.setState(this.blankAttrs);
-      }
-    }
-  },
-
   showMessage: function(event) {
     event.preventDefault();
-    this.setState({messageDetails: event.currentTarget.id})
+    this.setState({messageDetails: parseInt(event.currentTarget.id)})
+  },
+
+  deleteMessage: function(event){
+    event.preventDefault();
+    var message = MessageStore.find(parseInt(event.target.id));
+    ApiMessageUtil.deleteMessage(message);
   },
 
   render: function () {
@@ -98,8 +69,9 @@ var Messages = React.createClass({
     } else {
 
       var messageReceivedContainer = [];
+      messageReceivedContainer.push(<li className="message-label">User<span className="date">Date</span></li>);
       this.state.myReceivedMessages.forEach(function(message) {
-        var user = UserStore.find(message.sender_id);
+        var user = UserStore.find(parseInt(message.sender_id));
         var date = MessageStore.dateToString(message.created_at)
         if (user) {
           if (message.read) {
@@ -108,62 +80,67 @@ var Messages = React.createClass({
             var read = "unread";
           }
           messageReceivedContainer.push(
-            <li onClick={this.showMessage} id={message.id} key={message.id} className={read}>
-              {user.username}
-              <span>{date}</span>
+            <li className="message-list-item" key={message.id}>
+              <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
+              <div onClick={this.showMessage} id={message.id} className={read}>
+                {user.username}
+                <span className="date">{date}</span>
+              </div>
             </li>
           )
         }
       }.bind(this))
+      if (messageReceivedContainer.length === 1) {
+        messageReceivedContainer[0] = <li className={"no messages"}>No messages</li>;
+      }
 
       var messageSentContainer = [];
+      messageSentContainer.push(<li className="message-label">User<span className="date">Date</span></li>);
       this.state.mySentMessages.forEach(function(message) {
-        var user = UserStore.find(message.receiver_id);
+        var user = UserStore.find(parseInt(message.receiver_id));
         var date = MessageStore.dateToString(message.created_at)
         if (user) {
-          if (message.read) {
-            var read = "read";
-          } else {
-            var read = "unread";
-          }
           messageSentContainer.push(
-            <li onClick={this.showMessage} id={message.id} key={message.id} className={read}>
-              {user.username}
-              <span>{date}</span>
+            <li className="message-list-item" key={message.id} >
+              <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
+              <div onClick={this.showMessage} id={message.id} className="read">
+                {user.username}
+                <span className="date">{date}</span>
+              </div>
             </li>
           )
         }
       }.bind(this))
+      if (messageSentContainer.length === 1) {
+        messageSentContainer[0] = <li className={"no messages"}>No messages</li>;
+      }
+      console.log(messageSentContainer[0]);
     }
 
     return (
       <div>
-        <div>
-          <ul className="message-div">
-            <h2 className="h3">Inbox:</h2>
-            {messageReceivedContainer}
-          </ul>
-          <br/><br/>
-          <ul className="message-div">
-            <h2 className="h3">Sent Messages:</h2>
-            {messageSentContainer}
-          </ul>
-          <br/><br/><br/><br/>
-          <form onSubmit={this.sendMessage}>
-            <h2>New Message:</h2>
-            <input type="text" name="receiver" valueLink={this.linkState("receiver")}/>
-            <br/>
-            <textarea cols="40" rows="6" name="body" valueLink={this.linkState("body")}></textarea>
-            <br/>
-            <input type="submit" value="Send Message"/>
-          </form>
-        </div>
-        <br/><br/><br/>
-        <div>
-          <div>
+        <div className="message-container">
+          <div className="message-panel">
+            <ul className="message-ul">
+              <h2 className="h2">Inbox:</h2>
+              {messageReceivedContainer}
+            </ul>
+            <br/><br/>
+            <ul className="message-ul">
+              <h2 className="h2">Sent Messages:</h2>
+              {messageSentContainer}
+            </ul>
+            <br/><br/><br/><br/>
+            <h3 className="h3">Send New Message: </h3>
+            <NewMessage currentUserId={this.state.current_user_id}/>
+          </div>
+          <div className="message-details">
             <MessageDetails messageId={this.state.messageDetails} currentUserId={this.state.current_user_id}/>
           </div>
         </div>
+        <footer>
+          <a className="nav-button" href="#">Back</a>
+        </footer>
       </div>
     );
   }

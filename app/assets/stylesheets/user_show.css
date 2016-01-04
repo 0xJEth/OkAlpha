@@ -1,12 +1,12 @@
-.user-container {
-  width: 100%;
+.background {
   background-color: #4242f0;
+  height: 150px;
 }
 
 .user-info {
   padding: 10px 10px 10px 20px;
-  height: 150px;
-  position: relative;
+  position: absolute;
+  top: 50px;
   width: 800px;
   margin: 0 0 auto auto;
 }
@@ -27,8 +27,18 @@
 
 #star-checkbox {
   margin-top: -5px;
+  margin-left: 0;
   display: inline;
   width: 20px;
   height: 20px;
   padding: 10px;
 }
+
+.user-body {
+  width: 100%;
+  height: 90%;
+}
+/*.user-body form {
+  position: absolute;
+  bottom: 100px;
+}*/

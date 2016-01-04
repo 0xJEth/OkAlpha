@@ -45,7 +45,7 @@ var Matches = React.createClass({
     } else {
       var matchContainer = [];
       this.state.myMatches.forEach(function(interest) {
-        var user = UserStore.find(interest.user_id);
+        var user = UserStore.find(parseInt(interest.user_id));
         matchContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
         matchContainer.push(<p className="match-text">{"likes " + interest.interest}</p>)
       })

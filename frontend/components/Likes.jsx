@@ -44,35 +44,36 @@ var Likes = React.createClass({
   render: function () {
     if (!this.state.myLikes || !this.state.myFans) {
       return <div></div>
+    }
+
+    var likesContainer = [];
+    this.state.myLikes.forEach(function(like) {
+      var user = UserStore.find(parseInt(like.liked_id));
+      likesContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
+    })
+
+    var fansContainer = [];
+    this.state.myFans.forEach(function(fan) {
+      var user = UserStore.find(parseInt(fan.user_id));
+      fansContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
+    })
+
+    var mutualContainer = [];
+    if (!this.state.myFans) {
+      mutualContainer.push(<div></div>)
     } else {
-
-      var likesContainer = [];
       this.state.myLikes.forEach(function(like) {
-        var user = UserStore.find(like.liked_id);
-        likesContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
-      })
+        this.state.myFans.forEach(function(fan) {
+          if (like.liked_id === fan.user_id) {
+            var user = UserStore.find(parseInt(like.liked_id));
+            mutualContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
+          }
+        })
+      }.bind(this))
+    }
 
-      var fansContainer = [];
-      this.state.myFans.forEach(function(fan) {
-        var user = UserStore.find(fan.user_id);
-        fansContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
-      })
-
-      var mutualContainer = [];
-      if (!this.state.myFans) {
-        mutualContainer.push(<div></div>)
-      } else {
-        this.state.myLikes.forEach(function(like) {
-          this.state.myFans.forEach(function(fan) {
-            if (like.liked_id === fan.user_id) {
-              var user = UserStore.find(like.liked_id);
-              mutualContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
-            }
-          })
-        }.bind(this))
-      }
-
-      return (
+    return (
+      <div>
         <div className="likes-container">
           <ul className="likes-div">
             <h3 className="h3" >Users I like:</h3>
@@ -88,8 +89,11 @@ var Likes = React.createClass({
           </ul>
           <Matches id={this.state.current_user_id}/>
         </div>
-      );
-    }
+        <footer>
+          <a className="nav-button" href="#">Back</a>
+        </footer>
+      </div>
+    );
   }
 });
 

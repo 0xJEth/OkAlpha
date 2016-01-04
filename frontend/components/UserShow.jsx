@@ -3,6 +3,7 @@ var React = require('react'),
     ApiUserUtil = require('../util/api_user_util'),
     ApiInterestUtil = require('../util/api_interest_util'),
     Star = require('./Star'),
+    NewMessage = require('./NewMessage'),
     InterestStore = require('../stores/interests'),
     UserStore = require('../stores/users');
 
@@ -87,7 +88,9 @@ var UserShow = React.createClass({
     }
 
     return (
-      <div className="user-container">
+      <div className="user-body">
+        <div className="background">
+        </div>
         <div className="user-info">
           {thumbnail}
           <br/>
@@ -99,10 +102,16 @@ var UserShow = React.createClass({
           {interestsContainer}
           <br/><br/>
           {star}
+          <div>
+            <br/><br/><br/>
+            <h3>Send {thisUser.username.split(" ")[0]} a Message</h3>
+            <NewMessage currentUserId={this.state.current_user.id} userId={this.state.user.id}/>
+          </div>
+          <br/><br/>
+          <footer>
+            <a className="nav-button" href="#">Back</a>
+          </footer>
         </div>
-        <footer id="footer">
-          <a className="nav-button" href="#">Back</a>
-        </footer>
       </div>
     );
   }

@@ -5,3 +5,89 @@
 .read {
   font-weight: normal;
 }
+
+.message-container {
+  margin-top: 20px;
+  margin-left: 30px;
+  display: block;
+  width: 1500px;
+  height: 100%;
+  position: relative;
+}
+
+.message-ul {
+  margin: 5px;
+  display: inline-block;
+  width: 350px;
+}
+
+.message-list-item {
+  padding: 5px;
+  cursor: pointer;
+}
+
+.read span, .unread span {
+  cursor: pointer;
+}
+
+.message-list-item:hover {
+  background-color: #b3d1ff;
+}
+
+.remove-interest, .read, .unread {
+  display: inline;
+  margin-right: 5px;
+}
+
+.date {
+  float: right;
+  margin-left: 75px;
+}
+
+.message-details, .message-panel {
+  width: 30%;
+  display: inline-block;
+  vertical-align: top;
+}
+
+.time {
+  padding-top: 5px;
+}
+
+.message-body {
+  font-size: 12pt;
+  margin-top: 45px;
+}
+
+.message-image, .title-container {
+  display: inline-block;
+  margin-right: 10px;
+  vertical-align: top;
+}
+
+.new-message-button {
+  font-family: "Raleway", Arial, Helvetica, sans-serif;
+  padding: 10px;
+  margin: 5px 5px;
+  height: 30px;
+  border-radius: 5px;
+}
+
+.new-message-button:hover {
+  color: #999999;
+}
+
+.new-message-button:active {
+  color: #999999;
+}
+
+.new-message-form input[type="text"] {
+  border: solid 1px;
+  padding: 5px;
+  margin: 5px;
+  border-color: #e3e3e3;
+}
+
+.new-message-form textarea {
+  vertical-align: top;
+}

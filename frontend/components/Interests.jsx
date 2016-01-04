@@ -52,7 +52,7 @@ var Interests = React.createClass({
 
   removeInterest: function(event){
     event.preventDefault();
-    var interest = InterestStore.find(event.target.id);
+    var interest = InterestStore.find(parseInt(event.target.id));
     ApiInterestUtil.deleteInterest(interest);
   },
 

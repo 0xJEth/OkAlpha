@@ -1,6 +1,8 @@
 footer .nav-button {
   padding: 10px;
   font-size: 12pt;
+  margin: 10px;
+  margin-left: 20px;
   background-color: #4242f0;
   border-radius: 5px;
   color: white;

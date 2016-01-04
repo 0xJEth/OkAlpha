@@ -7,7 +7,7 @@
 }
 
 .likes-div {
-  // margin-top: 50px;
+  margin-top: 50px;
   margin:50px 10px 10px 10px;
   display: inline-block;
   vertical-align: top;
@@ -29,6 +29,7 @@ div.likes {
 
 .match-text  {
   padding: 0 0 15px 10px;
+  margin-left: 5px;
   height: 10px;
   display: inline-block;
 }

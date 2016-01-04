@@ -78,3 +78,13 @@ header, nav {
 .header-list-welcome {
   padding: 7px 0;
 }
+
+.show {
+  border-radius: 50%;
+  background-color: red;
+  padding: 5px 10px;
+}
+
+.hidden {
+  background-color: #4242f0;
+}

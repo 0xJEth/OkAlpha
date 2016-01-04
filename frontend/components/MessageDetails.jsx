@@ -13,47 +13,39 @@ var MessageDetails = React.createClass({
   mixins: [History],
 
   getStateFromStore: function() {
-    return MessageStore.find(this.props.messageId);
+    return MessageStore.find(parseInt(this.props.messageId));
   },
 
   getInitialState: function () {
     var current_user_id = this.props.currentUserId;
-
-    if (!this.props.messageId) {
-      return ({
-        current_user_id: current_user_id,
-        message: "",
-        body: "",
-        sender: "",
-        receiver: ""
-      })
-    } else {
-      var message = this.getStateFromStore()
-      return ({
-        message: message,
-        body: message.body,
-        sender: UserStore.find(message.sender_id),
-        receiver: UserStore.find(message.receiver_id)
-      })
-    }
+    return ({
+      current_user_id: current_user_id,
+      body: "",
+      sender: "",
+      receiver: "",
+      created_at: ""
+    })
   },
 
   componentWillReceiveProps: function (newProps) {
     if (newProps.messageId) {
-      var message = MessageStore.find(newProps.messageId)
+      var message = MessageStore.find(parseInt(newProps.messageId));
       this.setState({
-        message: message,
         body: message.body,
-        sender: UserStore.find(message.sender_id),
-        receiver: UserStore.find(message.receiver_id)
+        sender: UserStore.find(parseInt(message.sender_id)),
+        receiver: UserStore.find(parseInt(message.receiver_id)),
+        created_at: message.created_at
       })
-      ApiMessageUtil.updateMessage({
-        body: message.body,
-        sender_id: message.sender_id,
-        receiver_id: message.receiver_id,
-        read: true,
-        id: message.id
-      })
+      if (message.receiver_id === this.state.current_user_id && !message.read) {
+        ApiMessageUtil.updateMessage({
+          body: message.body,
+          sender_id: message.sender_id,
+          receiver_id: message.receiver_id,
+          read: true,
+          id: message.id,
+          created_at: message.created_at
+        })
+      }
     }
   },
 
@@ -73,23 +65,36 @@ var MessageDetails = React.createClass({
     this.userListener.remove();
   },
 
+  showDetail: function (event) {
+    var current_user = UserStore.find(parseInt(this.state.current_user_id));
+    var user = UserStore.find(parseInt(event.target.id));
+    this.history.pushState(current_user, '/user/' + user.id)
+  },
+
   render: function () {
-    if (!this.state.message) {
+    if (!this.state.body) {
       return (<div></div>)
     } else {
 
       if (this.state.sender.id === this.state.current_user_id) {
-        var title = <h3>Message to {this.state.receiver.username}</h3>;
+        var user = this.state.receiver;
+        var title = <h2>Message to {user.username}:</h2>;
       } else {
-        var title = <h3>Message from {this.state.sender.username}</h3>;
+        var user = this.state.sender;
+        var title = <h2>Message from {user.username}:</h2>;
       }
-      var time = MessageStore.dateToString(this.state.message.created_at);
+      var time = MessageStore.dateToString(this.state.created_at);
       return (
         <div>
-          {title}
-          <div>Sent at {time}</div>
+          <li onClick={this.showDetail} className="message-image">
+            <img id={user.id} className="message-img" src={user.image_url}/>
+          </li>
+          <div className="title-container">
+            {title}
+            <div className="time">Sent at {time}</div>
+            <div className="message-body">{this.state.body}</div>
+          </div>
           <br/><br/>
-          <div>{this.state.body}</div>
         </div>
       );
     }
