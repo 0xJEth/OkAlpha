@@ -16,7 +16,7 @@ ul.side-scroll-ul {
   white-space: nowrap;
   height: 200px;
   width: 100%;
-  overflow-x: auto;
+  overflow-x: hidden;
   overflow-y: hidden;
   display: block;
   padding-left: 40px;
