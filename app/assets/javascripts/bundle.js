@@ -33055,6 +33055,7 @@
 	    if (!current_user_id) {
 	      var current_user_id = parseInt(this.props.routeParams.id);
 	    }
+	    console.log(current_user_id);
 	    return {
 	      current_user_id: current_user_id,
 	      myLikes: LikeStore.allMyLikes(current_user_id),
@@ -33090,13 +33091,17 @@
 	    var likesContainer = [];
 	    this.state.myLikes.forEach(function (like) {
 	      var user = UserStore.find(parseInt(like.liked_id));
-	      likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      if (user) {
+	        likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      }
 	    });
 	
 	    var fansContainer = [];
 	    this.state.myFans.forEach(function (fan) {
 	      var user = UserStore.find(parseInt(fan.user_id));
-	      fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      if (user) {
+	        fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      }
 	    });
 	
 	    var mutualContainer = [];
