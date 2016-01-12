@@ -33051,7 +33051,10 @@
 	  mixins: [LinkedStateMixin, History],
 	
 	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.routeParams.id);
+	    var current_user_id = parseInt(this.props.id);
+	    if (!current_user_id) {
+	      var current_user_id = parseInt(this.props.routeParams.id);
+	    }
 	    return {
 	      current_user_id: current_user_id,
 	      myLikes: LikeStore.allMyLikes(current_user_id),
@@ -33184,6 +33187,9 @@
 	
 	  getStateFromStore: function () {
 	    var current_user_id = parseInt(this.props.id);
+	    if (!current_user_id) {
+	      var current_user_id = parseInt(this.props.routeParams.id);
+	    }
 	    return {
 	      current_user_id: current_user_id,
 	      myMatches: InterestStore.allMyMatches(current_user_id)
@@ -33217,10 +33223,12 @@
 	      var matchContainer = {};
 	      this.state.myMatches.forEach(function (interest) {
 	        var user = UserStore.find(parseInt(interest.user_id));
-	        if (matchContainer[user.id]) {
-	          matchContainer[user.id].push(interest);
-	        } else {
-	          matchContainer[user.id] = [interest];
+	        if (user) {
+	          if (matchContainer[user.id]) {
+	            matchContainer[user.id].push(interest);
+	          } else {
+	            matchContainer[user.id] = [interest];
+	          }
 	        }
 	      });
 	      var matchList = [];
@@ -33344,7 +33352,7 @@
 	          }
 	          messageReceivedContainer.unshift(React.createElement(
 	            'div',
-	            null,
+	            { key: message.id },
 	            React.createElement(
 	              'button',
 	              { title: 'delete', className: 'remove-interest', id: message.id, onClick: this.deleteMessage },
@@ -33352,7 +33360,7 @@
 	            ),
 	            React.createElement(
 	              'li',
-	              { className: 'message-list-item', key: message.id },
+	              { className: 'message-list-item' },
 	              React.createElement(
 	                'div',
 	                { onClick: this.showMessage, id: message.id, className: read },
@@ -33369,7 +33377,7 @@
 	      }).bind(this));
 	      messageReceivedContainer.unshift(React.createElement(
 	        'li',
-	        { className: 'message-label' },
+	        { key: 1001, className: 'message-label' },
 	        'User',
 	        React.createElement(
 	          'span',
@@ -33392,7 +33400,7 @@
 	        if (user) {
 	          messageSentContainer.unshift(React.createElement(
 	            'div',
-	            null,
+	            { key: message.id },
 	            React.createElement(
 	              'button',
 	              { title: 'delete', className: 'remove-interest', id: message.id, onClick: this.deleteMessage },
@@ -33400,7 +33408,7 @@
 	            ),
 	            React.createElement(
 	              'li',
-	              { className: 'message-list-item', key: message.id },
+	              { className: 'message-list-item' },
 	              React.createElement(
 	                'div',
 	                { onClick: this.showMessage, id: message.id, className: 'read' },
@@ -33417,7 +33425,7 @@
 	      }).bind(this));
 	      messageSentContainer.unshift(React.createElement(
 	        'li',
-	        { className: 'message-label' },
+	        { key: 1000, className: 'message-label' },
 	        'User',
 	        React.createElement(
 	          'span',
@@ -33474,12 +33482,12 @@
 	            { className: 'h3' },
 	            'Send New Message: '
 	          ),
-	          React.createElement(NewMessage, { currentUserId: this.state.current_user_id })
+	          React.createElement(NewMessage, { key: this.state.current_user_id, currentUserId: this.state.current_user_id })
 	        ),
 	        React.createElement(
 	          'div',
 	          { className: 'message-details' },
-	          React.createElement(MessageDetails, { messageId: this.state.messageDetails, currentUserId: this.state.current_user_id })
+	          React.createElement(MessageDetails, { key: this.state.messageDetails, messageId: this.state.messageDetails, currentUserId: this.state.current_user_id })
 	        )
 	      ),
 	      React.createElement(

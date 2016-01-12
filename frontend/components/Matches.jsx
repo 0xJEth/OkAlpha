@@ -13,6 +13,9 @@ var Matches = React.createClass({
 
   getStateFromStore: function () {
     var current_user_id = parseInt(this.props.id);
+    if (!current_user_id) {
+      var current_user_id = parseInt(this.props.routeParams.id)
+    }
     return ({
       current_user_id: current_user_id,
       myMatches: InterestStore.allMyMatches(current_user_id)
@@ -46,10 +49,12 @@ var Matches = React.createClass({
       var matchContainer = {};
       this.state.myMatches.forEach(function(interest) {
         var user = UserStore.find(parseInt(interest.user_id));
-        if (matchContainer[user.id]) {
-          matchContainer[user.id].push(interest)
-        } else {
-          matchContainer[user.id] = [interest]
+        if (user) {
+          if (matchContainer[user.id]) {
+            matchContainer[user.id].push(interest)
+          } else {
+            matchContainer[user.id] = [interest]
+          }
         }
       })
       var matchList = [];

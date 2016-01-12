@@ -79,19 +79,19 @@ var Messages = React.createClass({
             var read = "unread";
           }
           messageReceivedContainer.unshift(
-            <div>
-            <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
-            <li className="message-list-item" key={message.id}>
-              <div onClick={this.showMessage} id={message.id} className={read}>
-                {user.username}
-                <span className="date">{date}</span>
-              </div>
-            </li>
+            <div key={message.id}>
+              <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
+              <li className="message-list-item">
+                <div onClick={this.showMessage} id={message.id} className={read}>
+                  {user.username}
+                  <span className="date">{date}</span>
+                </div>
+              </li>
             </div>
           )
         }
       }.bind(this))
-      messageReceivedContainer.unshift(<li className="message-label">User<span className="date-label">Date</span></li>);
+      messageReceivedContainer.unshift(<li key={1001} className="message-label">User<span className="date-label">Date</span></li>);
       if (messageReceivedContainer.length === 1) {
         messageReceivedContainer[0] = <li className={"no messages"}>No messages</li>;
       }
@@ -102,19 +102,19 @@ var Messages = React.createClass({
         var date = MessageStore.dateToString(message.created_at)
         if (user) {
           messageSentContainer.unshift(
-            <div>
-            <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
-            <li className="message-list-item" key={message.id} >
-              <div onClick={this.showMessage} id={message.id} className="read">
-                {user.username}
-                <span className="date">{date}</span>
-              </div>
-            </li>
+            <div key={message.id}>
+              <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
+              <li className="message-list-item">
+                <div onClick={this.showMessage} id={message.id} className="read">
+                  {user.username}
+                  <span className="date">{date}</span>
+                </div>
+              </li>
             </div>
           )
         }
       }.bind(this))
-      messageSentContainer.unshift(<li className="message-label">User<span className="date-label">Date</span></li>);
+      messageSentContainer.unshift(<li key={1000} className="message-label">User<span className="date-label">Date</span></li>);
       if (messageSentContainer.length === 1) {
         messageSentContainer[0] = <li className={"no messages"}>No messages</li>;
       }
@@ -135,10 +135,10 @@ var Messages = React.createClass({
             </ul>
             <br/><br/><br/><br/>
             <h3 className="h3">Send New Message: </h3>
-            <NewMessage currentUserId={this.state.current_user_id}/>
+            <NewMessage key={this.state.current_user_id} currentUserId={this.state.current_user_id}/>
           </div>
           <div className="message-details">
-            <MessageDetails messageId={this.state.messageDetails} currentUserId={this.state.current_user_id}/>
+            <MessageDetails key={this.state.messageDetails} messageId={this.state.messageDetails} currentUserId={this.state.current_user_id}/>
           </div>
         </div>
         <footer>
