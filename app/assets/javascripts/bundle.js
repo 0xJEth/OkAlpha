@@ -33808,7 +33808,7 @@
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
 	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png") {
-	          if (this.state.current_user.preferred_gender === "no prefence" || user.gender === this.state.current_user.preferred_gender) {
+	          if (this.state.current_user.preferred_gender === "no preference" || user.gender === this.state.current_user.preferred_gender) {
 	            showUsers.push(user);
 	          }
 	        }

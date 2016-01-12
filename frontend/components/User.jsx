@@ -77,7 +77,7 @@ var User = React.createClass({
             )
           {
             if (
-                this.state.current_user.preferred_gender === "no prefence" ||
+                this.state.current_user.preferred_gender === "no preference" ||
                 user.gender === this.state.current_user.preferred_gender
                 )
               {
