@@ -35,7 +35,12 @@ module.exports = React.createClass({
   },
 
   getStateFromStore: function () {
-    return {user: UserStore.find(parseInt(this.props.routeParams.id))};
+    var user = UserStore.find(parseInt(this.props.routeParams.id));
+    return ({
+      user: user,
+      gender: user.gender,
+      preferred_gender: user.preferred_gender
+    })
   },
 
   getInitialState: function () {
@@ -83,6 +88,27 @@ module.exports = React.createClass({
 
     var user = UserStore.find(parseInt(this.props.routeParams.id));
 
+    if (this.state.gender != "male" && this.state.gender!= "female") {
+      var linkstate = this.linkState("gender");
+      var genderState = this.state.gender;
+    } else {
+      var linkstate = "";
+      var genderState = "";
+    }
+
+    if (
+        this.state.preferred_gender != "male" &&
+        this.state.preferred_gender!= "female" &&
+        this.state.preferred_gender!= "no preference"
+        )
+    {
+      var preferredlinkstate = this.linkState("preferred_gender");
+      var preferredGenderState = this.state.preferred_gender;
+    } else {
+      var preferredlinkstate = "";
+      var preferredGenderState = "";
+    }
+
     var profileForm = (
       <div className="attr-form">
         <h3>Tell us about yourself!</h3>
@@ -92,25 +118,30 @@ module.exports = React.createClass({
           <br/>
           <label className="profile-label">Your gender :</label>
             <br/>
-            <input type="radio" checkedLink={gender.valueLink("male")}/>
+            <input type="radio" name="gender" checkedLink={gender.valueLink("male")}/>
             <label>Male</label>
             <br/>
-            <input type="radio" checkedLink={gender.valueLink("female")}/>
+            <input type="radio" name="gender" checkedLink={gender.valueLink("female")}/>
             <label>Female</label>
             <br/>
-            <input type="radio" checkedLink={gender.valueLink("other")}/>
+            <input type="radio" name="gender" checkedLink={gender.valueLink(genderState)}/>
             <label>Other</label>
+            <input id="profile-textbox1" type="text" valueLink={linkstate}/>
             <br/><br/>
           <label className="profile-label">Gender interested in :</label>
             <br/>
-            <input type="radio" checkedLink={preferred_gender.valueLink("male")}/>
+            <input type="radio" name="preferred-gender" checkedLink={preferred_gender.valueLink("male")}/>
             <label>Male</label>
             <br/>
-            <input type="radio" checkedLink={preferred_gender.valueLink("female")}/>
+            <input type="radio" name="preferred-gender" checkedLink={preferred_gender.valueLink("female")}/>
             <label>Female</label>
             <br/>
-            <input type="radio" checkedLink={preferred_gender.valueLink("other")}/>
+            <input type="radio" name="preferred-gender" checkedLink={preferred_gender.valueLink("no preference")}/>
+            <label>No prefence</label><br/>
+            <input type="radio" name="preferred-gender" checkedLink={preferred_gender.valueLink(preferredGenderState)}/>
             <label>Other</label>
+            <input id="profile-textbox2" type="text" valueLink={preferredlinkstate}/>
+
             <br/><br/>
           <label className="profile-label">About me :</label>
           <textarea cols="40" rows="5" defaultValue={user.bio} valueLink={this.linkState("bio")}></textarea>

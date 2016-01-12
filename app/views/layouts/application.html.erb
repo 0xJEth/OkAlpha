@@ -21,7 +21,7 @@
 
 	        <h1 class="header-logo">
 	          <a class="header-button" href="#">OkAlpha</a>
-	          <a class="header-button" href= "<%="#/profile/#{current_user.id}"%> " id="user_form"> Profile </a>
+	          <!-- <a class="header-button" href= "<%="#/profile/#{current_user.id}"%> " id="user_form"> Profile </a> -->
 						<a class="header-button" href="<%="#/likes/#{current_user.id}"%>">My Likes</a>
 						<a class="header-button" href="<%="#/messages/#{current_user.id}"%>">
 							My Messages
@@ -29,7 +29,12 @@
 						</a>
 					</h1>
 	        <ul class="header-list">
-	          <li class="header-list-welcome">Welcome <%= current_user.username.capitalize %></li>
+	          <!-- <li class="header-list-welcome">Welcome <%= current_user.username.capitalize %></li> -->
+						<li class="header-list-item">
+							<a href= "<%="#/profile/#{current_user.id}"%> " id="user_form">
+								<img id="img-icon" src="<%=current_user.image_url%>"></img>
+							</a>
+						</li>
 	          <li class="header-list-item"><%= button_to "Sign Out", session_url, :method => :delete %></li>
 	        </ul>
 

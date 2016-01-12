@@ -24484,7 +24484,12 @@
 	  },
 	
 	  getStateFromStore: function () {
-	    return { user: UserStore.find(parseInt(this.props.routeParams.id)) };
+	    var user = UserStore.find(parseInt(this.props.routeParams.id));
+	    return {
+	      user: user,
+	      gender: user.gender,
+	      preferred_gender: user.preferred_gender
+	    };
 	  },
 	
 	  getInitialState: function () {
@@ -24536,6 +24541,22 @@
 	
 	    var user = UserStore.find(parseInt(this.props.routeParams.id));
 	
+	    if (this.state.gender != "male" && this.state.gender != "female") {
+	      var linkstate = this.linkState("gender");
+	      var genderState = this.state.gender;
+	    } else {
+	      var linkstate = "";
+	      var genderState = "";
+	    }
+	
+	    if (this.state.preferred_gender != "male" && this.state.preferred_gender != "female" && this.state.preferred_gender != "no preference") {
+	      var preferredlinkstate = this.linkState("preferred_gender");
+	      var preferredGenderState = this.state.preferred_gender;
+	    } else {
+	      var preferredlinkstate = "";
+	      var preferredGenderState = "";
+	    }
+	
 	    var profileForm = React.createElement(
 	      'div',
 	      { className: 'attr-form' },
@@ -24560,26 +24581,27 @@
 	          'Your gender :'
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'radio', checkedLink: gender.valueLink("male") }),
+	        React.createElement('input', { type: 'radio', name: 'gender', checkedLink: gender.valueLink("male") }),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Male'
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'radio', checkedLink: gender.valueLink("female") }),
+	        React.createElement('input', { type: 'radio', name: 'gender', checkedLink: gender.valueLink("female") }),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Female'
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'radio', checkedLink: gender.valueLink("other") }),
+	        React.createElement('input', { type: 'radio', name: 'gender', checkedLink: gender.valueLink(genderState) }),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Other'
 	        ),
+	        React.createElement('input', { id: 'profile-textbox1', type: 'text', valueLink: linkstate }),
 	        React.createElement('br', null),
 	        React.createElement('br', null),
 	        React.createElement(
@@ -24588,26 +24610,34 @@
 	          'Gender interested in :'
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'radio', checkedLink: preferred_gender.valueLink("male") }),
+	        React.createElement('input', { type: 'radio', name: 'preferred-gender', checkedLink: preferred_gender.valueLink("male") }),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Male'
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'radio', checkedLink: preferred_gender.valueLink("female") }),
+	        React.createElement('input', { type: 'radio', name: 'preferred-gender', checkedLink: preferred_gender.valueLink("female") }),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Female'
 	        ),
 	        React.createElement('br', null),
-	        React.createElement('input', { type: 'radio', checkedLink: preferred_gender.valueLink("other") }),
+	        React.createElement('input', { type: 'radio', name: 'preferred-gender', checkedLink: preferred_gender.valueLink("no preference") }),
+	        React.createElement(
+	          'label',
+	          null,
+	          'No prefence'
+	        ),
+	        React.createElement('br', null),
+	        React.createElement('input', { type: 'radio', name: 'preferred-gender', checkedLink: preferred_gender.valueLink(preferredGenderState) }),
 	        React.createElement(
 	          'label',
 	          null,
 	          'Other'
 	        ),
+	        React.createElement('input', { id: 'profile-textbox2', type: 'text', valueLink: preferredlinkstate }),
 	        React.createElement('br', null),
 	        React.createElement('br', null),
 	        React.createElement(
@@ -32161,10 +32191,10 @@
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
 	    ApiInterestUtil = __webpack_require__(244),
-	    ApiLikeUtil = __webpack_require__(248),
+	    ApiLikeUtil = __webpack_require__(247),
 	    LinkedStateMixin = __webpack_require__(211),
 	    History = __webpack_require__(1).History,
-	    Star = __webpack_require__(247),
+	    Star = __webpack_require__(249),
 	    NewMessage = __webpack_require__(251),
 	    InterestStore = __webpack_require__(243),
 	    LikeStore = __webpack_require__(250),
@@ -32366,10 +32396,94 @@
 /* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
+	var ApiLikeActions = __webpack_require__(248);
+	
+	var ApiLikeUtil = {
+	  fetchLikes: function () {
+	    $.ajax({
+	      url: "api/likes",
+	      success: function (likes) {
+	        ApiLikeActions.receiveLikes(likes);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateLike: function (like, callback) {
+	    $.ajax({
+	      url: "api/likes/",
+	      type: "POST",
+	      data: { like: like },
+	      success: function (like) {
+	        ApiLikeActions.receiveLike(like);
+	        callback && callback(like);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  deleteLike: function (like) {
+	    $.ajax({
+	      url: "api/likes/" + like.id,
+	      type: "DELETE",
+	      success: function () {
+	        ApiLikeActions.removeLike();
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	
+	};
+	
+	module.exports = ApiLikeUtil;
+
+/***/ },
+/* 248 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiLikeActions = {
+	
+	  receiveLikes: function (likes) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.LIKES_RECEIVED,
+	      likes: likes
+	    });
+	  },
+	
+	  receiveLike: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.LIKE_RECEIVED,
+	      like: like
+	    });
+	  },
+	
+	  removeLike: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.LIKE_REMOVED,
+	      like: like
+	    });
+	  }
+	};
+	
+	module.exports = ApiLikeActions;
+
+/***/ },
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(248),
+	    ApiLikeUtil = __webpack_require__(247),
 	    LikeStore = __webpack_require__(250),
 	    LinkedStateMixin = __webpack_require__(211),
 	    History = __webpack_require__(1).History,
@@ -32447,10 +32561,10 @@
 	      return React.createElement('div', null);
 	    }
 	    if (this.state.star) {
-	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star', checked: true });
+	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star', checked: true });
 	      var text = "Unlike";
 	    } else if (!this.state.star) {
-	      var checkbox = React.createElement('input', { onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' });
+	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' });
 	      var text = "Like!";
 	    }
 	    if (this.state.fan) {
@@ -32486,97 +32600,13 @@
 	module.exports = Star;
 
 /***/ },
-/* 248 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiLikeActions = __webpack_require__(249);
-	
-	var ApiLikeUtil = {
-	  fetchLikes: function () {
-	    $.ajax({
-	      url: "api/likes",
-	      success: function (likes) {
-	        ApiLikeActions.receiveLikes(likes);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateLike: function (like, callback) {
-	    $.ajax({
-	      url: "api/likes/",
-	      type: "POST",
-	      data: { like: like },
-	      success: function (like) {
-	        ApiLikeActions.receiveLike(like);
-	        callback && callback(like);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  deleteLike: function (like) {
-	    $.ajax({
-	      url: "api/likes/" + like.id,
-	      type: "DELETE",
-	      success: function () {
-	        ApiLikeActions.removeLike();
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  }
-	
-	};
-	
-	module.exports = ApiLikeUtil;
-
-/***/ },
-/* 249 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(236);
-	var Constants = __webpack_require__(233);
-	
-	var ApiLikeActions = {
-	
-	  receiveLikes: function (likes) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.LIKES_RECEIVED,
-	      likes: likes
-	    });
-	  },
-	
-	  receiveLike: function (like) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.LIKE_RECEIVED,
-	      like: like
-	    });
-	  },
-	
-	  removeLike: function (like) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.LIKE_REMOVED,
-	      like: like
-	    });
-	  }
-	};
-	
-	module.exports = ApiLikeActions;
-
-/***/ },
 /* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
 	    UserStore = __webpack_require__(215),
-	    ApiLikeUtil = __webpack_require__(248),
+	    ApiLikeUtil = __webpack_require__(247),
 	    AppDispatcher = __webpack_require__(236);
 	
 	var LikeStore = new Store(AppDispatcher);
@@ -33007,7 +33037,7 @@
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(248),
+	    ApiLikeUtil = __webpack_require__(247),
 	    LikeStore = __webpack_require__(250),
 	    LinkedStateMixin = __webpack_require__(211),
 	    UserItem = __webpack_require__(254),
@@ -33184,15 +33214,26 @@
 	    if (!this.state.myMatches) {
 	      return React.createElement('div', null);
 	    } else {
-	      var matchContainer = [];
+	      var matchContainer = {};
 	      this.state.myMatches.forEach(function (interest) {
 	        var user = UserStore.find(parseInt(interest.user_id));
-	        matchContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
-	        matchContainer.push(React.createElement(
-	          'p',
-	          { className: 'match-text' },
-	          "likes " + interest.interest
-	        ));
+	        if (matchContainer[user.id]) {
+	          matchContainer[user.id].push(interest);
+	        } else {
+	          matchContainer[user.id] = [interest];
+	        }
+	      });
+	      var matchList = [];
+	      Object.keys(matchContainer).forEach(function (id) {
+	        var user = UserStore.find(parseInt(id));
+	        matchList.push(React.createElement(UserItem, { key: id, user: user, className: 'like-list-item' }));
+	        matchContainer[user.id].forEach(function (interest) {
+	          matchList.push(React.createElement(
+	            'p',
+	            { key: interest.id + 100, className: 'match-text' },
+	            "likes " + interest.interest
+	          ));
+	        });
 	      });
 	    }
 	
@@ -33204,7 +33245,7 @@
 	        { className: 'h3' },
 	        'Recommended Matches:'
 	      ),
-	      matchContainer
+	      matchList
 	    );
 	  }
 	});
@@ -33737,7 +33778,7 @@
 	
 	  componentDidMount: function () {
 	    this.usersListener = UserStore.addListener(this._usersChanged);
-	    this.messageListener = MessageStore.addListener(this._messageChanged);
+	    this.messageListener = MessageStore.addListener(this._usersChanged);
 	    ApiMessageUtil.fetchMessages();
 	    ApiUserUtil.fetchUsers();
 	    ApiUserUtil.fetchCurrentUser();
@@ -33762,12 +33803,14 @@
 	    var showUsers = [];
 	    if (this.state.users.length > 0) {
 	      var copyUsers = this.state.users.slice(0);
-	      while (showUsers.length < 6) {
+	      while (showUsers.length < 7 && copyUsers.length > 0) {
 	        var rand = Math.floor(Math.random() * copyUsers.length);
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
-	        if (this.state.current_user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png") {
-	          showUsers.push(user);
+	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png") {
+	          if (this.state.current_user.preferred_gender === "no prefence" || user.gender === this.state.current_user.preferred_gender) {
+	            showUsers.push(user);
+	          }
 	        }
 	      }
 	    }

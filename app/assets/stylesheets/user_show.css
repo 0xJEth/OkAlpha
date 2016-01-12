@@ -23,11 +23,11 @@
   padding: 5px;
 }
 
-input[type="checkbox"] {
+ .like-checkbox {
   display: none;
 }
 
-input[type="checkbox"] + label {
+.like-checkbox + label {
   background: url(http://findicons.com/files/icons/2227/picol/32/star_outline_32.png);
   background-repeat: no-repeat;
   background-size: 20px 20px;
@@ -39,7 +39,7 @@ input[type="checkbox"] + label {
   padding: 10px;
 }
 
-input[type="checkbox"]:checked + label {
+.like-checkbox:checked + label {
   background: url(https://upload.wikimedia.org/wikipedia/en/0/0d/Yellow_star.gif);
   background-repeat: no-repeat;
 }

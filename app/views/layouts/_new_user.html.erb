@@ -1,5 +1,11 @@
 <div class="splash-body">
-<h1>OkAlpha</h1>
+<!-- <h1 id="logo">OkAlpha</h1> -->
+<div class="logo-img">
+  <img id="img-one" src="../assets/ok-logo.png"></img>
+  <img id="img-two" src="../assets/alpha-logo.png"></img>
+</div>
+<!-- <img id="img-bg" class="logo-bg" src="../assets/okalpha-logo_white.png"></img> -->
+
 <br/>
 <div class="new-page">
 <h4>Join the best free dating site in the Quadrant</h4>
@@ -35,7 +41,7 @@
 
 <br>
 <hr class="bar"><hr class="bar">
-<br>
+<br><br>
 
 <div class="errors">
   <%= flash[:errors_login].join("<br>").html_safe if flash[:errors_login] %>

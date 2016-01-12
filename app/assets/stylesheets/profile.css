@@ -27,6 +27,11 @@
   border-color: #e3e3e3;
 }
 
+.attr-form input[type="radio"] {
+  padding: 5px;
+  margin-bottom: 5px;
+}
+
 .profile-form textarea {
   vertical-align: top;
 }
@@ -35,4 +40,8 @@
   display: inline-block;
   width: 135px;
   text-align: right;
+}
+
+#profile-textbox1, #profile-textbox2 {
+  margin: 0;
 }

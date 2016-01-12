@@ -41,7 +41,7 @@ var User = React.createClass({
 
   componentDidMount: function() {
     this.usersListener = UserStore.addListener(this._usersChanged);
-    this.messageListener = MessageStore.addListener(this._messageChanged);
+    this.messageListener = MessageStore.addListener(this._usersChanged);
     ApiMessageUtil.fetchMessages();
     ApiUserUtil.fetchUsers();
     ApiUserUtil.fetchCurrentUser();
@@ -66,14 +66,23 @@ var User = React.createClass({
     var showUsers = [];
     if (this.state.users.length > 0) {
       var copyUsers = this.state.users.slice(0);
-      while(showUsers.length < 6) {
+      while(showUsers.length < 7 && copyUsers.length > 0) {
         var rand = Math.floor(Math.random() * copyUsers.length);
         var user = copyUsers[rand];
         copyUsers.splice(rand, 1);
-        if (this.state.current_user && this.state.current_user.id != user.id &&
-          user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png"
-          ) {
-            showUsers.push(user);
+        if (
+            this.state.current_user && user &&
+            this.state.current_user.id != user.id &&
+            user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png"
+            )
+          {
+            if (
+                this.state.current_user.preferred_gender === "no prefence" ||
+                user.gender === this.state.current_user.preferred_gender
+                )
+              {
+                showUsers.push(user);
+              }
           }
       }
     }

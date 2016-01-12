@@ -88,3 +88,10 @@ header, nav {
 .hidden {
   background-color: #4242f0;
 }
+
+#img-icon {
+  height: 37px;
+  width: 37px;
+  margin: 2px;
+  border-radius: 100%;
+}

@@ -77,10 +77,10 @@ var Star = React.createClass({
       return <div></div>
     }
     if (this.state.star) {
-      var checkbox = <input onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star" checked/>
+      var checkbox = <input className="like-checkbox" onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star" checked/>
       var text = "Unlike"
     } else if (!this.state.star) {
-      var checkbox = <input onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star"/>
+      var checkbox = <input className="like-checkbox" onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star"/>
       var text = "Like!"
     }
     if (this.state.fan) {

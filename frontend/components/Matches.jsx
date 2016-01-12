@@ -43,18 +43,29 @@ var Matches = React.createClass({
     if (!this.state.myMatches) {
       return <div></div>
     } else {
-      var matchContainer = [];
+      var matchContainer = {};
       this.state.myMatches.forEach(function(interest) {
         var user = UserStore.find(parseInt(interest.user_id));
-        matchContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
-        matchContainer.push(<p className="match-text">{"likes " + interest.interest}</p>)
+        if (matchContainer[user.id]) {
+          matchContainer[user.id].push(interest)
+        } else {
+          matchContainer[user.id] = [interest]
+        }
+      })
+      var matchList = [];
+      Object.keys(matchContainer).forEach(function(id) {
+        var user = UserStore.find(parseInt(id));
+        matchList.push(<UserItem key={id} user={user} className="like-list-item"/>);
+        matchContainer[user.id].forEach(function(interest) {
+          matchList.push(<p key={interest.id + 100} className="match-text">{"likes " + interest.interest}</p>);
+        })
       })
     }
 
     return (
       <ul className="likes-div">
         <h3 className="h3">Recommended Matches:</h3>
-        {matchContainer}
+        {matchList}
       </ul>
     );
   }
