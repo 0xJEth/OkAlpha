@@ -17,7 +17,6 @@ var Likes = React.createClass({
     if (!current_user_id) {
       var current_user_id = parseInt(this.props.routeParams.id)
     }
-    console.log(current_user_id);
     return ({
       current_user_id: current_user_id,
       myLikes: LikeStore.allMyLikes(current_user_id),
