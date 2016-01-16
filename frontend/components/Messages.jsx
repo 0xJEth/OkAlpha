@@ -126,7 +126,7 @@ var Messages = React.createClass({
     }
 
     return (
-      <div>
+      <div className="whole">
         <div className="message-container">
           <div className="message-panel">
             <ul className="message-ul">

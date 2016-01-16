@@ -33472,7 +33472,7 @@
 	
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'whole' },
 	      React.createElement(
 	        'div',
 	        { className: 'message-container' },

@@ -9,10 +9,10 @@
 }
 
 .message-container {
-  margin-top: 20px;
   margin-left: 50px;
+  margin: 50px auto;
   display: block;
-  width: 1500px;
+  width: 1000px;
   position: relative;
 }
 
@@ -35,7 +35,6 @@
 
 .message-list-item:hover {
   background-color: #b3d1ff;
-
 }
 
 .remove-interest, .read, .unread {
@@ -59,7 +58,7 @@
   background-color: white;
   border: solid 1px;
   border-radius: 10px;
-  margin: 10px;
+  margin: 0 10px;
 }
 
 .message-details-hidden {
