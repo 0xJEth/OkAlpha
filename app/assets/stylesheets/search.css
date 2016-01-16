@@ -23,6 +23,11 @@
   font-size: 12pt;
 }
 
+.search-results {
+  height: 25px;
+  padding: 10px;
+}
+
 .search-results li.user-item {
   height: 30px;
   width: 200px;

@@ -36,11 +36,19 @@ module.exports = React.createClass({
 
   getStateFromStore: function () {
     var user = UserStore.find(parseInt(this.props.routeParams.id));
-    return ({
-      user: user,
-      gender: user.gender,
-      preferred_gender: user.preferred_gender
-    })
+    if (user) {
+      return ({
+        user: user,
+        gender: user.gender,
+        preferred_gender: user.preferred_gender
+      })
+    } else {
+      return ({
+        user: null,
+        gender: null,
+        preferred_gender: null
+      })
+    }
   },
 
   getInitialState: function () {
@@ -146,16 +154,15 @@ module.exports = React.createClass({
           <label className="profile-label">About me :</label>
           <textarea cols="40" rows="5" defaultValue={user.bio} valueLink={this.linkState("bio")}></textarea>
           <br/>
-          <input className="profile-button" type="submit" value="Update"/>
+          <input id="update" className="profile-button" type="submit" value="Update"/>
         </form>
       </div>
   );
     return (
-      <div>
+      <div className="profile-cont">
         <div className="profile-form">
           <Cloud key={user.id} user={user}/>
           {profileForm}
-          <br/><br/>
           <Interests user={user}/>
         </div>
         <footer>

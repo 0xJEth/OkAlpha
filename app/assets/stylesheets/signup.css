@@ -1,12 +1,8 @@
 .sign-in-page {
-  /*background-image: url(https://res.cloudinary.com/jolinar1013/image/upload/v1450830981/482260-space_o6vvsf.jpg);*/
   background-image: url(http://www.drodd.com/images10/space-wallpaper17.jpg);
-  /*background-image: url(http://www.drodd.com/images10/space-wallpaper2.jpg);*/
   background-repeat: no-repeat;
-  /*background-image: url('download.jpg');*/
-  background-size: cover;
+  background-size: auto 100%;
   height: 75%;
-  /*width: 100%;*/
 }
 
 .splash-body {
@@ -27,14 +23,6 @@
   display: block;
 }
 
-/*.logo-bg {
-  padding: 0;
-  margin: -12px -3px;
-  display: inline-block;
-  height: 90px;
-  width: 350px;
-}*/
-
 #img-one {
   height: 50px;
   margin-bottom: 12px;
@@ -43,16 +31,6 @@
 #img-two {
   height: 65px;
 }
-/*#logo {
-  font-family: "sauna pro";
-  color: black;
-  font-size: 32pt;
-  font-weight: bold;
-  font-style: italic;
-  text-emphasis: 5px;
-  -webkit-text-stroke: 5px black;
-}*/
-
 
 .new-user input[type="text"], .new-session input[type="text"] {
   border: solid 1px;

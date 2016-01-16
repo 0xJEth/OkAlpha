@@ -7,8 +7,8 @@
   padding: 10px 10px 10px 20px;
   position: absolute;
   top: 50px;
-  width: 800px;
-  margin: 0 0 auto auto;
+  margin: 0 auto;
+  display: block;
 }
 
 .user-info li, .user-info span {
@@ -16,32 +16,72 @@
   height: 20px;
 }
 
+.user-details {
+  border: solid 1px;
+  border-radius: 10px;
+  margin: 20px;
+  padding: 20px;
+  background-color: white;
+  width: 400px;
+}
+
+.left {
+  display: inline-block;
+  margin-left: 20px;
+}
+
+.profile-message {
+  border: solid 1px;
+  border-radius: 10px;
+  margin: 20px;
+  padding: 20px;
+  background-color: white;
+  display: inline-block;
+  margin-top: 190px;
+  vertical-align: top;
+}
+
+.star {
+  font-size: 12pt;
+  margin: 30px;
+}
+
 .star-form {
-  margin-top: 20px;
+
   display: inline;
   color: black;
   padding: 5px;
+  cursor: pointer;
+}
+
+.star-form * {
+  cursor: pointer;
+  margin-left: 20px;
 }
 
  .like-checkbox {
   display: none;
 }
 
+.fan-boolean {
+  margin-left: 55px;
+}
+
 .like-checkbox + label {
   background: url(http://findicons.com/files/icons/2227/picol/32/star_outline_32.png);
   background-repeat: no-repeat;
-  background-size: 20px 20px;
+  background-size: 25px 25px;
   display: inline-block;
-  width: 20px;
-  height: 20px;
+  width: 25px;
+  height: 25px;
   margin-top: -5px;
-  margin-left: 0;
   padding: 10px;
 }
 
 .like-checkbox:checked + label {
+  background-size: 25px 25px;
   background: url(https://upload.wikimedia.org/wikipedia/en/0/0d/Yellow_star.gif);
-  background-repeat: no-repeat;
+  background-repeat:round;
 }
 
 .star-form span {

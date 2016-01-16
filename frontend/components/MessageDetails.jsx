@@ -75,7 +75,6 @@ var MessageDetails = React.createClass({
     if (!this.state.body) {
       return (<div></div>)
     } else {
-
       if (this.state.sender.id === this.state.current_user_id) {
         var user = this.state.receiver;
         var title = <h2>Message to {user.username}:</h2>;
@@ -86,7 +85,7 @@ var MessageDetails = React.createClass({
       var time = MessageStore.dateToString(this.state.created_at);
       return (
         <div>
-          <li onClick={this.showDetail} className="message-image">
+          <li key={user.id} onClick={this.showDetail} className="message-image">
             <img id={user.id} className="message-img" src={user.image_url}/>
           </li>
           <div className="title-container">

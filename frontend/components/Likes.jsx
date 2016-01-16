@@ -73,7 +73,9 @@ var Likes = React.createClass({
         this.state.myFans.forEach(function(fan) {
           if (like.liked_id === fan.user_id) {
             var user = UserStore.find(parseInt(like.liked_id));
-            mutualContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
+            if (user) {
+              mutualContainer.push(<UserItem key={user.id} user={user} className="like-list-item"/>)
+            }
           }
         })
       }.bind(this))

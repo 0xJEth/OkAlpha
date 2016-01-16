@@ -23,7 +23,7 @@ var Cloud = React.createClass({
 
   render: function () {
     return (
-      <div>
+      <div className="cloud">
         <Picture key={this.props.user.id} user={this.props.user}/>
         <UploadButton postImage={this.postImage}/>
       </div>

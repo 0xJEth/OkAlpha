@@ -16,7 +16,6 @@ var resetLikes = function(likes){
 
 var resetLike = function (like) {
   _likes[like.id] = like;
-  console.log(_likes);
 };
 
 var removeLike = function () {

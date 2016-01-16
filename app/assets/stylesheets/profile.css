@@ -1,15 +1,39 @@
+body {
+  background-color: #e5e5ff;
+}
+
+.profile-cont {
+  position: relative;
+  width: 100%;
+}
+
 .profile-form {
-  margin-left: 20px;
-  margin-top: 20px;
+  background-color: white;
+  margin: 20px auto;
+  width: 1100px;
   font-family: "Raleway", Arial, Helvetica, sans-serif;
+  display: block;
+  border: solid 1px;
+  border-radius: 10px;
+  border-color: black;
+}
+
+ button.upload-button {
+   margin-left: -5px;
+   font-size: 12pt;
 }
 
 .profile-button, button.upload-button {
   padding: 10px;
-  margin: 10px;
+  margin-top: 30px;
   border-radius: 5px;
   color: black;
   font-family: "Raleway", Arial, Helvetica, sans-serif;
+  vertical-align: bottom;
+}
+
+#update {
+  margin-left: 140px;
 }
 
 .profile-button:hover, button.upload-button:hover {
@@ -30,6 +54,31 @@
 .attr-form input[type="radio"] {
   padding: 5px;
   margin-bottom: 5px;
+  display: inline-block;
+}
+
+.cloud {
+  display: inline-block;
+  margin: 30px;
+  margin-right: 50px;
+  vertical-align: top;
+
+}
+
+.attr-form {
+  display: inline-block;
+  margin: 20px;
+  margin-top: 100px;
+  vertical-align: top;
+
+}
+
+.interest-form {
+  display: inline-block;
+  margin: 20px;
+  margin-top: 100px;
+  vertical-align: top;
+
 }
 
 .profile-form textarea {

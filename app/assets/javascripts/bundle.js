@@ -24485,11 +24485,19 @@
 	
 	  getStateFromStore: function () {
 	    var user = UserStore.find(parseInt(this.props.routeParams.id));
-	    return {
-	      user: user,
-	      gender: user.gender,
-	      preferred_gender: user.preferred_gender
-	    };
+	    if (user) {
+	      return {
+	        user: user,
+	        gender: user.gender,
+	        preferred_gender: user.preferred_gender
+	      };
+	    } else {
+	      return {
+	        user: null,
+	        gender: null,
+	        preferred_gender: null
+	      };
+	    }
 	  },
 	
 	  getInitialState: function () {
@@ -24647,19 +24655,17 @@
 	        ),
 	        React.createElement('textarea', { cols: '40', rows: '5', defaultValue: user.bio, valueLink: this.linkState("bio") }),
 	        React.createElement('br', null),
-	        React.createElement('input', { className: 'profile-button', type: 'submit', value: 'Update' })
+	        React.createElement('input', { id: 'update', className: 'profile-button', type: 'submit', value: 'Update' })
 	      )
 	    );
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'profile-cont' },
 	      React.createElement(
 	        'div',
 	        { className: 'profile-form' },
 	        React.createElement(Cloud, { key: user.id, user: user }),
 	        profileForm,
-	        React.createElement('br', null),
-	        React.createElement('br', null),
 	        React.createElement(Interests, { user: user })
 	      ),
 	      React.createElement(
@@ -31842,7 +31848,7 @@
 	  render: function () {
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'cloud' },
 	      React.createElement(Picture, { key: this.props.user.id, user: this.props.user }),
 	      React.createElement(UploadButton, { postImage: this.postImage })
 	    );
@@ -31896,7 +31902,7 @@
 	  render: function () {
 	    return React.createElement(
 	      "div",
-	      { key: this.props.user.id },
+	      { className: "img-cont", key: this.props.user.id },
 	      React.createElement("img", { className: "larger-image", src: this.props.user.image_url })
 	    );
 	  }
@@ -32338,33 +32344,34 @@
 	      React.createElement(
 	        'div',
 	        { className: 'user-info' },
-	        thumbnail,
-	        React.createElement('br', null),
-	        React.createElement(
-	          'h2',
-	          null,
-	          thisUser.username
-	        ),
-	        profileProps,
-	        React.createElement('br', null),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'h4',
-	          null,
-	          thisUser.username + "'s Interests:",
-	          ' '
-	        ),
-	        React.createElement('br', null),
-	        interestsContainer,
-	        React.createElement('br', null),
-	        React.createElement('br', null),
-	        star,
 	        React.createElement(
 	          'div',
-	          null,
-	          React.createElement('br', null),
-	          React.createElement('br', null),
-	          React.createElement('br', null),
+	          { className: 'left' },
+	          thumbnail,
+	          React.createElement(
+	            'div',
+	            { className: 'user-details' },
+	            React.createElement(
+	              'h2',
+	              null,
+	              thisUser.username
+	            ),
+	            profileProps,
+	            React.createElement('br', null),
+	            React.createElement('br', null),
+	            React.createElement(
+	              'h4',
+	              null,
+	              thisUser.username + "'s Interests:",
+	              ' '
+	            ),
+	            React.createElement('br', null),
+	            interestsContainer
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-message' },
 	          React.createElement(
 	            'h3',
 	            null,
@@ -32374,8 +32381,7 @@
 	          ),
 	          React.createElement(NewMessage, { currentUserId: this.state.current_user.id, userId: this.state.user.id })
 	        ),
-	        React.createElement('br', null),
-	        React.createElement('br', null),
+	        star,
 	        React.createElement(
 	          'footer',
 	          null,
@@ -32579,12 +32585,12 @@
 	    }
 	    return React.createElement(
 	      'div',
-	      null,
+	      { className: 'star' },
 	      React.createElement(
 	        'form',
-	        { className: 'star-form' },
+	        { className: 'star-form', onClick: this.handleLike },
 	        checkbox,
-	        React.createElement('label', { 'for': 'like', onClick: this.handleLike }),
+	        React.createElement('label', { htmlFor: 'like' }),
 	        text
 	      ),
 	      React.createElement(
@@ -32621,7 +32627,6 @@
 	
 	var resetLike = function (like) {
 	  _likes[like.id] = like;
-	  console.log(_likes);
 	};
 	
 	var removeLike = function () {
@@ -32718,14 +32723,17 @@
 	
 	    if (this.props.userId) {
 	      var receiver = UserStore.find(parseInt(this.props.userId));
+	      var editable = false;
 	    } else {
 	      var receiver = { username: "" };
+	      var editable = true;
 	    }
 	
 	    return {
 	      current_user_id: current_user_id,
 	      receiver: receiver,
-	      body: ""
+	      body: "",
+	      editable: editable
 	    };
 	  },
 	
@@ -32790,13 +32798,20 @@
 	    }
 	
 	    var username = this.state.receiver.username;
+	
+	    if (this.state.editable) {
+	      var input = React.createElement('input', { placeholder: 'Recipient', type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") });
+	    } else {
+	      var input = React.createElement('input', { readOnly: true, placeholder: username, type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") });
+	    }
+	
 	    return React.createElement(
 	      'div',
 	      null,
 	      React.createElement(
 	        'form',
 	        { onSubmit: this.sendMessage, className: 'new-message-form' },
-	        React.createElement('input', { placeholder: 'Recipient', type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") }),
+	        input,
 	        React.createElement('br', null),
 	        React.createElement('textarea', { cols: '40', rows: '6', name: 'body', valueLink: this.linkState("body") }),
 	        React.createElement('br', null),
@@ -33111,7 +33126,9 @@
 	        this.state.myFans.forEach(function (fan) {
 	          if (like.liked_id === fan.user_id) {
 	            var user = UserStore.find(parseInt(like.liked_id));
-	            mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	            if (user) {
+	              mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	            }
 	          }
 	        });
 	      }).bind(this));
@@ -33238,14 +33255,16 @@
 	      var matchList = [];
 	      Object.keys(matchContainer).forEach(function (id) {
 	        var user = UserStore.find(parseInt(id));
-	        matchList.push(React.createElement(UserItem, { key: id, user: user, className: 'like-list-item' }));
-	        matchContainer[user.id].forEach(function (interest) {
-	          matchList.push(React.createElement(
-	            'p',
-	            { key: interest.id + 100, className: 'match-text' },
-	            "likes " + interest.interest
-	          ));
-	        });
+	        if (user) {
+	          matchList.push(React.createElement(UserItem, { key: id, user: user, className: 'like-list-item' }));
+	          matchContainer[user.id].forEach(function (interest) {
+	            matchList.push(React.createElement(
+	              'p',
+	              { key: interest.id + 100, className: 'match-text' },
+	              "likes " + interest.interest
+	            ));
+	          });
+	        }
 	      });
 	    }
 	
@@ -33298,9 +33317,7 @@
 	      current_user_id: current_user_id,
 	      mySentMessages: MessageStore.allMySentMessages(current_user_id),
 	      myReceivedMessages: messages,
-	      unreadMessageCount: count,
-	      date: "",
-	      messageDetails: ""
+	      unreadMessageCount: count
 	    };
 	  },
 	
@@ -33326,6 +33343,7 @@
 	
 	  showMessage: function (event) {
 	    event.preventDefault();
+	
 	    this.setState({ messageDetails: parseInt(event.currentTarget.id) });
 	  },
 	
@@ -33364,10 +33382,10 @@
 	            ),
 	            React.createElement(
 	              'li',
-	              { className: 'message-list-item' },
+	              { onClick: this.showMessage, id: message.id, className: 'message-list-item' },
 	              React.createElement(
 	                'div',
-	                { onClick: this.showMessage, id: message.id, className: read },
+	                { className: read },
 	                user.username,
 	                React.createElement(
 	                  'span',
@@ -33392,7 +33410,7 @@
 	      if (messageReceivedContainer.length === 1) {
 	        messageReceivedContainer[0] = React.createElement(
 	          'li',
-	          { className: "no messages" },
+	          { key: 1002, className: "no messages" },
 	          'No messages'
 	        );
 	      }
@@ -33412,10 +33430,10 @@
 	            ),
 	            React.createElement(
 	              'li',
-	              { className: 'message-list-item' },
+	              { onClick: this.showMessage, id: message.id, className: 'message-list-item' },
 	              React.createElement(
 	                'div',
-	                { onClick: this.showMessage, id: message.id, className: 'read' },
+	                { className: 'read' },
 	                user.username,
 	                React.createElement(
 	                  'span',
@@ -33429,7 +33447,7 @@
 	      }).bind(this));
 	      messageSentContainer.unshift(React.createElement(
 	        'li',
-	        { key: 1000, className: 'message-label' },
+	        { key: 1003, className: 'message-label' },
 	        'User',
 	        React.createElement(
 	          'span',
@@ -33440,10 +33458,16 @@
 	      if (messageSentContainer.length === 1) {
 	        messageSentContainer[0] = React.createElement(
 	          'li',
-	          { className: "no messages" },
+	          { key: 1004, className: "no messages" },
 	          'No messages'
 	        );
 	      }
+	    }
+	
+	    if (this.state.messageDetails) {
+	      var detailsClassName = "message-details";
+	    } else {
+	      var detailsClassName = "message-details-hidden";
 	    }
 	
 	    return React.createElement(
@@ -33490,7 +33514,7 @@
 	        ),
 	        React.createElement(
 	          'div',
-	          { className: 'message-details' },
+	          { className: detailsClassName },
 	          React.createElement(MessageDetails, { key: this.state.messageDetails, messageId: this.state.messageDetails, currentUserId: this.state.current_user_id })
 	        )
 	      ),
@@ -33592,7 +33616,6 @@
 	    if (!this.state.body) {
 	      return React.createElement('div', null);
 	    } else {
-	
 	      if (this.state.sender.id === this.state.current_user_id) {
 	        var user = this.state.receiver;
 	        var title = React.createElement(
@@ -33618,7 +33641,7 @@
 	        null,
 	        React.createElement(
 	          'li',
-	          { onClick: this.showDetail, className: 'message-image' },
+	          { key: user.id, onClick: this.showDetail, className: 'message-image' },
 	          React.createElement('img', { id: user.id, className: 'message-img', src: user.image_url })
 	        ),
 	        React.createElement(
@@ -33668,7 +33691,6 @@
 	    string = string.split(" ");
 	    var users = UserStore.all();
 	    var results = [];
-	    // use regex or maybe gem on back end?
 	    for (var userIdx = 0; userIdx < users.length; userIdx++) {
 	      var name = users[userIdx].username.split(" ");
 	      for (var i = 0; i < name.length; i++) {
@@ -33819,8 +33841,8 @@
 	        var rand = Math.floor(Math.random() * copyUsers.length);
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
-	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png") {
-	          if (this.state.current_user.preferred_gender === "no preference" || user.gender === this.state.current_user.preferred_gender) {
+	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" && user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png") {
+	          if (this.state.current_user.preferred_gender === "no preference" || this.state.current_user.preferred_gender === user.gender || !this.state.current_user.preferred_gender) {
 	            showUsers.push(user);
 	          }
 	        }

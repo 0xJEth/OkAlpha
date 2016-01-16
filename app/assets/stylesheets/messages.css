@@ -10,10 +10,9 @@
 
 .message-container {
   margin-top: 20px;
-  margin-left: 30px;
+  margin-left: 50px;
   display: block;
   width: 1500px;
-  height: 100%;
   position: relative;
 }
 
@@ -54,9 +53,24 @@
 }
 
 .message-details, .message-panel {
-  width: 30%;
   display: inline-block;
   vertical-align: top;
+  padding: 20px;
+  background-color: white;
+  border: solid 1px;
+  border-radius: 10px;
+  margin: 10px;
+}
+
+.message-details-hidden {
+  visibility: hidden;
+  visibility: visible;
+  min-height: 100%;
+
+}
+
+.message-details {
+  visibility: visible;
 }
 
 .time {

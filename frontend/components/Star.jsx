@@ -89,9 +89,9 @@ var Star = React.createClass({
       var fanView = <p></p>
     }
     return (
-      <div>
-        <form className="star-form">
-          {checkbox}<label for="like" onClick={this.handleLike}></label>{text}
+      <div className="star">
+        <form className="star-form" onClick={this.handleLike}>
+          {checkbox}<label htmlFor="like"></label>{text}
         </form>
         <div className="fan-boolean">
           <br/>

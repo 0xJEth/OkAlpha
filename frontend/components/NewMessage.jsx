@@ -21,14 +21,17 @@ var NewMessage = React.createClass({
 
     if (this.props.userId) {
       var receiver = UserStore.find(parseInt(this.props.userId));
+      var editable = false;
     } else {
       var receiver = {username: ""};
+      var editable = true;
     }
 
     return ({
       current_user_id: current_user_id,
       receiver: receiver,
-      body: ""
+      body: "",
+      editable: editable
     })
   },
 
@@ -93,10 +96,17 @@ var NewMessage = React.createClass({
     }
 
     var username = this.state.receiver.username;
+
+    if (this.state.editable) {
+      var input = <input placeholder="Recipient" type="text" defaultValue={username} valueLink={this.linkState("receiver.username")}/>
+    } else {
+      var input = <input readOnly placeholder={username} type="text" defaultValue={username} valueLink={this.linkState("receiver.username")}/>
+    }
+
     return (
       <div>
         <form onSubmit={this.sendMessage} className="new-message-form">
-          <input placeholder="Recipient" type="text" defaultValue={username} valueLink={this.linkState("receiver.username")}/>
+          {input}
           <br/>
           <textarea cols="40" rows="6" name="body" valueLink={this.linkState("body")}></textarea>
           <br/>

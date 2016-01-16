@@ -60,10 +60,12 @@ var Matches = React.createClass({
       var matchList = [];
       Object.keys(matchContainer).forEach(function(id) {
         var user = UserStore.find(parseInt(id));
-        matchList.push(<UserItem key={id} user={user} className="like-list-item"/>);
-        matchContainer[user.id].forEach(function(interest) {
-          matchList.push(<p key={interest.id + 100} className="match-text">{"likes " + interest.interest}</p>);
-        })
+        if (user) {
+          matchList.push(<UserItem key={id} user={user} className="like-list-item"/>);
+          matchContainer[user.id].forEach(function(interest) {
+            matchList.push(<p key={interest.id + 100} className="match-text">{"likes " + interest.interest}</p>);
+          })
+        }
       })
     }
 

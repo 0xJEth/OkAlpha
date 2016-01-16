@@ -100,22 +100,22 @@ var UserShow = React.createClass({
         <div className="background">
         </div>
         <div className="user-info">
-          {thumbnail}
-          <br/>
-          <h2>{thisUser.username}</h2>
-          {profileProps}
-          <br/><br/>
-          <h4>{thisUser.username + "'s Interests:"} </h4>
-          <br/>
-          {interestsContainer}
-          <br/><br/>
-          {star}
-          <div>
-            <br/><br/><br/>
+          <div className="left">
+            {thumbnail}
+            <div className="user-details">
+              <h2>{thisUser.username}</h2>
+              {profileProps}
+              <br/><br/>
+              <h4>{thisUser.username + "'s Interests:"} </h4>
+              <br/>
+              {interestsContainer}
+            </div>
+          </div>
+          <div className="profile-message">
             <h3>Send {thisUser.username.split(" ")[0]} a Message</h3>
             <NewMessage currentUserId={this.state.current_user.id} userId={this.state.user.id}/>
           </div>
-          <br/><br/>
+          {star}
           <footer>
             <a className="nav-button" href="#">Back</a>
           </footer>
