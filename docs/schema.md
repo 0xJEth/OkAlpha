@@ -26,11 +26,11 @@ column name      | data type | details
 -----------------|-----------|-----------------------
 id               | integer   | not null, primary key
 username         | string    | not null, indexed, unique
-gender           | string    | not null
-preferred_gender | string    | not null
-email            | string    | not null
+gender           | string    | 
+preferred_gender | string    | 
+email            | string    | 
 password_digest  | string    | not null
-image_url        | string    |
+image_url        | string    | not null, default "blank" image
 bio              | text      |
 session_token    | string    | not null, indexed, unique
 
