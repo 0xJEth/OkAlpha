@@ -1,6 +1,6 @@
 # OkAlpha
 
-[Heroku](https://okalpha.herokuapp.com/)
+[Live](https://okalpha.herokuapp.com/)
 
 ## Minimum Viable Product
 
