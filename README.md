@@ -1,6 +1,6 @@
 # OkAlpha
 
-[Heroku](https://okalpha.herokuapp.com/)
+[Live](https://okalpha.herokuapp.com/)
 
 ## Minimum Viable Product
 
@@ -10,14 +10,13 @@ members of the Alpha Quadrant can:
 
 - [x] Create an account
 - [x] Log in / Log out
-- [ ] Guest account
+- [x] Guest account
 - [x] Create and edit their user profile
 - [x] Browse profiles of other users
 - [x] Search for users explicitly
-- [ ] Search for users with keywords from their profile
-- [ ] Have a match-making AI that will pair people with similar interests
-- [ ] Let users select people they "like" and see who has "liked" them
-- [ ] Send in-app messages
+- [x] Look at recommended matches based on mutual interests
+- [x] Let users select people they "like" and see who has "liked" them
+- [x] Send in-app messages
 
 ## Design Docs
 * [View Wireframes][view]
@@ -65,8 +64,7 @@ people who have liked you, and an index of mutual likes.
 
 ### Phase 5: AI Recommended Matches (2 day)
 
-In phase 5, I'll work on a feature that will search through the database and
-find people with any matching interests.
+In phase 5, I'll work on a feature that will make recommended matches based on mutual interests.
 
 [Details][phase-five]
 
@@ -80,13 +78,6 @@ will be functionality to compose new messages and see your received messages.
 ### Phase 7: Make it pretty (2 day)
 
 CSS, fine tune views with jbuilder
-
-### Bonus Features (TBD)
-* Save draft messages
-* A fancy side scroller for the root page
-* Dismiss AI matches that you're not interested it
-* Whatever I skipped over the first time through because I had no idea how
-  complicated it would all be
 
 [phase-one]: ./docs/phases/phase1.md
 [phase-two]: ./docs/phases/phase2.md
