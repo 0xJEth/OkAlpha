@@ -33842,7 +33842,7 @@
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
 	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" && user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png") {
-	          if (this.state.current_user.preferred_gender === "no preference" || this.state.current_user.preferred_gender === user.gender || !this.state.current_user.preferred_gender) {
+	          if (this.state.current_user.preferred_gender === "no preference" || this.state.current_user.preferred_gender === user.gender || !this.state.current_user.preferred_gender || user.gender != "male" && user.gender != "female") {
 	            showUsers.push(user);
 	          }
 	        }

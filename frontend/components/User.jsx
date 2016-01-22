@@ -80,7 +80,8 @@ var User = React.createClass({
             if (
                 this.state.current_user.preferred_gender === "no preference" ||
                 this.state.current_user.preferred_gender === user.gender ||
-                !this.state.current_user.preferred_gender
+                !this.state.current_user.preferred_gender ||
+                (user.gender != "male" && user.gender != "female")
                 )
               {
                 showUsers.push(user);
