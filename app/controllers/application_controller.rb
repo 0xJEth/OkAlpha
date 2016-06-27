@@ -1,7 +1,8 @@
 class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
-  helper_method :current_user, :signed_in?
+  helper_method :current_user, :signed_in?, :session_flag?
+  attr_reader :session_flag
 
   private
   def current_user
@@ -20,6 +21,10 @@ class ApplicationController < ActionController::Base
   def sign_out
     current_user.try(:reset_token!)
     session[:session_token] = nil
+  end
+
+  def session_flag?
+    !!session_flag
   end
 
   def require_signed_in!

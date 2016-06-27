@@ -1,8 +1,10 @@
 class SessionsController < ApplicationController
-  def new
-  end
 
-  attr_reader :current_user
+  attr_reader :current_user, :session_flag
+
+  def new
+    @session_flag = true
+  end
 
   def create
     @current_user = User.find_by_credentials(
@@ -17,6 +19,7 @@ class SessionsController < ApplicationController
       redirect_to root_url
     else
       flash.now[:errors_login] = ["Invalid username or password"]
+      @session_flag = true
       render :new
     end
   end
@@ -25,4 +28,5 @@ class SessionsController < ApplicationController
     sign_out
     redirect_to new_session_url
   end
+
 end

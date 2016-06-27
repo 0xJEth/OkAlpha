@@ -74,19 +74,16 @@
   color: #999999;
 }
 
-@keyframes error {
+/*@keyframes error {
   from {color: red;}
   to {color: back;}
-}
+}*/
 
 .errors {
   margin-left: 20px;
-  animation-name: error;
-  animation-duration: 0.5s;
-}
-
-#sign-up{
-  height: 39px;
+  color: red;
+  /*animation-name: error;
+  animation-duration: 0.5s;*/
 }
 
 .splash-body h1 {
@@ -95,4 +92,8 @@
 
 .splash-body h4 {
   margin-left: 55px;
+}
+
+a {
+  margin-left: 15px;
 }

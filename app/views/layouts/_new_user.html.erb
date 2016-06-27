@@ -20,41 +20,51 @@
 
 <br>
 <hr class="bar"><hr class="bar">
-<br><br>
 
-<div class="errors" id="sign-up">
-  <%= flash[:errors_signup].join("<br>").html_safe if flash[:errors_signup] %>
-  <br/>
 </div>
-<h2 class="new-user">Sign Up</h2>
-<br>
-<form class="new-user" action="<%= users_url %>" method="post">
-  <%= auth_token_input %>
-  <input type="text" name="user[username]" placeholder="Username">
+
+<% if session_flag? %>
+
+<div class= "new-session" id="new-session">
+  <div class="errors" id="errors-session">
+    <br/>
+    <%= flash[:errors_login].join("<br>").html_safe if flash[:errors_login] %>
+    <br/><br/>
+  </div>
+  <h2>Log In</h2>
   <br>
-  <input type="password" name="user[password]" placeholder="Password">
-  <br><br>
-  <input type="submit" value="Sign Up">
-</form>
-
-<br>
-<hr class="bar"><hr class="bar">
-<br><br>
-
-<div class="errors">
-  <%= flash[:errors_login].join("<br>").html_safe if flash[:errors_login] %>
-  <br/><br/>
+  <form action="<%= session_url %>" method="post">
+    <%= auth_token_input %>
+    <input type="text" name="user[username]" placeholder="Username">
+    <br>
+    <input type="password" name="user[password]" placeholder="Password">
+    <br><br>
+    <input type="submit" value="Log In">
+    <a href="/users/new">Don't have an account? Sign Up</a>
+  </form>
 </div>
-<h2 class="new-session">Log In</h2>
-<br>
-<form class="new-session" action="<%= session_url %>" method="post">
-  <%= auth_token_input %>
-  <input type="text" name="user[username]" placeholder="Username">
+
+<% else %>
+
+<div class="new-user" id="new-user">
+  <div class="errors" id="errors-user">
+    <br/>
+    <%= flash[:errors_signup].join("<br>").html_safe if flash[:errors_signup] %>
+    <br/><br/>
+  </div>
+  <h2>Sign Up</h2>
   <br>
-  <input type="password" name="user[password]" placeholder="Password">
-  <br><br>
-  <input type="submit" value="Log In">
-</form>
-
+  <form action="<%= users_url %>" method="post">
+    <%= auth_token_input %>
+    <input type="text" name="user[username]" placeholder="Username">
+    <br>
+    <input type="password" name="user[password]" placeholder="Password">
+    <br><br>
+    <input type="submit" value="Sign Up">
+    <a href="/session/new">Already have an account? Log In</a>
+  </form>
 </div>
+
+<% end %>
+
 </div>

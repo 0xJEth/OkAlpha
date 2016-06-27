@@ -1,8 +1,11 @@
 class UsersController < ApplicationController
   helper_method :create
 
+  attr_reader :session_flag
+
   def new
     @user = User.new
+    @session_flag = false
   end
 
   def create
@@ -12,6 +15,7 @@ class UsersController < ApplicationController
       redirect_to "/#/profile/#{@user.id}"
     else
       flash.now[:errors_signup] = @user.errors.full_messages
+      @session_flag = false
       render :new
     end
   end
@@ -20,4 +24,5 @@ class UsersController < ApplicationController
   def user_params
     params.require(:user).permit(:password, :username)
   end
+
 end
