@@ -24,6 +24,7 @@ body {
 }
 
 .profile-button, button.upload-button {
+  background-color: #e3e3e3;
   padding: 10px;
   margin-top: 30px;
   border-radius: 5px;

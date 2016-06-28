@@ -82,7 +82,7 @@ var Interests = React.createClass({
             <ul className="interest-list">
               {interestsContainer}
             </ul>
-          <form onSubmit={this.handleInterestSubmit}>
+          <form className="interest-submit-form" onSubmit={this.handleInterestSubmit}>
             <input className="profile-button" type="submit" value="Add Interest"/>
             <input type="text" valueLink={this.linkState("interest")}/>
           </form>

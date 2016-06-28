@@ -5,9 +5,9 @@
 </div>
 
 <br/>
-<div class="new-page">
 <h4>Join the best free dating site in the Quadrant</h4>
-<br><br/>
+<div class="new-page">
+<br>
 <h2 class="guest-user">Try with a demo account!</h2>
 <br>
 
@@ -18,10 +18,10 @@
   <input type="submit" value="Log in as Guest">
 </form>
 
+</div>
+
 <br>
 <hr class="bar"><hr class="bar">
-
-</div>
 
 <% if session_flag? %>
 
@@ -29,7 +29,7 @@
   <div class="errors" id="errors-session">
     <br/>
     <%= flash[:errors_login].join("<br>").html_safe if flash[:errors_login] %>
-    <br/><br/>
+    <br/>
   </div>
   <h2>Log In</h2>
   <br>
@@ -50,7 +50,7 @@
   <div class="errors" id="errors-user">
     <br/>
     <%= flash[:errors_signup].join("<br>").html_safe if flash[:errors_signup] %>
-    <br/><br/>
+    <br/>
   </div>
   <h2>Sign Up</h2>
   <br>

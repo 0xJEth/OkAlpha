@@ -154,7 +154,8 @@ module.exports = React.createClass({
           <label className="profile-label">About me :</label>
           <textarea cols="40" rows="5" defaultValue={user.bio} valueLink={this.linkState("bio")}></textarea>
           <br/>
-          <input id="update" className="profile-button" type="submit" value="Update"/>
+          <input id="update" className="profile-button" type="submit" value="Save"/>
+          <a className="profile-button" href="#">Cancel</a>
         </form>
       </div>
   );
@@ -165,9 +166,7 @@ module.exports = React.createClass({
           {profileForm}
           <Interests user={user}/>
         </div>
-        <footer>
-          <a className="nav-button" href="#">Back</a>
-        </footer>
+
       </div>
     );
   }

@@ -1,6 +1,7 @@
 .interest-list {
   margin-left: 20px;
   margin-top: 10px;
+  margin-bottom: 20px;
   font-family: "Raleway", Arial, Helvetica, sans-serif;
 }
 
@@ -13,4 +14,10 @@
   border-radius: 25%;
   font-size: 8pt;
   vertical-align: center;
+}
+
+.interest-submit-form input[type="text"], .interest-submit-form .profile-button {
+  height: 30px;
+  padding: 5px;
+  margin: 5px;
 }

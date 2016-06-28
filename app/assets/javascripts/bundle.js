@@ -24655,7 +24655,12 @@
 	        ),
 	        React.createElement('textarea', { cols: '40', rows: '5', defaultValue: user.bio, valueLink: this.linkState("bio") }),
 	        React.createElement('br', null),
-	        React.createElement('input', { id: 'update', className: 'profile-button', type: 'submit', value: 'Update' })
+	        React.createElement('input', { id: 'update', className: 'profile-button', type: 'submit', value: 'Save' }),
+	        React.createElement(
+	          'a',
+	          { className: 'profile-button', href: '#' },
+	          'Cancel'
+	        )
 	      )
 	    );
 	    return React.createElement(
@@ -24667,15 +24672,6 @@
 	        React.createElement(Cloud, { key: user.id, user: user }),
 	        profileForm,
 	        React.createElement(Interests, { user: user })
-	      ),
-	      React.createElement(
-	        'footer',
-	        null,
-	        React.createElement(
-	          'a',
-	          { className: 'nav-button', href: '#' },
-	          'Back'
-	        )
 	      )
 	    );
 	  }
@@ -32011,7 +32007,7 @@
 	        ),
 	        React.createElement(
 	          'form',
-	          { onSubmit: this.handleInterestSubmit },
+	          { className: 'interest-submit-form', onSubmit: this.handleInterestSubmit },
 	          React.createElement('input', { className: 'profile-button', type: 'submit', value: 'Add Interest' }),
 	          React.createElement('input', { type: 'text', valueLink: this.linkState("interest") })
 	        )
