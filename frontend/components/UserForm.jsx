@@ -105,7 +105,7 @@ module.exports = React.createClass({
     }
 
     if (
-        this.state.preferred_gender != "male" &&
+        this.state.preferred_gender!= "male" &&
         this.state.preferred_gender!= "female" &&
         this.state.preferred_gender!= "no preference"
         )

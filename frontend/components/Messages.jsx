@@ -52,7 +52,6 @@ var Messages = React.createClass({
 
   showMessage: function(event) {
     event.preventDefault();
-
     this.setState({messageDetails: parseInt(event.currentTarget.id)})
   },
 
