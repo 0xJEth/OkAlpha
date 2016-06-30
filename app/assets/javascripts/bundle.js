@@ -32344,6 +32344,7 @@
 	          'div',
 	          { className: 'left' },
 	          thumbnail,
+	          star,
 	          React.createElement(
 	            'div',
 	            { className: 'user-details' },
@@ -32377,7 +32378,6 @@
 	          ),
 	          React.createElement(NewMessage, { currentUserId: this.state.current_user.id, userId: this.state.user.id })
 	        ),
-	        star,
 	        React.createElement(
 	          'footer',
 	          null,
@@ -32562,38 +32562,38 @@
 	    if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
 	      return React.createElement('div', null);
 	    }
+	    var username = UserStore.find(parseInt(this.state.liked_id)).username;
 	    if (this.state.star) {
-	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star', checked: true });
-	      var text = "Unlike";
+	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: function () {}, type: 'checkbox', checked: true });
+	      var text = "I'm no longer interested in " + username;
 	    } else if (!this.state.star) {
-	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: this.handleLike, id: 'star-checkbox', type: 'checkbox', name: 'like', value: 'star' });
-	      var text = "Like!";
+	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: function () {}, type: 'checkbox' });
+	      var text = "Let " + username + " know that you're intested!";
 	    }
 	    if (this.state.fan) {
+	      innerHtml = this.props.user.username + " is interested in you!";
 	      var fanView = React.createElement(
 	        'p',
-	        null,
-	        this.props.user.username,
-	        'has liked you!'
+	        { className: 'fan-boolean' },
+	        innerHtml
 	      );
 	    } else {
-	      var fanView = React.createElement('p', null);
+	      var fanView = React.createElement('p', { className: 'fan-boolean' });
 	    }
 	    return React.createElement(
 	      'div',
 	      { className: 'star' },
+	      fanView,
 	      React.createElement(
 	        'form',
-	        { className: 'star-form', onClick: this.handleLike },
+	        { className: 'star-form' },
 	        checkbox,
 	        React.createElement('label', { htmlFor: 'like' }),
-	        text
-	      ),
-	      React.createElement(
-	        'div',
-	        { className: 'fan-boolean' },
-	        React.createElement('br', null),
-	        fanView
+	        React.createElement(
+	          'span',
+	          { onClick: this.handleLike },
+	          text
+	        )
 	      )
 	    );
 	  }
@@ -33339,7 +33339,6 @@
 	
 	  showMessage: function (event) {
 	    event.preventDefault();
-	
 	    this.setState({ messageDetails: parseInt(event.currentTarget.id) });
 	  },
 	

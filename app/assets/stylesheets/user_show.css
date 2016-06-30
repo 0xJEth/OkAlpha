@@ -42,48 +42,52 @@
 }
 
 .star {
-  font-size: 12pt;
-  margin: 30px;
-}
-
-.star-form {
-
-  display: inline;
-  color: black;
-  padding: 5px;
-  cursor: pointer;
-}
-
-.star-form * {
-  cursor: pointer;
-  margin-left: 20px;
-}
-
- .like-checkbox {
-  display: none;
+  display: inline-block;
+  font-size: 10pt;
+  margin-top: -50px;
 }
 
 .fan-boolean {
-  margin-left: 55px;
+  display: inline-block;
+  margin: 10px 20px 10px 80px;
+  color: white;
+}
+
+.star-form {
+  color: black;
+  cursor: auto;
+  margin-left: 10px;
+}
+
+.star-form span {
+  border-radius: 5px;
+  margin-left: 10px;
+  padding: 10px;
+  background-color: #e3e3e3;
+  cursor: pointer;
+}
+
+.star-form span:hover {
+  color: #999999;
+}
+
+.like-checkbox {
+  display: none;
 }
 
 .like-checkbox + label {
-  background: url(http://findicons.com/files/icons/2227/picol/32/star_outline_32.png);
+  background: url('https://res.cloudinary.com/jolinar1013/image/upload/c_crop,g_center,h_270,w_270/v1467252673/insignia1_zehoto.png');
   background-repeat: no-repeat;
-  background-size: 25px 25px;
+  background-size: 50px 50px;
   display: inline-block;
-  width: 25px;
-  height: 25px;
+  width: 50px;
+  height: 50px;
   margin-top: -5px;
   padding: 10px;
 }
 
 .like-checkbox:checked + label {
-  background-size: 25px 25px;
-  background: url(https://upload.wikimedia.org/wikipedia/en/0/0d/Yellow_star.gif);
+  background-size: 50px 50px;
+  background: url('https://res.cloudinary.com/jolinar1013/image/upload/c_crop,g_center,h_270,w_270/v1467252673/insignia2_kujjzr.png');
   background-repeat:round;
-}
-
-.star-form span {
-  margin-left: 5px;
 }

@@ -101,7 +101,7 @@ var UserShow = React.createClass({
         </div>
         <div className="user-info">
           <div className="left">
-            {thumbnail}
+            {thumbnail}{star}
             <div className="user-details">
               <h2>{thisUser.username}</h2>
               {profileProps}
@@ -115,7 +115,6 @@ var UserShow = React.createClass({
             <h3>Send {thisUser.username.split(" ")[0]} a Message</h3>
             <NewMessage currentUserId={this.state.current_user.id} userId={this.state.user.id}/>
           </div>
-          {star}
           <footer>
             <a className="nav-button" href="#">Back</a>
           </footer>

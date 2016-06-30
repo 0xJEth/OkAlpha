@@ -76,27 +76,26 @@ var Star = React.createClass({
     if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
       return <div></div>
     }
+    var username = UserStore.find(parseInt(this.state.liked_id)).username;
     if (this.state.star) {
-      var checkbox = <input className="like-checkbox" onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star" checked/>
-      var text = "Unlike"
+      var checkbox = <input className="like-checkbox" onChange={function(){}} type="checkbox" checked/>
+      var text = "I'm no longer interested in " + username;
     } else if (!this.state.star) {
-      var checkbox = <input className="like-checkbox" onChange={this.handleLike} id="star-checkbox" type="checkbox" name="like" value="star"/>
-      var text = "Like!"
+      var checkbox = <input className="like-checkbox" onChange={function(){}} type="checkbox"/>
+      var text = "Let " + username + " know that you're intested!"
     }
     if (this.state.fan) {
-      var fanView = <p>{this.props.user.username}has liked you!</p>;
+      innerHtml = this.props.user.username + " is interested in you!"
+      var fanView = <p className="fan-boolean">{innerHtml}</p>;
     } else {
-      var fanView = <p></p>
+      var fanView = <p className="fan-boolean"></p>
     }
     return (
       <div className="star">
-        <form className="star-form" onClick={this.handleLike}>
-          {checkbox}<label htmlFor="like"></label>{text}
+        {fanView}
+        <form className="star-form">
+          {checkbox}<label htmlFor="like"></label><span onClick={this.handleLike}>{text}</span>
         </form>
-        <div className="fan-boolean">
-          <br/>
-          {fanView}
-        </div>
       </div>
     );
   }
