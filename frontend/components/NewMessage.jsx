@@ -55,27 +55,10 @@ var NewMessage = React.createClass({
     this.setState(this.getStateFromStore());
   },
 
-  findUsername: function(string) {
-    var matches = [];
-    var regex = new RegExp(string, 'i');
-    var users = UserStore.all();
-
-    for (var i = 0; i < users.length; i++) {
-      var str = users[i].username.toString();
-      if (str.toLowerCase() === string.toLowerCase()) {
-        matches = [users[i]];
-        break
-      } else if (regex.test(str)) {
-        matches.push(users[i]);
-      }
-    }
-    return matches;
-  },
-
   sendMessage: function (event) {
     event.preventDefault();
     var string = event.target[0].value;
-    var receiver = this.findUsername(string);
+    var receiver = UserStore.findUsername(string, true);
     if (receiver.length === 0) {
       alert("No user found with that name");
     } else if (receiver.length > 1) {

@@ -22,6 +22,23 @@ var getCurrentUser = function(user) {
   current_user = user;
 };
 
+UserStore.findUsername = function(string, flag) {
+  var matches = [];
+  var regex = new RegExp(string, 'i');
+  var users = UserStore.all();
+
+  for (var i = 0; i < users.length; i++) {
+    var str = users[i].username.toString();
+    if (str.toLowerCase() === string.toLowerCase() && flag) {
+      matches = [users[i]];
+      break
+    } else if (regex.test(str)) {
+      matches.push(users[i]);
+    }
+  }
+  return matches;
+};
+
 UserStore.currentUser = function() {
   return current_user;
 };

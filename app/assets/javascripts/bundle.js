@@ -24935,6 +24935,23 @@
 	  current_user = user;
 	};
 	
+	UserStore.findUsername = function (string, flag) {
+	  var matches = [];
+	  var regex = new RegExp(string, 'i');
+	  var users = UserStore.all();
+	
+	  for (var i = 0; i < users.length; i++) {
+	    var str = users[i].username.toString();
+	    if (str.toLowerCase() === string.toLowerCase() && flag) {
+	      matches = [users[i]];
+	      break;
+	    } else if (regex.test(str)) {
+	      matches.push(users[i]);
+	    }
+	  }
+	  return matches;
+	};
+	
 	UserStore.currentUser = function () {
 	  return current_user;
 	};
@@ -32753,27 +32770,10 @@
 	    this.setState(this.getStateFromStore());
 	  },
 	
-	  findUsername: function (string) {
-	    var matches = [];
-	    var regex = new RegExp(string, 'i');
-	    var users = UserStore.all();
-	
-	    for (var i = 0; i < users.length; i++) {
-	      var str = users[i].username.toString();
-	      if (str.toLowerCase() === string.toLowerCase()) {
-	        matches = [users[i]];
-	        break;
-	      } else if (regex.test(str)) {
-	        matches.push(users[i]);
-	      }
-	    }
-	    return matches;
-	  },
-	
 	  sendMessage: function (event) {
 	    event.preventDefault();
 	    var string = event.target[0].value;
-	    var receiver = this.findUsername(string);
+	    var receiver = UserStore.findUsername(string, true);
 	    if (receiver.length === 0) {
 	      alert("No user found with that name");
 	    } else if (receiver.length > 1) {
@@ -33681,38 +33681,28 @@
 	var React = __webpack_require__(5),
 	    UserItem = __webpack_require__(254),
 	    UserStore = __webpack_require__(215),
+	    LinkedStateMixin = __webpack_require__(211),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var SearchBar = React.createClass({
 	  displayName: 'SearchBar',
 	
+	  mixins: [LinkedStateMixin],
+	
 	  getInitialState: function () {
-	    return { matches: [] };
+	    return { search: "" };
 	  },
 	
-	  search: function (event) {
-	    event.preventDefault();
-	    var string = event.target.form.firstChild.value;
-	    string = string.split(" ");
-	    var users = UserStore.all();
-	    var results = [];
-	    for (var userIdx = 0; userIdx < users.length; userIdx++) {
-	      var name = users[userIdx].username.split(" ");
-	      for (var i = 0; i < name.length; i++) {
-	        for (var j = 0; j < string.length; j++) {
-	          if (name[i].toLowerCase() === string[j].toLowerCase()) {
-	            results.push(users[userIdx]);
-	          }
-	        }
-	      }
-	    }
-	    this.setState({ matches: results });
+	  search: function () {
+	    var string = this.state.search;
+	    var results = UserStore.findUsername(string, false);
+	    return results;
 	  },
 	
-	  searchList: function () {
+	  makeList: function (results) {
 	    var list = [];
 	    {
-	      this.state.matches.map((function (user) {
+	      results.map((function (user) {
 	        if (user.id != this.props.currentUser.id) {
 	          list.push(React.createElement(UserItem, { key: user.id, user: user }));
 	        }
@@ -33731,26 +33721,29 @@
 	  allUsers: function (event) {
 	    event.preventDefault();
 	    var results = UserStore.all();
-	    this.setState({ matches: results });
+	    var list = this.makeList(results);
+	    this.setState({ search: "" });
 	  },
 	
 	  render: function () {
-	    var list = this.searchList();
-	    if (this.searchList().length === 0) {
-	      list = React.createElement('p', null);
+	    if (this.state.search != "") {
+	      var list = this.makeList(this.search(this.state.search));
+	    } else {
+	      var list = this.makeList(UserStore.all());
 	    }
+	
 	    return React.createElement(
 	      'div',
 	      { className: 'search-div' },
 	      React.createElement(
-	        'form',
+	        'div',
 	        { className: 'search-bar' },
-	        React.createElement('input', { className: 'search-text-field', type: 'text', name: 'users[username]' }),
-	        React.createElement(
-	          'button',
-	          { className: 'search-button', onClick: this.search },
-	          'Search'
-	        ),
+	        React.createElement('input', {
+	          className: 'search-text-field',
+	          type: 'text',
+	          valueLink: this.linkState("search"),
+	          placeholder: 'Search'
+	        }),
 	        React.createElement(
 	          'button',
 	          { className: 'all-button', onClick: this.allUsers },

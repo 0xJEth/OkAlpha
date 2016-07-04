@@ -1,35 +1,25 @@
 var React = require("react"),
     UserItem = require('./UserItem'),
     UserStore = require('../stores/users'),
+    LinkedStateMixin = require('react-addons-linked-state-mixin'),
     ApiUserUtil = require("../util/api_user_util");
 
 var SearchBar = React.createClass({
+  mixins: [LinkedStateMixin],
+
   getInitialState:function(){
-    return { matches: [] }
+    return { search: "" }
   },
 
-  search: function (event) {
-    event.preventDefault();
-    var string = event.target.form.firstChild.value;
-    string = string.split(" ");
-    var users = UserStore.all();
-    var results = [];
-    for (var userIdx = 0; userIdx < users.length; userIdx++) {
-      var name = users[userIdx].username.split(" ");
-      for (var i = 0; i < name.length; i++) {
-        for (var j = 0; j < string.length; j++) {
-          if (name[i].toLowerCase() === string[j].toLowerCase()) {
-            results.push(users[userIdx]);
-          }
-        }
-      }
-    }
-    this.setState({ matches: results });
+  search: function () {
+    var string = this.state.search;
+    var results = UserStore.findUsername(string, false);
+    return results;
   },
 
-  searchList: function() {
+  makeList: function(results) {
     var list = [];
-    {this.state.matches.map(function (user) {
+    {results.map(function (user) {
       if (user.id != this.props.currentUser.id) {
         list.push(<UserItem key={user.id} user={user}/>)
       }
@@ -43,21 +33,28 @@ var SearchBar = React.createClass({
   allUsers: function(event) {
     event.preventDefault();
     var results = UserStore.all();
-    this.setState({ matches: results });
+    var list = this.makeList(results);
+    this.setState({search: ""});
   },
 
   render: function () {
-    var list = this.searchList();
-    if (this.searchList().length === 0) {
-      list = <p></p>
+    if (this.state.search != "") {
+      var list = this.makeList(this.search(this.state.search));
+    } else {
+      var list = this.makeList(UserStore.all());
     }
+
     return (
       <div className="search-div">
-        <form className="search-bar">
-          <input className="search-text-field" type="text" name="users[username]"></input>
-          <button className="search-button" onClick={this.search}>Search</button>
+        <div className="search-bar">
+          <input
+            className="search-text-field"
+            type="text"
+            valueLink={this.linkState("search")}
+            placeholder="Search"
+          />
           <button className="all-button" onClick={this.allUsers}>Browse All Users</button>
-        </form>
+        </div>
         <ul className="search-results">{list}</ul>
       </div>
     );
