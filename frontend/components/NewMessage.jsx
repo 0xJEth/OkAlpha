@@ -56,18 +56,20 @@ var NewMessage = React.createClass({
   },
 
   findUsername: function(string) {
-    string = string.split(" ");
+    var matches = [];
+    var regex = new RegExp(string, 'i');
     var users = UserStore.all();
+
     for (var i = 0; i < users.length; i++) {
-      var name = users[i].username.split(" ");
-      for (var j = 0; j < name.length; j++) {
-        for (var k = 0; k < string.length; k++) {
-          if (name[j].toLowerCase() === string[k].toLowerCase()) {
-            return users[i];
-          }
-        }
+      var str = users[i].username.toString();
+      if (str.toLowerCase() === string.toLowerCase()) {
+        matches = [users[i]];
+        break
+      } else if (regex.test(str)) {
+        matches.push(users[i]);
       }
     }
+    return matches;
   },
 
   sendMessage: function (event) {
@@ -77,12 +79,16 @@ var NewMessage = React.createClass({
     if (receiver.length === 0) {
       alert("No user found with that name");
     } else if (receiver.length > 1) {
-      alert("Multiple users found with that name");
+      var list = "";
+      for (var i = 0; i < receiver.length; i++) {
+        list += "\n" + receiver[i].username;
+      }
+      alert("Multiple users found with that name:\n" + list);
     } else {
-      var receiver_id = receiver.id;
+      var receiver_id = receiver[0].id;
       var body = event.target[1].value;
       var message = {sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false};
-      var conf = confirm("Confirm send message to " + receiver.username + "?");
+      var conf = confirm("Confirm send message to " + receiver[0].username + "?");
       if (conf) {
         ApiMessageUtil.createMessage(message)
         this.setState(this.blankAttrs);
