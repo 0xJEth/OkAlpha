@@ -57,7 +57,11 @@ var Messages = React.createClass({
 
   deleteMessage: function(event){
     event.preventDefault();
-    var message = MessageStore.find(parseInt(event.target.id));
+    var id = (parseInt(event.target.id));
+    if (id === this.state.messageDetails) {
+      this.setState({messageDetails: undefined});
+    }
+    var message = MessageStore.find(id);
     ApiMessageUtil.deleteMessage(message);
   },
 
