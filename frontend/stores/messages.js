@@ -29,8 +29,12 @@ var removeMessage = function () {
 
 MessageStore.dateToString = function(date){
   var timestamp = new Date(date);
+  var minutes = timestamp.getMinutes().toString();
+  if (minutes.length === 1) {
+    minutes = "0" + minutes;
+  }
   return (" " + timestamp.getHours() + ":" +
-          timestamp.getMinutes() + ", " +
+          minutes + ", " +
           DAYS[timestamp.getDay()] + " " +
           MONTHS[timestamp.getMonth()]+ " " +
           timestamp.getDate()

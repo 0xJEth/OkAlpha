@@ -32985,7 +32985,11 @@
 	
 	MessageStore.dateToString = function (date) {
 	  var timestamp = new Date(date);
-	  return " " + timestamp.getHours() + ":" + timestamp.getMinutes() + ", " + DAYS[timestamp.getDay()] + " " + MONTHS[timestamp.getMonth()] + " " + timestamp.getDate();
+	  var minutes = timestamp.getMinutes().toString();
+	  if (minutes.length === 1) {
+	    minutes = "0" + minutes;
+	  }
+	  return " " + timestamp.getHours() + ":" + minutes + ", " + DAYS[timestamp.getDay()] + " " + MONTHS[timestamp.getMonth()] + " " + timestamp.getDate();
 	};
 	
 	MessageStore.findMessage = function (user_id, message_id) {
@@ -33873,7 +33877,7 @@
 	                React.createElement('img', { id: user.id, className: 'side-scroll-img', src: user.image_url }),
 	                React.createElement(
 	                  'span',
-	                  { className: 'side-scroll-text' },
+	                  { id: user.id, className: 'side-scroll-text' },
 	                  user.username
 	                )
 	              );

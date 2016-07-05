@@ -109,7 +109,7 @@ var User = React.createClass({
                 return (
                   <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
                     <img id={user.id} className="side-scroll-img" src={user.image_url}/>
-                    <span className="side-scroll-text">{user.username}</span>
+                    <span id={user.id} className="side-scroll-text">{user.username}</span>
                   </li>
                 )
               }

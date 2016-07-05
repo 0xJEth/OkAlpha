@@ -12,7 +12,6 @@ ul.side-scroll-ul {
 }
 
 .side-scroll-ul {
-
   white-space: nowrap;
   height: 200px;
   width: 100%;
@@ -38,6 +37,15 @@ ul.side-scroll-ul {
   object-fit: cover;
   border-radius: 100%;
   cursor: pointer;
+  opacity: 1;
+}
+
+.side-scroll-li:hover img {
+  opacity: 0.8;
+}
+
+.side-scroll-text:hover {
+  color: #bfbfbf
 }
 
 .side-scroll-text {

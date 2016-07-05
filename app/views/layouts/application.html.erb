@@ -28,9 +28,10 @@
 						</a>
 					</h1>
 	        <ul class="header-list">
-						<li class="header-list-item">
+						<li class="header-list-item" id="profile-link">
 							<a href= "<%="#/profile/#{current_user.id}"%> " id="user_form">
 								<img id="img-icon" src="<%=current_user.image_url%>"></img>
+								<span class="profile-hover">Edit Profile</span>
 							</a>
 						</li>
 	          <li class="header-list-item"><%= button_to "Sign Out", session_url, :method => :delete %></li>
