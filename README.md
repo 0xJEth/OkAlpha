@@ -51,7 +51,7 @@ OkAplha is built with 4 tables: users, interests, messages, and likes. Each tabl
 
 There are several different components in OkAlpha. For example, a user's edit-profile page is made up of 3 main components: the upload picture form using Cloudinary called `Cloud`, the form to add interests called `Interests`, and the component that wraps them all together along with the personal details form called `UserForm`.
 
-![image of profile_form](./docs/profileScreenGrab.png)
+![image of profile_form](./docs/ProfileScreenGrab.png)
 
 ```javascript
 return (
