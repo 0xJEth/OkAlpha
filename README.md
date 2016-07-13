@@ -8,15 +8,15 @@ OkAlpha is a full-stack web application inspired by OkCupid.  It's built with Ru
 
 OkAlpha is a dating and match-making web application for the Alpha Quadrant. With OkAlpha, members of the Alpha Quadrant can:
 
-- [x] Create an account
-- [x] Log in / Log out
-- [x] Send in-app messages
-- [x] Create and edit their user profile
-- [x] Upload a profile picture
-- [x] Browse profiles of other users
-- [x] Search for specific users
-- [x] Look at recommended matches based on mutual interests
-- [x] Let users select people they're "like" and see who has "liked" them
+* Create an account
+* Log in / Log out
+* Send in-app messages
+* Create and edit their user profile
+* Upload a profile picture
+* Browse profiles of other users
+* Search for specific users
+* Look at recommended matches based on mutual interests
+* Let users select people they're "like" and see who has "liked" them
 
 ### Single-Page App
 
@@ -68,8 +68,8 @@ return (
 ## Future Ideas
 
 There are still a few features I'd like to add to OkAlpha in my spare time:
-- [x] The ability to mark messages as unread
-- [x] The ability to search messages
-- [x] The ability to see messages from one user or subject line bundled in a thread
-- [x] Fix the delete messages API so it takes both sender and receiver to delete
-- [x] Implement more complicated matching algorithms
+* The ability to mark messages as unread
+* The ability to search messages
+* The ability to see messages from one user or subject line bundled in a thread
+* Fix the delete messages API so it takes both sender and receiver to delete
+* Implement more complicated matching algorithms
