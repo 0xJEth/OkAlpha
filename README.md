@@ -2,86 +2,74 @@
 
 [Live](https://okalpha.herokuapp.com/)
 
-## Minimum Viable Product
+OkAlpha is a full-stack web application inspired by OkCupid.  It's built with Ruby on Rails on the backend, a PostgreSQL database, and React.js with a Flux architectural framework on the frontend.  
 
-OkAlpha is a dating and match-making web application for the Alpha Quadrant.
-It is inspired by OkCupid and built with Ruby on Rails and React. With OkAlpha,
-members of the Alpha Quadrant can:
+## Features
+
+OkAlpha is a dating and match-making web application for the Alpha Quadrant. With OkAlpha, members of the Alpha Quadrant can:
 
 - [x] Create an account
 - [x] Log in / Log out
-- [x] Guest account
-- [x] Create and edit their user profile
-- [x] Browse profiles of other users
-- [x] Search for users explicitly
-- [x] Look at recommended matches based on mutual interests
-- [x] Let users select people they "like" and see who has "liked" them
 - [x] Send in-app messages
+- [x] Create and edit their user profile
+- [x] Upload a profile picture
+- [x] Browse profiles of other users
+- [x] Search for specific users
+- [x] Look at recommended matches based on mutual interests
+- [x] Let users select people they're "like" and see who has "liked" them
 
-## Design Docs
-* [View Wireframes][view]
+### Single-Page App
+
+OkAlpha is a single-page app once you get past the signup page. The root page renders content specific to a user based on the session token. If nobody is logged in, the app redirects you to the signup page.
+
+```ruby
+class SessionsController < ApplicationController
+  def create
+    @current_user = User.find_by_credentials(
+      params[:user][:username],
+      params[:user][:password]
+    )
+    if @current_user
+      session[:session_token] = @current_user.reset_token!
+      redirect_to root_url
+    else
+      flash.now[:errors_login] = ["Invalid username or password"]
+      render :new
+    end
+  end
+end
+```
+
+### Database Schema
+
+OkAplha is built with 4 tables: users, interests, messages, and likes. Each table has its own store. When a user logs in, all of his or her personal data is collected from the database and stored in these stores. For example, to obtain all of a user's messages, an API request is made to the database which joins the user table and the message table polymorphically on both `receiver_id` and `sender_id`. Then, if just viewing these messages, calls to the store are made when refreshing, instead of pinging the database too often.
+
 * [DB schema][schema]
-
-[view]: ./docs/views.md
 [schema]: ./docs/schema.md
 
-## Implementation Timeline
+### Components
 
-### Phase 1: User Authentication, Rails Backend (2 days)
+There are several different components in OkAlpha. For example, a user's edit-profile page is made up of 3 main components: the upload picture form using Cloudinary called `Cloud`, the form to add interests called `Interests`, and the component that wraps them all together along with the personal details form called `UserForm`.
 
-In Phase 1, I will begin by implementing user signup and authentication (using
-BCrypt). After signup/signin users will be redirected to the root view. I will
-then create user show pages (profiles) with an option to edit if it's your
-account.
+![image of profile_form](profileScreenGrab.png)
 
-[Details][phase-one]
+```javascript
+return (
+  <div className="profile-cont">
+    <div className="profile-form">
+      <Cloud key={user.id} user={user}/>
+      {profileForm}
+      <Interests user={user}/>
+    </div>
+  </div>
+);
+```
 
-### Phase 2: Flux Architecture Frontend, User Store (2 days)
+## Future Ideas
 
-In phase 2, I'll set up Flux, the React Router, and the React view
-structure for the main application. After the basic Flux architecture has been
-set up, a User store will be implemented and a set of actions corresponding to
-the needed CRUD functionality created. Next, I'll create React
-views for the root page.
-
-[Details][phase-two]
-
-### Phase 3: Search Bar (2 days)
-
-In phase 3, I want to get the search functionality working. You can search for
-usernames, and hopefully I'll be able to implement searching for keywords
-that match users' interests or bio.
-
-[Details][phase-three]
-
-### Phase 4: Likes (2 day)
-
-In phase 4, I'll start working on the "like" functionality. Users will be able
-to like other people. There will be an index view of all people you like, all
-people who have liked you, and an index of mutual likes.
-
-[Details][phase-four]
-
-### Phase 5: AI Recommended Matches (2 day)
-
-In phase 5, I'll work on a feature that will make recommended matches based on mutual interests.
-
-[Details][phase-five]
-
-### Phase 6: Messaging (2 days)
-
-In phase 6, I'll implement the final feature which is in-app messages. There
-will be functionality to compose new messages and see your received messages.
-
-[Details][phase-six]
-
-### Phase 7: Make it pretty (2 day)
-
-CSS, fine tune views with jbuilder
-
-[phase-one]: ./docs/phases/phase1.md
-[phase-two]: ./docs/phases/phase2.md
-[phase-three]: ./docs/phases/phase3.md
-[phase-four]: ./docs/phases/phase4.md
-[phase-five]: ./docs/phases/phase5.md
-[phase-six]: ./docs/phases/phase6.md
+There are still a few features I'd like to add to OkAlpha in my spare time:
+- [x] The ability to mark messages as unread
+- [x] The ability to search messages
+- [x] The ability to see messages from one user or subject line bundled in a thread
+- [x] Fix the delete messages API so it takes both sender and receiver to delete
+- [x] Implement more complicated matching algorithms
