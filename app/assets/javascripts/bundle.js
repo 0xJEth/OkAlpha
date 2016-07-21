@@ -33841,7 +33841,7 @@
 	    var showUsers = [];
 	    if (this.state.users.length > 0) {
 	      var copyUsers = this.state.users.slice(0);
-	      while (showUsers.length < 7 && copyUsers.length > 0) {
+	      while (showUsers.length < 6 && copyUsers.length > 0) {
 	        var rand = Math.floor(Math.random() * copyUsers.length);
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
