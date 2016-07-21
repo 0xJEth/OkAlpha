@@ -33152,17 +33152,7 @@
 	          React.createElement(
 	            'h3',
 	            { className: 'h3' },
-	            'Users I like:'
-	          ),
-	          likesContainer
-	        ),
-	        React.createElement(
-	          'ul',
-	          { className: 'likes-div' },
-	          React.createElement(
-	            'h3',
-	            { className: 'h3' },
-	            'Users who like me:'
+	            'Users interested in me:'
 	          ),
 	          fansContainer
 	        ),
@@ -33172,7 +33162,17 @@
 	          React.createElement(
 	            'h3',
 	            { className: 'h3' },
-	            'My mutual likes:'
+	            'Users I\'m interested in:'
+	          ),
+	          likesContainer
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'You\'re both interested:'
 	          ),
 	          mutualContainer
 	        ),
@@ -33280,7 +33280,7 @@
 	      React.createElement(
 	        'h3',
 	        { className: 'h3' },
-	        'Recommended Matches:'
+	        'Users with shared interests:'
 	      ),
 	      matchList
 	    );
@@ -33732,8 +33732,10 @@
 	  render: function () {
 	    if (this.state.search != "") {
 	      var list = this.makeList(this.search(this.state.search));
+	      var browseAll = "enabled";
 	    } else {
 	      var list = this.makeList(UserStore.all());
+	      var browseAll = "disabled";
 	    }
 	
 	    return React.createElement(
@@ -33750,7 +33752,7 @@
 	        }),
 	        React.createElement(
 	          'button',
-	          { className: 'all-button', onClick: this.allUsers },
+	          { className: browseAll, onClick: this.allUsers },
 	          'Browse All Users'
 	        )
 	      ),
@@ -33869,6 +33871,16 @@
 	        React.createElement(
 	          'ul',
 	          { className: 'side-scroll-ul' },
+	          React.createElement(
+	            'li',
+	            { id: 'header-li', className: 'side-scroll-li' },
+	            React.createElement(
+	              'div',
+	              { id: 'header', className: 'side-scroll-img' },
+	              'Here are some users you might be interested in based on your gender preferences!'
+	            ),
+	            React.createElement('span', { id: 'no-text', className: 'side-scroll-text' })
+	          ),
 	          showUsers.map((function (user) {
 	            if (this.state.current_user) {
 	              return React.createElement(

@@ -104,7 +104,11 @@ var User = React.createClass({
       <div>
         <div className="container">
           <ul className="side-scroll-ul">
-            {showUsers.map(function(user) {
+            <li id="header-li" className="side-scroll-li">
+                <div  id="header" className="side-scroll-img">Here are some users you might be interested in based on your gender preferences!</div>
+                <span id="no-text" className="side-scroll-text"></span>
+              </li>
+          {showUsers.map(function(user) {
               if (this.state.current_user) {
                 return (
                   <li key={user.id} onClick={this.showDetail} className="side-scroll-li">
@@ -116,7 +120,7 @@ var User = React.createClass({
             }.bind(this))}
           </ul>
         </div>
-        <SearchBar currentUser={this.state.current_user}className="search-container"/>
+        <SearchBar currentUser={this.state.current_user} className="search-container"/>
       </div>
     );
   }

@@ -3,12 +3,24 @@ ul.side-scroll-ul {
   color: white;
   position: relative;
   margin: 0 auto;
-  width: 1000px;
+  width: 1200px;
 }
 
 .container {
   background-color: #4242f0;
   width: 100%;
+}
+
+#header {
+  border: 1px solid white;
+  white-space: normal;
+  line-height: 1.2;
+  text-align: center;
+  padding: 30px 20px;
+}
+
+#header, #no-text, #header-li {
+  cursor: default;
 }
 
 .side-scroll-ul {
@@ -18,7 +30,6 @@ ul.side-scroll-ul {
   overflow-x: hidden;
   overflow-y: hidden;
   display: block;
-  padding-left: 40px;
   padding-right: 40px;
   padding-top: 10px;
 }
@@ -49,6 +60,7 @@ ul.side-scroll-ul {
 }
 
 .side-scroll-text {
+  height: 25px;
   display: block;
   text-align: center;
   cursor: pointer;

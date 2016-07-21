@@ -85,15 +85,15 @@ var Likes = React.createClass({
       <div>
         <div className="likes-container">
           <ul className="likes-div">
-            <h3 className="h3" >Users I like:</h3>
-            {likesContainer}
-          </ul>
-          <ul className="likes-div">
-            <h3 className="h3">Users who like me:</h3>
+            <h3 className="h3">Users interested in me:</h3>
             {fansContainer}
           </ul>
           <ul className="likes-div">
-            <h3 className="h3">My mutual likes:</h3>
+            <h3 className="h3" >Users I'm interested in:</h3>
+            {likesContainer}
+          </ul>
+          <ul className="likes-div">
+            <h3 className="h3">You're both interested:</h3>
             {mutualContainer}
           </ul>
           <Matches id={this.state.current_user_id}/>

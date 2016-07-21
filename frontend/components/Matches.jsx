@@ -71,7 +71,7 @@ var Matches = React.createClass({
 
     return (
       <ul className="likes-div">
-        <h3 className="h3">Recommended Matches:</h3>
+        <h3 className="h3">Users with shared interests:</h3>
         {matchList}
       </ul>
     );
