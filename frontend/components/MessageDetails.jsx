@@ -36,16 +36,6 @@ var MessageDetails = React.createClass({
         receiver: UserStore.find(parseInt(message.receiver_id)),
         created_at: message.created_at
       })
-      if (message.receiver_id === this.state.current_user_id && !message.read) {
-        ApiMessageUtil.updateMessage({
-          body: message.body,
-          sender_id: message.sender_id,
-          receiver_id: message.receiver_id,
-          read: true,
-          id: message.id,
-          created_at: message.created_at
-        })
-      }
     }
   },
 

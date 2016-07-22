@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160102221655) do
+ActiveRecord::Schema.define(version: 20160722000225) do
 
   create_table "interests", force: :cascade do |t|
     t.string   "interest",   null: false
@@ -30,12 +30,14 @@ ActiveRecord::Schema.define(version: 20160102221655) do
   end
 
   create_table "messages", force: :cascade do |t|
-    t.integer  "sender_id",                   null: false
-    t.integer  "receiver_id",                 null: false
-    t.boolean  "read",        default: false, null: false
+    t.integer  "sender_id",                       null: false
+    t.integer  "receiver_id",                     null: false
+    t.boolean  "read",            default: false, null: false
     t.text     "body"
-    t.datetime "created_at",                  null: false
-    t.datetime "updated_at",                  null: false
+    t.datetime "created_at",                      null: false
+    t.datetime "updated_at",                      null: false
+    t.boolean  "sender_delete",   default: false, null: false
+    t.boolean  "receiver_delete", default: false, null: false
   end
 
   add_index "messages", ["sender_id", "receiver_id"], name: "index_messages_on_sender_id_and_receiver_id"

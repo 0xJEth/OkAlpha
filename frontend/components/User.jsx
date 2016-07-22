@@ -32,7 +32,7 @@ var User = React.createClass({
     var myMessages = MessageStore.allMyReceivedMessages(this.state.current_user.id);
     var unread_count = 0;
     myMessages.forEach(function(message){
-      if (!message.read) {
+      if (!message.read && !message.receiver_delete) {
         unread_count += 1;
       }
     })

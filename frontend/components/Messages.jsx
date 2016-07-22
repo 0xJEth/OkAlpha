@@ -18,7 +18,7 @@ var Messages = React.createClass({
     var messages = MessageStore.allMyReceivedMessages(current_user_id);
     var count = 0;
     messages.forEach(function(message){
-      if (!message.read) {
+      if (!message.read && !message.receiver_delete) {
         count += 1;
       }
     })
@@ -52,7 +52,20 @@ var Messages = React.createClass({
 
   showMessage: function(event) {
     event.preventDefault();
-    this.setState({messageDetails: parseInt(event.currentTarget.id)})
+    this.setState({messageDetails: parseInt(event.currentTarget.id)});
+    var message = MessageStore.find(parseInt(event.currentTarget.id));
+    if (message.receiver_id === this.state.current_user_id && !message.read) {
+      ApiMessageUtil.updateMessage({
+        body: message.body,
+        sender_id: message.sender_id,
+        receiver_id: message.receiver_id,
+        read: true,
+        id: message.id,
+        created_at: message.created_at,
+        receiver_delete: message.receiver_delete,
+        sender_delete: message.sender_delete
+      })
+    }
   },
 
   deleteMessage: function(event){
@@ -62,7 +75,31 @@ var Messages = React.createClass({
       this.setState({messageDetails: undefined});
     }
     var message = MessageStore.find(id);
-    ApiMessageUtil.deleteMessage(message);
+    if (message.sender_id === this.state.current_user_id && !message.receiver_delete) {
+      ApiMessageUtil.updateMessage({
+        body: message.body,
+        sender_id: message.sender_id,
+        receiver_id: message.receiver_id,
+        read: message.read,
+        id: message.id,
+        created_at: message.created_at,
+        receiver_delete: message.receiver_delete,
+        sender_delete: true
+      })
+    } else if (message.receiver_id === this.state.current_user_id && !message.sender_delete) {
+      ApiMessageUtil.updateMessage({
+        body: message.body,
+        sender_id: message.sender_id,
+        receiver_id: message.receiver_id,
+        read: message.read,
+        id: message.id,
+        created_at: message.created_at,
+        receiver_delete: true,
+        sender_delete: message.sender_delete
+      })
+    } else {
+      ApiMessageUtil.deleteMessage(message);
+    }
   },
 
   render: function () {
@@ -80,17 +117,19 @@ var Messages = React.createClass({
           } else {
             var read = "unread";
           }
-          messageReceivedContainer.unshift(
-            <div key={message.id}>
-              <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
-              <li onClick={this.showMessage} id={message.id} className="message-list-item">
-                <div className={read}>
-                  {user.username}
-                  <span className="date">{date}</span>
-                </div>
-              </li>
-            </div>
-          )
+          if (!message.receiver_delete) {
+            messageReceivedContainer.unshift(
+              <div key={message.id}>
+                <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
+                <li onClick={this.showMessage} id={message.id} className="message-list-item">
+                  <div className={read}>
+                    {user.username}
+                    <span className="date">{date}</span>
+                  </div>
+                </li>
+              </div>
+            )
+          }
         }
       }.bind(this))
       messageReceivedContainer.unshift(<li key={1001} className="message-label">User<span className="date-label">Date</span></li>);
@@ -103,17 +142,19 @@ var Messages = React.createClass({
         var user = UserStore.find(parseInt(message.receiver_id));
         var date = MessageStore.dateToString(message.created_at)
         if (user) {
-          messageSentContainer.unshift(
-            <div key={message.id}>
-              <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
-              <li onClick={this.showMessage} id={message.id} className="message-list-item">
-                <div className="read">
-                  {user.username}
-                  <span className="date">{date}</span>
-                </div>
-              </li>
-            </div>
-          )
+          if (!message.sender_delete) {
+            messageSentContainer.unshift(
+              <div key={message.id}>
+                <button title="delete" className="remove-interest" id={message.id} onClick={this.deleteMessage}>X</button>
+                <li onClick={this.showMessage} id={message.id} className="message-list-item">
+                  <div className="read">
+                    {user.username}
+                    <span className="date">{date}</span>
+                  </div>
+                </li>
+              </div>
+            )
+          }
         }
       }.bind(this))
       messageSentContainer.unshift(<li key={1003} className="message-label">User<span className="date-label">Date</span></li>);
