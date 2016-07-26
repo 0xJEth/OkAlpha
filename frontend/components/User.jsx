@@ -7,7 +7,8 @@ var React = require('react'),
     UserStore = require('../stores/users'),
     MessageStore = require('../stores/messages'),
     History = require('react-router').History,
-    UserItem = require('./UserItem');
+    UserItem = require('./UserItem'),
+    RecentActivity = require('./RecentActivity');
 
 function _getStateFromStore() {
   var current_user = UserStore.currentUser();
@@ -121,6 +122,7 @@ var User = React.createClass({
           </ul>
         </div>
         <SearchBar currentUser={this.state.current_user} className="search-container"/>
+        <RecentActivity currentUser={this.state.current_user} className="recent-activity"/>
       </div>
     );
   }

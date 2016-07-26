@@ -19,6 +19,6 @@ class Api::InterestsController < ApplicationController
   private
 
   def interest_params
-    params.require(:interest).permit(:user_id, :interest)
+    params.require(:interest).permit(:user_id, :interest, :created_at)
   end
 end

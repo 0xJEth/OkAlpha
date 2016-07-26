@@ -5,6 +5,6 @@ class Api::SessionsController < ApplicationController
   end
 
   def profile_params
-    params.require(:user).permit(:username,:gender,:preferred_gender,:email,:bio,:image_url,:id)
+    params.require(:user).permit(:username,:gender,:preferred_gender,:email,:bio,:image_url,:id,:updated_at)
   end
 end

@@ -10,9 +10,14 @@ module.exports = React.createClass({
   },
 
   render: function () {
+    if (this.props.text) {
+      var text = this.props.text;
+    } else {
+      var text = this.props.user.username;
+    }
     return(
       <li onClick={this.showDetail} className="user-item">
-        {this.props.user.username}
+        {text}
       </li>
     );
   }

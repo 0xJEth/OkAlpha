@@ -32942,10 +32942,15 @@
 	  },
 	
 	  render: function () {
+	    if (this.props.text) {
+	      var text = this.props.text;
+	    } else {
+	      var text = this.props.user.username;
+	    }
 	    return React.createElement(
 	      'li',
 	      { onClick: this.showDetail, className: 'user-item' },
-	      this.props.user.username
+	      text
 	    );
 	  }
 	});
@@ -33811,7 +33816,8 @@
 	    UserStore = __webpack_require__(215),
 	    MessageStore = __webpack_require__(255),
 	    History = __webpack_require__(1).History,
-	    UserItem = __webpack_require__(254);
+	    UserItem = __webpack_require__(254),
+	    RecentActivity = __webpack_require__(262);
 	
 	function _getStateFromStore() {
 	  var current_user = UserStore.currentUser();
@@ -33928,12 +33934,136 @@
 	          }).bind(this))
 	        )
 	      ),
-	      React.createElement(SearchBar, { currentUser: this.state.current_user, className: 'search-container' })
+	      React.createElement(SearchBar, { currentUser: this.state.current_user, className: 'search-container' }),
+	      React.createElement(RecentActivity, { currentUser: this.state.current_user, className: 'recent-activity' })
 	    );
 	  }
 	});
 	
 	module.exports = User;
+
+/***/ },
+/* 262 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiInterestUtil = __webpack_require__(244),
+	    UserStore = __webpack_require__(215),
+	    InterestStore = __webpack_require__(243),
+	    MessageStore = __webpack_require__(255),
+	    UserItem = __webpack_require__(254),
+	    History = __webpack_require__(1).History;
+	
+	var RecentActivity = React.createClass({
+	  displayName: 'RecentActivity',
+	
+	  mixins: [History],
+	
+	  getStateFromStore: function () {
+	    var current_user = this.props.currentUser;
+	    var current_user_id = parseInt(this.props.currentUser.id);
+	    return {
+	      users: UserStore.all(),
+	      interests: InterestStore.allInterests(),
+	      current_user: current_user,
+	      current_user_id: current_user_id
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  _activityChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  componentDidMount: function () {
+	    this.usersListener = UserStore.addListener(this._activityChanged);
+	    this.interestsListener = InterestStore.addListener(this._activityChanged);
+	    ApiUserUtil.fetchUsers();
+	    ApiUserUtil.fetchCurrentUser();
+	    ApiInterestUtil.fetchInterests();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.usersListener.remove();
+	    this.interestsListener.remove();
+	  },
+	
+	  populateActivity: function () {
+	    if (this.state.users.length > 0 && this.state.interests.length > 0) {
+	      var users = this.state.users;
+	      var interests = this.state.interests;
+	      var activity_array = users.concat(interests);
+	      activity_array.sort(function (a, b) {
+	        if (a.updated_at < b.updated_at) {
+	          return 1;
+	        }
+	        if (a.updated_at > b.updated_at) {
+	          return -1;
+	        }
+	        return 0;
+	      });
+	      return activity_array;
+	    }
+	  },
+	
+	  render: function () {
+	    var activity = this.populateActivity();
+	    if (activity) {
+	      var activity_show = [];
+	      var user;
+	      var pronoun;
+	      var i = 0;
+	      var action;
+	      while (activity_show.length < 11) {
+	        action = activity[i];
+	        user = UserStore.find(action.user_id || action.id);
+	        if (user.id != this.state.current_user_id) {
+	          if (user.gender === "male") {
+	            pronoun = "his";
+	          } else if (user.gender === "female") {
+	            pronoun = "her";
+	          } else {
+	            pronoun = "their";
+	          }
+	          if (action.interest) {
+	            var string = user.username + " has added " + action.interest + " to " + pronoun + " interests";
+	            activity_show.push(React.createElement(UserItem, { key: i, user: user, text: string }));
+	          } else if (Date.now() - Date.parse(user.created_at) < 604800000) {
+	            var string = user.username + " is a new member!";
+	            activity_show.push(React.createElement(UserItem, { key: i, user: user, text: string }));
+	          } else {
+	            var string = user.username + " has updated " + pronoun + " profile";
+	            activity_show.push(React.createElement(UserItem, { key: i, user: user, text: string }));
+	          }
+	        }
+	        i += 1;
+	      }
+	      return React.createElement(
+	        'div',
+	        null,
+	        React.createElement(
+	          'h4',
+	          null,
+	          'Recent Activity'
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'activity' },
+	          activity_show
+	        )
+	      );
+	    } else {
+	      return React.createElement('div', null);
+	    }
+	  }
+	});
+	
+	module.exports = RecentActivity;
 
 /***/ }
 /******/ ]);
