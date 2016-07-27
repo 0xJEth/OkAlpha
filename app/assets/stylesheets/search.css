@@ -4,7 +4,7 @@
 
 .search-div {
   position: relative;
-  width: 750px;
+  width: 1000px;
   margin: 0 auto;
 }
 
@@ -26,9 +26,9 @@
 .search-results {
   height: auto;
   padding: 10px;
-  -webkit-column-count: 3;
-  -moz-column-count: 3;
-  column-count: 3;
+  -webkit-column-count: 2;
+  -moz-column-count: 2;
+  column-count: 2;
   }
 
 .search-results li.user-item {
