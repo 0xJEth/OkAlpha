@@ -82,21 +82,25 @@ var RecentActivity = React.createClass({
           }
           if (action.interest) {
             var string = user.username + " has added " + action.interest + " to " + pronoun + " interests";
-            activity_show.push(<UserItem key={i} user={user} text={string}/>);
+            activity_show.push(<div><img id={user.id} className="activity-image" src={user.image_url}/>
+                               <UserItem key={i} user={user} text={string}/></div>);
           } else if (Date.now() - Date.parse(user.created_at) < 604800000) {
             var string = user.username + " is a new member!";
-            activity_show.push(<UserItem key={i} user={user} text={string}/>);
+            activity_show.push(<div><img id={user.id} className="activity-image" src={user.image_url}/>
+                               <UserItem key={i} user={user} text={string}/></div>);
           } else {
             var string = user.username + " has updated " + pronoun + " profile";
-            activity_show.push(<UserItem key={i} user={user} text={string}/>);
+            activity_show.push(<div><img id={user.id} className="activity-image" src={user.image_url}/>
+                               <UserItem key={i} user={user} text={string}/></div>);
           }
         }
         i += 1;
       }
       return (
-        <div>
-          <h4>Recent Activity</h4>
-          <ul className="activity">
+        <div className="activity-div">
+        <hr className="bar"/><hr className="bar"/>
+          <h3>Recent Activity</h3>
+          <ul className="activity-ul">
             {activity_show}
           </ul>
         </div>

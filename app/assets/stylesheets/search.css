@@ -20,7 +20,7 @@
   margin-top: 20px;
   margin-left: 20px;
   color: black;
-  font-size: 12pt;
+  font-size: 14pt;
 }
 
 .search-results {
@@ -40,6 +40,7 @@
   white-space: nowrap;
   margin-left: 20px;
   color: black;
+  font-size: 12pt;
 }
 
 .search-button, .enabled {

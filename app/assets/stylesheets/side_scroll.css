@@ -67,3 +67,35 @@ ul.side-scroll-ul {
   padding: 5px;
   font-size: 10pt;
 }
+
+.activity-div {
+  width: 750px;
+  margin: 10px auto;
+  padding: 25px;
+}
+
+.activity-div h3 {
+  padding-top: 25px;
+  margin-left: 300px;
+}
+
+.activity-ul {
+  padding: 10px;
+  font-size: 12pt;
+}
+
+.activity-image {
+  width: 50px;
+  height: 50px;
+  border-radius: 25%;
+  object-fit: cover;
+  margin: 10px 10px 10px 100px;
+}
+
+.activity-ul li.user-item {
+  display: inline-block;
+  padding: 15px;
+  cursor: pointer;
+  margin-right: 100px;
+  white-space: nowrap;
+}

@@ -34032,28 +34032,45 @@
 	          }
 	          if (action.interest) {
 	            var string = user.username + " has added " + action.interest + " to " + pronoun + " interests";
-	            activity_show.push(React.createElement(UserItem, { key: i, user: user, text: string }));
+	            activity_show.push(React.createElement(
+	              'div',
+	              null,
+	              React.createElement('img', { id: user.id, className: 'activity-image', src: user.image_url }),
+	              React.createElement(UserItem, { key: i, user: user, text: string })
+	            ));
 	          } else if (Date.now() - Date.parse(user.created_at) < 604800000) {
 	            var string = user.username + " is a new member!";
-	            activity_show.push(React.createElement(UserItem, { key: i, user: user, text: string }));
+	            activity_show.push(React.createElement(
+	              'div',
+	              null,
+	              React.createElement('img', { id: user.id, className: 'activity-image', src: user.image_url }),
+	              React.createElement(UserItem, { key: i, user: user, text: string })
+	            ));
 	          } else {
 	            var string = user.username + " has updated " + pronoun + " profile";
-	            activity_show.push(React.createElement(UserItem, { key: i, user: user, text: string }));
+	            activity_show.push(React.createElement(
+	              'div',
+	              null,
+	              React.createElement('img', { id: user.id, className: 'activity-image', src: user.image_url }),
+	              React.createElement(UserItem, { key: i, user: user, text: string })
+	            ));
 	          }
 	        }
 	        i += 1;
 	      }
 	      return React.createElement(
 	        'div',
-	        null,
+	        { className: 'activity-div' },
+	        React.createElement('hr', { className: 'bar' }),
+	        React.createElement('hr', { className: 'bar' }),
 	        React.createElement(
-	          'h4',
+	          'h3',
 	          null,
 	          'Recent Activity'
 	        ),
 	        React.createElement(
 	          'ul',
-	          { className: 'activity' },
+	          { className: 'activity-ul' },
 	          activity_show
 	        )
 	      );
