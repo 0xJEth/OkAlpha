@@ -1,6 +1,7 @@
 class Api::SessionsController < ApplicationController
 
   def show
+    p current_user
     render json: current_user
   end
 

@@ -8,6 +8,7 @@ var React = require('react'),
     MessageStore = require('../stores/messages'),
     NewMessage = require('./NewMessage'),
     MessageDetails = require('./MessageDetails'),
+    Header = require('./Header'),
     UserStore = require('../stores/users');
 
 var Messages = React.createClass({

@@ -9,6 +9,7 @@ var React = require('react'),
     NewMessage = require('./NewMessage'),
     InterestStore = require('../stores/interests'),
     LikeStore = require('../stores/likes'),
+    Header = require('./Header'),
     UserStore = require('../stores/users');
 
 var UserShow = React.createClass({
@@ -35,7 +36,6 @@ var UserShow = React.createClass({
     this.interestsListener = InterestStore.addListener(this._userChanged);
     this.likeListener = LikeStore.addListener(this._userChanged);
     ApiUserUtil.fetchUser(parseInt(this.props.params.id));
-    ApiUserUtil.fetchCurrentUser();
     ApiInterestUtil.fetchInterests();
     ApiLikeUtil.fetchLikes();
   },

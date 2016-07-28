@@ -18,7 +18,11 @@ var resetUser = function (user) {
   _users[user.id] = user;
 };
 
-var getCurrentUser = function(user) {
+// var resetSession = function (user) {
+//   current_user = null;
+// }
+
+var getCurrentUser = function (user) {
   current_user = user;
 };
 
@@ -72,6 +76,9 @@ UserStore.__onDispatch = function (payload) {
     case Constants.CURRENT_USER_RECEIVED:
       getCurrentUser(payload.current_user);
       break;
+    // case Constants.SESSION_REMOVED:
+    //   resetSession();
+    //   break;
   }
   UserStore.__emitChange();
 };

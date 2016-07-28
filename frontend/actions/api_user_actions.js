@@ -42,6 +42,13 @@ var ApiUserActions = {
       actionType: Constants.SEARCH_PARAMS_RECEIVED,
       searchParams: searchParams
     })
+  },
+
+  removeSession: function(user) {
+    AppDispatcher.dispatch({
+      actionType: Constants.SESSION_REMOVED,
+      user: user
+    });
   }
 }
 

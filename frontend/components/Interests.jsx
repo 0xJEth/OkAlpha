@@ -5,6 +5,7 @@ var React = require('react'),
     InterestStore = require('../stores/interests'),
     History = require('react-router').History,
     ApiInterestUtil = require('../util/api_interest_util'),
+    Header = require('./Header'),
     ApiUserUtil = require('../util/api_user_util');
 
 var Interests = React.createClass({

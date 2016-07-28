@@ -65,6 +65,19 @@ var ApiUserUtil = {
         console.log(message);
       }
     })
+  },
+
+  deleteSession: function (user) {
+    $.ajax({
+      url: "session",
+      type: "DELETE",
+      success: function (user) {
+        ApiUserActions.removeSession(user);
+      },
+      error: function (message) {
+        console.log(message);
+      }
+    });
   }
 
 };

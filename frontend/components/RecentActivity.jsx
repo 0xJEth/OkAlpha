@@ -34,7 +34,6 @@ var RecentActivity = React.createClass({
     this.usersListener = UserStore.addListener(this._activityChanged);
     this.interestsListener = InterestStore.addListener(this._activityChanged);
     ApiUserUtil.fetchUsers();
-    ApiUserUtil.fetchCurrentUser();
     ApiInterestUtil.fetchInterests();
   },
 
@@ -69,7 +68,7 @@ var RecentActivity = React.createClass({
       var pronoun;
       var i = 0;
       var action;
-      while (activity_show.length < 11) {
+      while (activity_show.length < 8) {
         action = activity[i];
         user = UserStore.find(action.user_id || action.id);
         if (user.id != this.state.current_user_id) {

@@ -53,19 +53,56 @@
 	    UserForm = __webpack_require__(210),
 	    UserShow = __webpack_require__(246),
 	    Likes = __webpack_require__(256),
+	    Header = __webpack_require__(263),
 	    Messages = __webpack_require__(258),
-	    User = __webpack_require__(261);
+	    User = __webpack_require__(261),
+	    UserStore = __webpack_require__(215),
+	    MessageStore = __webpack_require__(255),
+	    ApiUserUtil = __webpack_require__(234);
 	
 	var App = React.createClass({
 	  displayName: 'App',
 	
+	  getStateFromStore: function () {
+	    var current_user = UserStore.currentUser();
+	    if (current_user) {
+	      var myMessages = MessageStore.allMyReceivedMessages(current_user.id);
+	      return {
+	        current_user: current_user,
+	        current_user_id: parseInt(current_user.id),
+	        messageCount: 2
+	      };
+	    }
+	  },
+	
+	  getInitialState: function () {
+	    ApiUserUtil.fetchCurrentUser();
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._currentUserChanged);
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	  },
+	
+	  _currentUserChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
 	  render: function () {
-	    return React.createElement(
-	      'div',
-	      { className: 'router' },
-	      React.createElement('header', null),
-	      this.props.children
-	    );
+	    if (!this.state.current_user_id) {
+	      return React.createElement('div', null);
+	    } else {
+	      return React.createElement(
+	        'div',
+	        { className: 'router' },
+	        React.createElement(Header, { currentUserId: this.state.current_user_id, unreadCount: this.state.messageCount }),
+	        this.props.children
+	      );
+	    }
 	  }
 	});
 	
@@ -24452,6 +24489,7 @@
 	    UserStore = __webpack_require__(215),
 	    Cloud = __webpack_require__(239),
 	    Interests = __webpack_require__(242),
+	    Header = __webpack_require__(263),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var LinkedStateRadioGroupMixin = {
@@ -24931,6 +24969,10 @@
 	  _users[user.id] = user;
 	};
 	
+	// var resetSession = function (user) {
+	//   current_user = null;
+	// }
+	
 	var getCurrentUser = function (user) {
 	  current_user = user;
 	};
@@ -24985,6 +25027,9 @@
 	    case Constants.CURRENT_USER_RECEIVED:
 	      getCurrentUser(payload.current_user);
 	      break;
+	    // case Constants.SESSION_REMOVED:
+	    //   resetSession();
+	    //   break;
 	  }
 	  UserStore.__emitChange();
 	};
@@ -31422,6 +31467,7 @@
 	  USERS_RECEIVED: "USERS_RECEIVED",
 	  USER_RECEIVED: "USER_RECEIVED",
 	  USER_UPDATED: "USER_UPDATED",
+	  SESSION_REMOVED: "SESSION_REMOVED",
 	
 	  LIKES_RECEIVED: "LIKES_RECEIVED",
 	  LIKE_RECEIVED: "LIKE_RECEIVED",
@@ -31511,6 +31557,19 @@
 	        console.log(message);
 	      }
 	    });
+	  },
+	
+	  deleteSession: function (user) {
+	    $.ajax({
+	      url: "session",
+	      type: "DELETE",
+	      success: function (user) {
+	        ApiUserActions.removeSession(user);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
 	  }
 	
 	};
@@ -31563,6 +31622,13 @@
 	    AppDispatcher.dispatch({
 	      actionType: Constants.SEARCH_PARAMS_RECEIVED,
 	      searchParams: searchParams
+	    });
+	  },
+	
+	  removeSession: function (user) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.SESSION_REMOVED,
+	      user: user
 	    });
 	  }
 	};
@@ -31932,6 +31998,7 @@
 	    InterestStore = __webpack_require__(243),
 	    History = __webpack_require__(1).History,
 	    ApiInterestUtil = __webpack_require__(244),
+	    Header = __webpack_require__(263),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var Interests = React.createClass({
@@ -32217,6 +32284,7 @@
 	    NewMessage = __webpack_require__(251),
 	    InterestStore = __webpack_require__(243),
 	    LikeStore = __webpack_require__(250),
+	    Header = __webpack_require__(263),
 	    UserStore = __webpack_require__(215);
 	
 	var UserShow = React.createClass({
@@ -32245,7 +32313,6 @@
 	    this.interestsListener = InterestStore.addListener(this._userChanged);
 	    this.likeListener = LikeStore.addListener(this._userChanged);
 	    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
-	    ApiUserUtil.fetchCurrentUser();
 	    ApiInterestUtil.fetchInterests();
 	    ApiLikeUtil.fetchLikes();
 	  },
@@ -33069,6 +33136,7 @@
 	    UserItem = __webpack_require__(254),
 	    History = __webpack_require__(1).History,
 	    Matches = __webpack_require__(257),
+	    Header = __webpack_require__(263),
 	    UserStore = __webpack_require__(215);
 	
 	var Likes = React.createClass({
@@ -33308,6 +33376,7 @@
 	    MessageStore = __webpack_require__(255),
 	    NewMessage = __webpack_require__(251),
 	    MessageDetails = __webpack_require__(259),
+	    Header = __webpack_require__(263),
 	    UserStore = __webpack_require__(215);
 	
 	var Messages = React.createClass({
@@ -33814,54 +33883,52 @@
 	    ApiUserUtil = __webpack_require__(234),
 	    ApiMessageUtil = __webpack_require__(252),
 	    UserStore = __webpack_require__(215),
-	    MessageStore = __webpack_require__(255),
 	    History = __webpack_require__(1).History,
 	    UserItem = __webpack_require__(254),
+	    Header = __webpack_require__(263),
 	    RecentActivity = __webpack_require__(262);
-	
-	function _getStateFromStore() {
-	  var current_user = UserStore.currentUser();
-	  var myMessages = MessageStore.allMyReceivedMessages(current_user.id);
-	
-	  return {
-	    current_user: current_user,
-	    users: UserStore.all(),
-	    messageCount: 0
-	  };
-	}
 	
 	var User = React.createClass({
 	  displayName: 'User',
 	
 	  mixins: [History],
 	
-	  getInitialState: function () {
-	    return _getStateFromStore();
+	  getStateFromStore: function () {
+	    var current_user = UserStore.currentUser();
+	    var users = UserStore.all();
+	    return {
+	      current_user: current_user,
+	      users: users
+	    };
 	  },
 	
-	  _usersChanged: function () {
-	    this.setState(_getStateFromStore());
-	    var myMessages = MessageStore.allMyReceivedMessages(this.state.current_user.id);
-	    var unread_count = 0;
-	    myMessages.forEach(function (message) {
-	      if (!message.read && !message.receiver_delete) {
-	        unread_count += 1;
-	      }
-	    });
-	    this.setState({ messageCount: unread_count });
+	  getInitialState: function () {
+	    return this.getStateFromStore();
 	  },
 	
 	  componentDidMount: function () {
-	    this.usersListener = UserStore.addListener(this._usersChanged);
-	    this.messageListener = MessageStore.addListener(this._usersChanged);
-	    ApiMessageUtil.fetchMessages();
-	    ApiUserUtil.fetchUsers();
-	    ApiUserUtil.fetchCurrentUser();
+	    this.userListener = UserStore.addListener(this._usersChanged);
+	    var state = this.getStateFromStore();
+	    var showUsers = this.randomize(state.current_user, state.users);
+	    this.setState({
+	      current_user: state.current_user,
+	      users: state.users,
+	      showUsers: showUsers
+	    });
 	  },
 	
 	  componentWillUnmount: function () {
-	    this.usersListener.remove();
-	    this.messageListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _usersChanged: function () {
+	    var state = this.getStateFromStore();
+	    var showUsers = this.randomize(state.current_user, state.users);
+	    this.setState({
+	      current_user: state.current_user,
+	      users: state.users,
+	      showUsers: showUsers
+	    });
 	  },
 	
 	  searchResults: function (string) {
@@ -33874,16 +33941,16 @@
 	    this.history.pushState(current_user, '/user/' + user.id);
 	  },
 	
-	  randomize: function () {
+	  randomize: function (current_user, users) {
 	    var showUsers = [];
-	    if (this.state.users.length > 0) {
-	      var copyUsers = this.state.users.slice(0);
+	    if (users.length > 0) {
+	      var copyUsers = users.slice(0);
 	      while (showUsers.length < 6 && copyUsers.length > 0) {
 	        var rand = Math.floor(Math.random() * copyUsers.length);
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
-	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" && user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png") {
-	          if (this.state.current_user.preferred_gender === "no preference" || this.state.current_user.preferred_gender === user.gender || !this.state.current_user.preferred_gender || user.gender != "male" && user.gender != "female") {
+	        if (current_user && user && current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" && user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png") {
+	          if (current_user.preferred_gender === "no preference" || current_user.preferred_gender === user.gender || !current_user.preferred_gender || user.gender != "male" && user.gender != "female") {
 	            showUsers.push(user);
 	          }
 	        }
@@ -33893,12 +33960,13 @@
 	  },
 	
 	  render: function () {
-	    if (this.state.messageCount > 0) {
-	      var badge = document.getElementById("badge");
-	      badge.className = "show", badge.innerHTML = this.state.messageCount;
-	    }
-	
-	    var showUsers = this.randomize();
+	    if (!this.state.current_user || !this.state.showUsers) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        'loading'
+	      );
+	    };
 	    return React.createElement(
 	      'div',
 	      null,
@@ -33918,7 +33986,7 @@
 	            ),
 	            React.createElement('span', { id: 'no-text', className: 'side-scroll-text' })
 	          ),
-	          showUsers.map((function (user) {
+	          this.state.showUsers.map((function (user) {
 	            if (this.state.current_user) {
 	              return React.createElement(
 	                'li',
@@ -33984,7 +34052,6 @@
 	    this.usersListener = UserStore.addListener(this._activityChanged);
 	    this.interestsListener = InterestStore.addListener(this._activityChanged);
 	    ApiUserUtil.fetchUsers();
-	    ApiUserUtil.fetchCurrentUser();
 	    ApiInterestUtil.fetchInterests();
 	  },
 	
@@ -34019,7 +34086,7 @@
 	      var pronoun;
 	      var i = 0;
 	      var action;
-	      while (activity_show.length < 11) {
+	      while (activity_show.length < 8) {
 	        action = activity[i];
 	        user = UserStore.find(action.user_id || action.id);
 	        if (user.id != this.state.current_user_id) {
@@ -34081,6 +34148,111 @@
 	});
 	
 	module.exports = RecentActivity;
+
+/***/ },
+/* 263 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    LinkedStateMixin = __webpack_require__(211),
+	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215),
+	    MessageStore = __webpack_require__(255),
+	    Messages = __webpack_require__(258),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiMessageUtil = __webpack_require__(252);
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [History],
+	
+	  getStateFromStore: function () {
+	    var current_user = UserStore.find(parseInt(this.props.currentUserId));
+	    return {
+	      current_user: current_user,
+	      id: parseInt(this.props.currentUserId),
+	      unread_count: this.props.messageCount
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    var current_user = UserStore.find(parseInt(newProps.currentUserId));
+	    this.setState({ current_user: current_user, unread_count: newProps.messageCount });
+	  },
+	
+	  handleMatchesButton: function (event) {
+	    event.preventDefault();
+	    var current_user = this.state.current_user;
+	    this.history.pushState(current_user, '/likes/' + this.state.id);
+	  },
+	
+	  handleMessagesButton: function (event) {
+	    event.preventDefault();
+	    var current_user = this.state.current_user;
+	    this.history.pushState(current_user, '/messages/' + this.state.id);
+	  },
+	
+	  handleEditProfileButton: function (event) {
+	    event.preventDefault();
+	    var current_user = this.state.current_user;
+	    this.history.pushState(current_user, '/profile/' + this.state.id);
+	  },
+	
+	  render: function () {
+	    if (!this.state.current_user) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        'loading'
+	      );
+	    };
+	
+	    return React.createElement(
+	      'nav',
+	      { className: 'header-nav' },
+	      React.createElement(
+	        'a',
+	        { id: 'profile-link', onClick: this.handleEditProfileButton },
+	        React.createElement('img', { id: 'img-icon', src: this.state.current_user.image_url }),
+	        React.createElement(
+	          'span',
+	          { className: 'profile-hover' },
+	          'Edit Profile'
+	        )
+	      ),
+	      React.createElement(
+	        'h1',
+	        { className: 'header-logo' },
+	        React.createElement(
+	          'a',
+	          { className: 'header-button', href: '#' },
+	          'OkAlpha'
+	        ),
+	        React.createElement(
+	          'a',
+	          { className: 'header-button', onClick: this.handleMatchesButton },
+	          'My Matches'
+	        ),
+	        React.createElement(
+	          'a',
+	          { className: 'header-button', onClick: this.handleMessagesButton },
+	          React.createElement(
+	            'div',
+	            null,
+	            'My Messages'
+	          ),
+	          React.createElement('span', { className: 'hidden', id: 'badge' })
+	        )
+	      )
+	    );
+	  }
+	});
 
 /***/ }
 /******/ ]);

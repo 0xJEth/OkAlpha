@@ -5,6 +5,7 @@ var React = require('react'),
     UserStore = require('../stores/users'),
     Cloud = require('./Cloud'),
     Interests = require('./Interests'),
+    Header = require('./Header'),
     ApiUserUtil = require('../util/api_user_util');
 
 var LinkedStateRadioGroupMixin = {

@@ -7,6 +7,7 @@ var React = require('react'),
     UserItem = require('./UserItem'),
     History = require('react-router').History,
     Matches = require('./Matches'),
+    Header = require('./Header'),
     UserStore = require('../stores/users');
 
 var Likes = React.createClass({
