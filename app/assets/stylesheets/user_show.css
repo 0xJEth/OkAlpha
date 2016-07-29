@@ -48,27 +48,37 @@
 }
 
 .fan-boolean {
-  display: inline-block;
-  margin: 10px 20px 10px 80px;
+  display: flex;
+  margin: 0px 20px 10px 64px;
   color: white;
+  cursor: default;
 }
 
 .star-form {
-  color: black;
-  cursor: auto;
+  color: white;
   margin-left: 10px;
 }
 
 .star-form span {
-  border-radius: 5px;
-  margin-left: 10px;
-  padding: 10px;
-  background-color: #e3e3e3;
-  cursor: pointer;
+  background-color: #4242f0;
+  cursor: default;
 }
 
-.star-form span:hover {
-  color: #999999;
+.star-form label {
+  margin: 0 5px;
+  cursor: pointer;
+  border-radius: 100%;
+}
+
+.like-checkbox + label:hover {
+  background-size: 54px 54px;
+}
+
+.like-checkbox:checked + label:hover {
+  width: 53px;
+  height: 53px;
+  margin-right: 2px;
+  margin-bottom: 0;
 }
 
 .like-checkbox {
@@ -82,12 +92,13 @@
   display: inline-block;
   width: 50px;
   height: 50px;
-  margin-top: -5px;
-  padding: 10px;
 }
 
 .like-checkbox:checked + label {
-  background-size: 50px 50px;
+  background-size: 52px 52px;
   background: url('https://res.cloudinary.com/jolinar1013/image/upload/c_crop,g_center,h_270,w_270/v1467252673/insignia2_kujjzr.png');
   background-repeat:round;
+  width: 50px;
+  height: 50px;
+  margin-bottom: 3px;
 }

@@ -3,7 +3,6 @@ var React = require('react'),
     UserForm = require('./UserForm'),
     SearchBar = require('./SearchBar'),
     ApiUserUtil = require('../util/api_user_util'),
-    ApiMessageUtil = require('../util/api_message_util'),
     UserStore = require('../stores/users'),
     History = require('react-router').History,
     UserItem = require('./UserItem'),
@@ -28,13 +27,8 @@ var User = React.createClass({
 
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._usersChanged);
-    var state = this.getStateFromStore();
-    var showUsers = this.randomize(state.current_user, state.users);
-    this.setState({
-      current_user: state.current_user,
-      users: state.users,
-      showUsers: showUsers
-    });
+    ApiUserUtil.fetchCurrentUser();
+    ApiUserUtil.fetchUsers();
   },
 
   componentWillUnmount: function () {
@@ -42,13 +36,7 @@ var User = React.createClass({
   },
 
   _usersChanged: function () {
-    var state = this.getStateFromStore();
-    var showUsers = this.randomize(state.current_user, state.users);
-    this.setState({
-      current_user: state.current_user,
-      users: state.users,
-      showUsers: showUsers
-    });
+    this.setState(this.getStateFromStore());
   },
 
   searchResults:function(string) {
@@ -61,25 +49,25 @@ var User = React.createClass({
     this.history.pushState(current_user, '/user/' + user.id)
   },
 
-  randomize: function(current_user, users) {
+  randomize: function() {
     var showUsers = [];
-    if (users.length > 0) {
-      var copyUsers = users.slice(0);
-      while(showUsers.length < 6 && copyUsers.length > 0) {
+    if (this.state.users.length > 0) {
+      var copyUsers = this.state.users.slice(0);
+      while (showUsers.length < 6 && copyUsers.length > 0) {
         var rand = Math.floor(Math.random() * copyUsers.length);
         var user = copyUsers[rand];
         copyUsers.splice(rand, 1);
         if (
-            current_user && user &&
-            current_user.id != user.id &&
+            this.state.current_user && user &&
+            this.state.current_user.id != user.id &&
             user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" &&
             user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"
             )
           {
             if (
-                current_user.preferred_gender === "no preference" ||
-                current_user.preferred_gender === user.gender ||
-                !current_user.preferred_gender ||
+                this.state.current_user.preferred_gender === "no preference" ||
+                this.state.current_user.preferred_gender === user.gender ||
+                !this.state.current_user.preferred_gender ||
                 (user.gender != "male" && user.gender != "female")
                 )
               {
@@ -92,9 +80,10 @@ var User = React.createClass({
   },
 
   render: function () {
-    if (!this.state.current_user || !this.state.showUsers) {
+    if (!this.state.current_user) {
       return <div>loading</div>
     };
+    var showUsers = this.randomize();
     return (
       <div>
         <div className="container">
@@ -103,7 +92,7 @@ var User = React.createClass({
               <div  id="header" className="side-scroll-img">Here are some users you might be interested in based on your gender preferences!</div>
               <span id="no-text" className="side-scroll-text"></span>
             </li>
-            {this.state.showUsers.map(function(user) {
+            {showUsers.map(function(user) {
               if (this.state.current_user) {
                 return (
                   <li key={user.id} onClick={this.showDetail} className="side-scroll-li">

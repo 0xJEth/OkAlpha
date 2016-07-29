@@ -3,10 +3,8 @@ var React = require('react'),
     LinkedStateMixin = require('react-addons-linked-state-mixin'),
     History = require('react-router').History,
     UserStore = require('../stores/users'),
-    MessageStore = require('../stores/messages'),
-    Messages = require('./Messages'),
-    ApiUserUtil = require('../util/api_user_util'),
-    ApiMessageUtil = require('../util/api_message_util');
+    Badge = require('./Badge'),
+    ApiUserUtil = require('../util/api_user_util');
 
 module.exports = React.createClass({
   mixins: [History],
@@ -15,8 +13,7 @@ module.exports = React.createClass({
     var current_user = UserStore.find(parseInt(this.props.currentUserId));
     return ({
       current_user: current_user,
-      id: parseInt(this.props.currentUserId),
-      unread_count: this.props.messageCount
+      id: parseInt(this.props.currentUserId)
     })
   },
 
@@ -27,6 +24,10 @@ module.exports = React.createClass({
   componentWillReceiveProps: function(newProps) {
     var current_user = UserStore.find(parseInt(newProps.currentUserId));
     this.setState({current_user: current_user, unread_count: newProps.messageCount})
+  },
+
+  componentWillUnmount: function() {
+      console.log("header unmounting");
   },
 
   handleMatchesButton: function (event) {
@@ -54,16 +55,16 @@ module.exports = React.createClass({
 
     return (
       <nav className="header-nav">
-        <a id="profile-link" onClick={this.handleEditProfileButton}>
+        <div id="profile-link" onClick={this.handleEditProfileButton}>
           <img id="img-icon" src={this.state.current_user.image_url}></img>
-          <span className="profile-hover">Edit Profile</span>
-        </a>
+          <a id="profile-text" className="header-button">My Profile</a>
+        </div>
         <h1 className="header-logo">
-          <a className="header-button" href="#">OkAlpha</a>
-          <a className="header-button" onClick={this.handleMatchesButton}>My Matches</a>
-          <a className="header-button" onClick={this.handleMessagesButton}>
+          <a id="home" className="header-button" href="#">Home</a>
+          <a id="matches" className="header-button" onClick={this.handleMatchesButton}>My Matches</a>
+          <a id="messages" className="header-button" onClick={this.handleMessagesButton}>
             <div>My Messages</div>
-            <span className="hidden" id="badge"></span>
+            <Badge currentUserId={this.state.current_user.id}/>
           </a>
         </h1>
       </nav>

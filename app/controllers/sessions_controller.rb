@@ -11,10 +11,7 @@ class SessionsController < ApplicationController
       params[:user][:username],
       params[:user][:password]
     )
-    if @current_user && @current_user.username == "Guest"
-      sign_in(@current_user)
-      redirect_to "/#/profile/#{@current_user.id}"
-    elsif @current_user
+    if @current_user
       sign_in(@current_user)
       redirect_to root_url
     else

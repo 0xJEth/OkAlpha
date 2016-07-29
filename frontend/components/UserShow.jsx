@@ -115,9 +115,6 @@ var UserShow = React.createClass({
             <h3>Send {thisUser.username.split(" ")[0]} a Message</h3>
             <NewMessage currentUserId={this.state.current_user.id} userId={this.state.user.id}/>
           </div>
-          <footer>
-            <a className="nav-button" href="#">Back</a>
-          </footer>
         </div>
       </div>
     );

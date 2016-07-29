@@ -191,9 +191,6 @@ var Messages = React.createClass({
             <MessageDetails key={this.state.messageDetails} messageId={this.state.messageDetails} currentUserId={this.state.current_user_id}/>
           </div>
         </div>
-        <footer>
-          <a className="nav-button" href="#">Back</a>
-        </footer>
       </div>
     );
   }

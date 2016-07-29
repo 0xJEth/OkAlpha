@@ -51,13 +51,13 @@
 	    Route = ReactRouter.Route,
 	    IndexRoute = ReactRouter.IndexRoute,
 	    UserForm = __webpack_require__(210),
-	    UserShow = __webpack_require__(246),
-	    Likes = __webpack_require__(256),
-	    Header = __webpack_require__(263),
-	    Messages = __webpack_require__(258),
-	    User = __webpack_require__(261),
+	    UserShow = __webpack_require__(255),
+	    Likes = __webpack_require__(260),
+	    Header = __webpack_require__(246),
+	    Messages = __webpack_require__(250),
+	    User = __webpack_require__(262),
 	    UserStore = __webpack_require__(215),
-	    MessageStore = __webpack_require__(255),
+	    MessageStore = __webpack_require__(247),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var App = React.createClass({
@@ -24489,7 +24489,7 @@
 	    UserStore = __webpack_require__(215),
 	    Cloud = __webpack_require__(239),
 	    Interests = __webpack_require__(242),
-	    Header = __webpack_require__(263),
+	    Header = __webpack_require__(246),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var LinkedStateRadioGroupMixin = {
@@ -31998,7 +31998,7 @@
 	    InterestStore = __webpack_require__(243),
 	    History = __webpack_require__(1).History,
 	    ApiInterestUtil = __webpack_require__(244),
-	    Header = __webpack_require__(263),
+	    Header = __webpack_require__(246),
 	    ApiUserUtil = __webpack_require__(234);
 	
 	var Interests = React.createClass({
@@ -32275,545 +32275,22 @@
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiInterestUtil = __webpack_require__(244),
-	    ApiLikeUtil = __webpack_require__(247),
 	    LinkedStateMixin = __webpack_require__(211),
 	    History = __webpack_require__(1).History,
-	    Star = __webpack_require__(249),
-	    NewMessage = __webpack_require__(251),
-	    InterestStore = __webpack_require__(243),
-	    LikeStore = __webpack_require__(250),
-	    Header = __webpack_require__(263),
-	    UserStore = __webpack_require__(215);
-	
-	var UserShow = React.createClass({
-	  displayName: 'UserShow',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  getStateFromStore: function () {
-	    var id = parseInt(this.props.params.id);
-	    return { user: UserStore.find(id),
-	      current_user: UserStore.currentUser(),
-	      interests: InterestStore.allMyInterests(id) };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentWillReceiveProps: function (newProps) {
-	    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
-	    ApiInterestUtil.fetchInterests();
-	  },
-	
-	  componentDidMount: function () {
-	    this.userListener = UserStore.addListener(this._userChanged);
-	    this.interestsListener = InterestStore.addListener(this._userChanged);
-	    this.likeListener = LikeStore.addListener(this._userChanged);
-	    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
-	    ApiInterestUtil.fetchInterests();
-	    ApiLikeUtil.fetchLikes();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.userListener.remove();
-	    this.interestsListener.remove();
-	    this.likeListener.remove();
-	  },
-	
-	  _userChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  render: function () {
-	    if (!this.state.user || !this.state.current_user) {
-	      return React.createElement(
-	        'div',
-	        null,
-	        'loading'
-	      );
-	    }
-	    var thisId = parseInt(this.props.routeParams.id);
-	    var thisUser = UserStore.find(parseInt(thisId));
-	    var profileProps = [];
-	    if (thisUser.image_url) {
-	      var thumbnail = React.createElement('img', { className: 'profile', src: thisUser.image_url });
-	    } else {
-	      var thumbnail = React.createElement('img', { className: 'blank', src: "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png" });
-	    }
-	    if (thisUser.email) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        { key: 'profile-email' },
-	        'Email: ',
-	        thisUser.email
-	      ));
-	    }
-	    if (thisUser.gender) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        { key: 'profile-gender' },
-	        'Gender: ',
-	        thisUser.gender
-	      ));
-	    }
-	    if (thisUser.preferred_gender) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        { key: 'profile-pref-gender' },
-	        'Interested in: ',
-	        thisUser.preferred_gender
-	      ));
-	    }
-	    if (thisUser.bio) {
-	      profileProps.push(React.createElement(
-	        'div',
-	        { key: 'profile-bio' },
-	        React.createElement('br', null),
-	        React.createElement('br', null),
-	        React.createElement(
-	          'li',
-	          null,
-	          'About me :'
-	        ),
-	        React.createElement(
-	          'li',
-	          null,
-	          thisUser.bio
-	        )
-	      ));
-	    }
-	    if (profileProps.length < 1) {
-	      profileProps.push(React.createElement(
-	        'li',
-	        { key: 'profile-empty' },
-	        'Nothing here yet'
-	      ));
-	    }
-	
-	    if (this.state.interests.length === 0) {
-	      var interestsContainer = React.createElement(
-	        'li',
-	        null,
-	        'No interests yet!'
-	      );
-	    } else {
-	      var interestsContainer = [];
-	      this.state.interests.forEach(function (interest) {
-	        var interestCapitalized = interest.interest.charAt(0).toUpperCase() + interest.interest.slice(1);
-	        interestsContainer.push(React.createElement(
-	          'li',
-	          { key: interest.id, className: 'interest-item' },
-	          interestCapitalized
-	        ));
-	      });
-	    }
-	
-	    if (thisUser.id != this.state.current_user.id) {
-	      var star = React.createElement(Star, { key: thisUser.id, user: thisUser, currentUserId: this.state.current_user.id });
-	    } else {
-	      var star = React.createElement('p', null);
-	    }
-	
-	    return React.createElement(
-	      'div',
-	      { className: 'user-body' },
-	      React.createElement('div', { className: 'background' }),
-	      React.createElement(
-	        'div',
-	        { className: 'user-info' },
-	        React.createElement(
-	          'div',
-	          { className: 'left' },
-	          thumbnail,
-	          star,
-	          React.createElement(
-	            'div',
-	            { className: 'user-details' },
-	            React.createElement(
-	              'h2',
-	              null,
-	              thisUser.username
-	            ),
-	            profileProps,
-	            React.createElement('br', null),
-	            React.createElement('br', null),
-	            React.createElement(
-	              'h4',
-	              null,
-	              thisUser.username + "'s Interests:",
-	              ' '
-	            ),
-	            React.createElement('br', null),
-	            interestsContainer
-	          )
-	        ),
-	        React.createElement(
-	          'div',
-	          { className: 'profile-message' },
-	          React.createElement(
-	            'h3',
-	            null,
-	            'Send ',
-	            thisUser.username.split(" ")[0],
-	            ' a Message'
-	          ),
-	          React.createElement(NewMessage, { currentUserId: this.state.current_user.id, userId: this.state.user.id })
-	        ),
-	        React.createElement(
-	          'footer',
-	          null,
-	          React.createElement(
-	            'a',
-	            { className: 'nav-button', href: '#' },
-	            'Back'
-	          )
-	        )
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = UserShow;
-
-/***/ },
-/* 247 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiLikeActions = __webpack_require__(248);
-	
-	var ApiLikeUtil = {
-	  fetchLikes: function () {
-	    $.ajax({
-	      url: "api/likes",
-	      success: function (likes) {
-	        ApiLikeActions.receiveLikes(likes);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateLike: function (like, callback) {
-	    $.ajax({
-	      url: "api/likes/",
-	      type: "POST",
-	      data: { like: like },
-	      success: function (like) {
-	        ApiLikeActions.receiveLike(like);
-	        callback && callback(like);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  deleteLike: function (like) {
-	    $.ajax({
-	      url: "api/likes/" + like.id,
-	      type: "DELETE",
-	      success: function () {
-	        ApiLikeActions.removeLike();
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  }
-	
-	};
-	
-	module.exports = ApiLikeUtil;
-
-/***/ },
-/* 248 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(236);
-	var Constants = __webpack_require__(233);
-	
-	var ApiLikeActions = {
-	
-	  receiveLikes: function (likes) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.LIKES_RECEIVED,
-	      likes: likes
-	    });
-	  },
-	
-	  receiveLike: function (like) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.LIKE_RECEIVED,
-	      like: like
-	    });
-	  },
-	
-	  removeLike: function (like) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.LIKE_REMOVED,
-	      like: like
-	    });
-	  }
-	};
-	
-	module.exports = ApiLikeActions;
-
-/***/ },
-/* 249 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(247),
-	    LikeStore = __webpack_require__(250),
-	    LinkedStateMixin = __webpack_require__(211),
-	    History = __webpack_require__(1).History,
-	    UserStore = __webpack_require__(215);
-	
-	var Star = React.createClass({
-	  displayName: 'Star',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.currentUserId);
-	    var likes = LikeStore.allMyLikes(current_user_id);
-	    if (likes.length === 0) {
-	      var starState = false;
-	    } else {
-	      for (var i in likes) {
-	        if (likes[i].liked_id === parseInt(this.props.user.id)) {
-	          var starState = true;
-	          break;
-	        } else {
-	          var starState = false;
-	        }
-	      }
-	    }
-	    var fans = LikeStore.allMyFans(current_user_id);
-	    if (fans.length === 0) {
-	      var fansState = false;
-	    } else {
-	      for (var i in fans) {
-	        if (fans[i].user_id === parseInt(this.props.user.id)) {
-	          var fanState = true;
-	          break;
-	        } else {
-	          var fanState = false;
-	        }
-	      }
-	    }
-	    return { liked_id: this.props.user.id, user_id: current_user_id, star: starState, fan: fanState };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentDidMount: function () {
-	    this.likeListener = LikeStore.addListener(this._likeChanged);
-	    this.userListener = UserStore.addListener(this._likeChanged);
-	    ApiLikeUtil.fetchLikes();
-	    ApiUserUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.likeListener.remove();
-	    this.userListener.remove();
-	  },
-	
-	  _likeChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  handleLike: function (event) {
-	    event.preventDefault;
-	    if (this.state.star) {
-	      var like = LikeStore.findLike(parseInt(this.state.user_id), parseInt(this.state.liked_id));
-	      ApiLikeUtil.deleteLike(like);
-	    } else {
-	      var like = { user_id: parseInt(this.state.user_id), liked_id: parseInt(this.state.liked_id) };
-	      ApiLikeUtil.updateLike(like);
-	    }
-	  },
-	
-	  render: function () {
-	    if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
-	      return React.createElement('div', null);
-	    }
-	    var username = UserStore.find(parseInt(this.state.liked_id)).username;
-	    if (this.state.star) {
-	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: function () {}, type: 'checkbox', checked: true });
-	      var text = "I'm no longer interested in " + username;
-	    } else if (!this.state.star) {
-	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: function () {}, type: 'checkbox' });
-	      var text = "Let " + username + " know that you're intested!";
-	    }
-	    if (this.state.fan) {
-	      innerHtml = this.props.user.username + " is interested in you!";
-	      var fanView = React.createElement(
-	        'p',
-	        { className: 'fan-boolean' },
-	        innerHtml
-	      );
-	    } else {
-	      var fanView = React.createElement('p', { className: 'fan-boolean' });
-	    }
-	    return React.createElement(
-	      'div',
-	      { className: 'star' },
-	      fanView,
-	      React.createElement(
-	        'form',
-	        { className: 'star-form' },
-	        checkbox,
-	        React.createElement('label', { htmlFor: 'like' }),
-	        React.createElement(
-	          'span',
-	          { onClick: this.handleLike },
-	          text
-	        )
-	      )
-	    );
-	  }
-	});
-	
-	module.exports = Star;
-
-/***/ },
-/* 250 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var Store = __webpack_require__(216).Store,
-	    Constants = __webpack_require__(233),
 	    UserStore = __webpack_require__(215),
-	    ApiLikeUtil = __webpack_require__(247),
-	    AppDispatcher = __webpack_require__(236);
+	    Badge = __webpack_require__(264),
+	    ApiUserUtil = __webpack_require__(234);
 	
-	var LikeStore = new Store(AppDispatcher);
-	var _likes = {};
+	module.exports = React.createClass({
+	  displayName: 'exports',
 	
-	var resetLikes = function (likes) {
-	  _likes = {};
-	  likes.forEach(function (like) {
-	    _likes[like.id] = like;
-	  });
-	};
-	
-	var resetLike = function (like) {
-	  _likes[like.id] = like;
-	};
-	
-	var removeLike = function () {
-	  var likes = [];
-	  ApiLikeUtil.fetchLikes();
-	  likes = LikeStore.allLikes();
-	};
-	
-	LikeStore.findLike = function (user_id, liked_id) {
-	  var myLikes = LikeStore.allMyLikes(user_id);
-	  for (var i = 0; i < myLikes.length; i++) {
-	    if (myLikes[i].liked_id === liked_id) {
-	      return myLikes[i];
-	    }
-	  }
-	  return {};
-	};
-	
-	LikeStore.allLikes = function () {
-	  var likes = [];
-	  for (var id in _likes) {
-	    likes.push(_likes[id]);
-	  }
-	  return likes;
-	};
-	
-	LikeStore.allMyLikes = function (user_id) {
-	  var likes = [];
-	  for (var i in _likes) {
-	    if (_likes[i].user_id === user_id) {
-	      likes.push(_likes[i]);
-	    }
-	  }
-	  return likes;
-	};
-	
-	LikeStore.allMyFans = function (user_id) {
-	  var likes = [];
-	  for (var i in _likes) {
-	    if (_likes[i].liked_id === user_id) {
-	      likes.push(_likes[i]);
-	    }
-	  }
-	  return likes;
-	};
-	
-	LikeStore.find = function (id) {
-	  return _likes[id];
-	};
-	
-	LikeStore.__onDispatch = function (payload) {
-	  switch (payload.actionType) {
-	    case Constants.LIKES_RECEIVED:
-	      resetLikes(payload.likes);
-	      break;
-	    case Constants.LIKE_RECEIVED:
-	      resetLike(payload.like);
-	      break;
-	    case Constants.LIKE_REMOVED:
-	      removeLike(payload.like);
-	      break;
-	  }
-	  LikeStore.__emitChange();
-	};
-	
-	module.exports = LikeStore;
-
-/***/ },
-/* 251 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(252),
-	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(254),
-	    History = __webpack_require__(1).History,
-	    MessageStore = __webpack_require__(255),
-	    UserStore = __webpack_require__(215);
-	
-	var NewMessage = React.createClass({
-	  displayName: 'NewMessage',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  blankAttrs: {
-	    receiver: "",
-	    body: ""
-	  },
+	  mixins: [History],
 	
 	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.currentUserId);
-	
-	    if (this.props.userId) {
-	      var receiver = UserStore.find(parseInt(this.props.userId));
-	      var editable = false;
-	    } else {
-	      var receiver = { username: "" };
-	      var editable = true;
-	    }
-	
+	    var current_user = UserStore.find(parseInt(this.props.currentUserId));
 	    return {
-	      current_user_id: current_user_id,
-	      receiver: receiver,
-	      body: "",
-	      editable: editable
+	      current_user: current_user,
+	      id: parseInt(this.props.currentUserId)
 	    };
 	  },
 	
@@ -32821,215 +32298,91 @@
 	    return this.getStateFromStore();
 	  },
 	
-	  componentDidMount: function () {
-	    this.messageListener = MessageStore.addListener(this._messageChanged);
-	    this.userListener = UserStore.addListener(this._messageChanged);
-	    ApiMessageUtil.fetchMessages();
-	    ApiUserUtil.fetchUsers();
+	  componentWillReceiveProps: function (newProps) {
+	    var current_user = UserStore.find(parseInt(newProps.currentUserId));
+	    this.setState({ current_user: current_user, unread_count: newProps.messageCount });
 	  },
 	
 	  componentWillUnmount: function () {
-	    this.messageListener.remove();
-	    this.userListener.remove();
+	    console.log("header unmounting");
 	  },
 	
-	  _messageChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  sendMessage: function (event) {
+	  handleMatchesButton: function (event) {
 	    event.preventDefault();
-	    var string = event.target[0].value;
-	    var receiver = UserStore.findUsername(string, true);
-	    if (receiver.length === 0) {
-	      alert("No user found with that name");
-	    } else if (receiver.length > 1) {
-	      var list = "";
-	      for (var i = 0; i < receiver.length; i++) {
-	        list += "\n" + receiver[i].username;
-	      }
-	      alert("Multiple users found with that name:\n" + list);
-	    } else {
-	      var receiver_id = receiver[0].id;
-	      var body = event.target[1].value;
-	      var message = { sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false };
-	      var conf = confirm("Confirm send message to " + receiver[0].username + "?");
-	      if (conf) {
-	        ApiMessageUtil.createMessage(message);
-	        this.setState(this.blankAttrs);
-	      }
-	    }
+	    var current_user = this.state.current_user;
+	    this.history.pushState(current_user, '/likes/' + this.state.id);
+	  },
+	
+	  handleMessagesButton: function (event) {
+	    event.preventDefault();
+	    var current_user = this.state.current_user;
+	    this.history.pushState(current_user, '/messages/' + this.state.id);
+	  },
+	
+	  handleEditProfileButton: function (event) {
+	    event.preventDefault();
+	    var current_user = this.state.current_user;
+	    this.history.pushState(current_user, '/profile/' + this.state.id);
 	  },
 	
 	  render: function () {
-	    if (!this.state.current_user_id) {
-	      return React.createElement('div', null);
-	    }
-	
-	    var username = this.state.receiver.username;
-	
-	    if (this.state.editable) {
-	      var input = React.createElement('input', { placeholder: 'Recipient', type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") });
-	    } else {
-	      var input = React.createElement('input', { readOnly: true, placeholder: username, type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") });
-	    }
+	    if (!this.state.current_user) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        'loading'
+	      );
+	    };
 	
 	    return React.createElement(
-	      'div',
-	      null,
+	      'nav',
+	      { className: 'header-nav' },
 	      React.createElement(
-	        'form',
-	        { onSubmit: this.sendMessage, className: 'new-message-form' },
-	        input,
-	        React.createElement('br', null),
-	        React.createElement('textarea', { cols: '40', rows: '6', name: 'body', valueLink: this.linkState("body") }),
-	        React.createElement('br', null),
-	        React.createElement('input', { className: 'new-message-button', type: 'submit', value: 'Send Message' })
+	        'div',
+	        { id: 'profile-link', onClick: this.handleEditProfileButton },
+	        React.createElement('img', { id: 'img-icon', src: this.state.current_user.image_url }),
+	        React.createElement(
+	          'a',
+	          { id: 'profile-text', className: 'header-button' },
+	          'My Profile'
+	        )
+	      ),
+	      React.createElement(
+	        'h1',
+	        { className: 'header-logo' },
+	        React.createElement(
+	          'a',
+	          { id: 'home', className: 'header-button', href: '#' },
+	          'Home'
+	        ),
+	        React.createElement(
+	          'a',
+	          { id: 'matches', className: 'header-button', onClick: this.handleMatchesButton },
+	          'My Matches'
+	        ),
+	        React.createElement(
+	          'a',
+	          { id: 'messages', className: 'header-button', onClick: this.handleMessagesButton },
+	          React.createElement(
+	            'div',
+	            null,
+	            'My Messages'
+	          ),
+	          React.createElement(Badge, { currentUserId: this.state.current_user.id })
+	        )
 	      )
 	    );
 	  }
 	});
-	
-	module.exports = NewMessage;
 
 /***/ },
-/* 252 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var ApiMessageActions = __webpack_require__(253);
-	
-	var ApiMessageUtil = {
-	  fetchMessages: function () {
-	    $.ajax({
-	      url: "api/messages",
-	      success: function (messages) {
-	        ApiMessageActions.receiveMessages(messages);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  createMessage: function (message, callback) {
-	    $.ajax({
-	      url: "api/messages/",
-	      type: "POST",
-	      data: { message: message },
-	      success: function (message) {
-	        ApiMessageActions.receiveMessage(message);
-	        callback && callback(message);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  updateMessage: function (read_messaage, callback) {
-	    $.ajax({
-	      url: "api/messages/" + read_messaage.id,
-	      type: "PATCH",
-	      data: { message: read_messaage },
-	      success: function (message) {
-	        ApiMessageActions.receiveMessage(read_messaage);
-	        callback && callback(read_messaage.id);
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  },
-	
-	  deleteMessage: function (message) {
-	    $.ajax({
-	      url: "api/messages/" + message.id,
-	      type: "DELETE",
-	      success: function () {
-	        ApiMessageActions.removeMessage();
-	      },
-	      error: function (message) {
-	        console.log(message);
-	      }
-	    });
-	  }
-	
-	};
-	
-	module.exports = ApiMessageUtil;
-
-/***/ },
-/* 253 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var AppDispatcher = __webpack_require__(236);
-	var Constants = __webpack_require__(233);
-	
-	var ApiMessageActions = {
-	
-	  receiveMessages: function (messages) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MESSAGES_RECEIVED,
-	      messages: messages
-	    });
-	  },
-	
-	  receiveMessage: function (message) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MESSAGE_RECEIVED,
-	      message: message
-	    });
-	  },
-	
-	  removeMessage: function (message) {
-	    AppDispatcher.dispatch({
-	      actionType: Constants.MESSAGE_REMOVED,
-	      message: message
-	    });
-	  }
-	};
-	
-	module.exports = ApiMessageActions;
-
-/***/ },
-/* 254 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    History = __webpack_require__(1).History;
-	
-	module.exports = React.createClass({
-	  displayName: 'exports',
-	
-	  mixins: [History],
-	
-	  showDetail: function () {
-	    var state = this.props.user;
-	    this.history.pushState(state, '/user/' + state.id);
-	  },
-	
-	  render: function () {
-	    if (this.props.text) {
-	      var text = this.props.text;
-	    } else {
-	      var text = this.props.user.username;
-	    }
-	    return React.createElement(
-	      'li',
-	      { onClick: this.showDetail, className: 'user-item' },
-	      text
-	    );
-	  }
-	});
-
-/***/ },
-/* 255 */
+/* 247 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var Store = __webpack_require__(216).Store,
 	    Constants = __webpack_require__(233),
 	    UserStore = __webpack_require__(215),
-	    ApiMessageUtil = __webpack_require__(252),
+	    ApiMessageUtil = __webpack_require__(248),
 	    AppDispatcher = __webpack_require__(236);
 	
 	var MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
@@ -33124,259 +32477,119 @@
 	module.exports = MessageStore;
 
 /***/ },
-/* 256 */
+/* 248 */
 /***/ function(module, exports, __webpack_require__) {
 
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiLikeUtil = __webpack_require__(247),
-	    LikeStore = __webpack_require__(250),
-	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(254),
-	    History = __webpack_require__(1).History,
-	    Matches = __webpack_require__(257),
-	    Header = __webpack_require__(263),
-	    UserStore = __webpack_require__(215);
+	var ApiMessageActions = __webpack_require__(249);
 	
-	var Likes = React.createClass({
-	  displayName: 'Likes',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.id);
-	    if (!current_user_id) {
-	      var current_user_id = parseInt(this.props.routeParams.id);
-	    }
-	    return {
-	      current_user_id: current_user_id,
-	      myLikes: LikeStore.allMyLikes(current_user_id),
-	      myFans: LikeStore.allMyFans(current_user_id)
-	    };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentDidMount: function () {
-	    this.likeListener = LikeStore.addListener(this._likeChanged);
-	    this.userListener = UserStore.addListener(this._likeChanged);
-	    ApiLikeUtil.fetchLikes();
-	    ApiUserUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.likeListener.remove();
-	    this.userListener.remove();
-	  },
-	
-	  _likeChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  render: function () {
-	    if (!this.state.myLikes || !this.state.myFans) {
-	      return React.createElement('div', null);
-	    }
-	
-	    var likesContainer = [];
-	    this.state.myLikes.forEach(function (like) {
-	      var user = UserStore.find(parseInt(like.liked_id));
-	      if (user) {
-	        likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	var ApiMessageUtil = {
+	  fetchMessages: function () {
+	    $.ajax({
+	      url: "api/messages",
+	      success: function (messages) {
+	        ApiMessageActions.receiveMessages(messages);
+	      },
+	      error: function (message) {
+	        console.log(message);
 	      }
 	    });
+	  },
 	
-	    var fansContainer = [];
-	    this.state.myFans.forEach(function (fan) {
-	      var user = UserStore.find(parseInt(fan.user_id));
-	      if (user) {
-	        fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	  createMessage: function (message, callback) {
+	    $.ajax({
+	      url: "api/messages/",
+	      type: "POST",
+	      data: { message: message },
+	      success: function (message) {
+	        ApiMessageActions.receiveMessage(message);
+	        callback && callback(message);
+	      },
+	      error: function (message) {
+	        console.log(message);
 	      }
 	    });
+	  },
 	
-	    var mutualContainer = [];
-	    if (!this.state.myFans) {
-	      mutualContainer.push(React.createElement('div', null));
-	    } else {
-	      this.state.myLikes.forEach((function (like) {
-	        this.state.myFans.forEach(function (fan) {
-	          if (like.liked_id === fan.user_id) {
-	            var user = UserStore.find(parseInt(like.liked_id));
-	            if (user) {
-	              mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
-	            }
-	          }
-	        });
-	      }).bind(this));
-	    }
+	  updateMessage: function (read_messaage, callback) {
+	    $.ajax({
+	      url: "api/messages/" + read_messaage.id,
+	      type: "PATCH",
+	      data: { message: read_messaage },
+	      success: function (message) {
+	        ApiMessageActions.receiveMessage(read_messaage);
+	        callback && callback(read_messaage.id);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
 	
-	    return React.createElement(
-	      'div',
-	      null,
-	      React.createElement(
-	        'div',
-	        { className: 'likes-container' },
-	        React.createElement(
-	          'ul',
-	          { className: 'likes-div' },
-	          React.createElement(
-	            'h3',
-	            { className: 'h3' },
-	            'Users interested in me:'
-	          ),
-	          fansContainer
-	        ),
-	        React.createElement(
-	          'ul',
-	          { className: 'likes-div' },
-	          React.createElement(
-	            'h3',
-	            { className: 'h3' },
-	            'Users I\'m interested in:'
-	          ),
-	          likesContainer
-	        ),
-	        React.createElement(
-	          'ul',
-	          { className: 'likes-div' },
-	          React.createElement(
-	            'h3',
-	            { className: 'h3' },
-	            'You\'re both interested:'
-	          ),
-	          mutualContainer
-	        ),
-	        React.createElement(Matches, { id: this.state.current_user_id })
-	      ),
-	      React.createElement(
-	        'footer',
-	        null,
-	        React.createElement(
-	          'a',
-	          { className: 'nav-button', href: '#' },
-	          'Back'
-	        )
-	      )
-	    );
+	  deleteMessage: function (message) {
+	    $.ajax({
+	      url: "api/messages/" + message.id,
+	      type: "DELETE",
+	      success: function () {
+	        ApiMessageActions.removeMessage();
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
 	  }
-	});
 	
-	module.exports = Likes;
+	};
+	
+	module.exports = ApiMessageUtil;
 
 /***/ },
-/* 257 */
+/* 249 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiMessageActions = {
+	
+	  receiveMessages: function (messages) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MESSAGES_RECEIVED,
+	      messages: messages
+	    });
+	  },
+	
+	  receiveMessage: function (message) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MESSAGE_RECEIVED,
+	      message: message
+	    });
+	  },
+	
+	  removeMessage: function (message) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.MESSAGE_REMOVED,
+	      message: message
+	    });
+	  }
+	};
+	
+	module.exports = ApiMessageActions;
+
+/***/ },
+/* 250 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiInterestUtil = __webpack_require__(244),
-	    InterestStore = __webpack_require__(243),
+	    ApiMessageUtil = __webpack_require__(248),
 	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(254),
+	    UserItem = __webpack_require__(251),
 	    History = __webpack_require__(1).History,
-	    UserStore = __webpack_require__(215);
-	
-	var Matches = React.createClass({
-	  displayName: 'Matches',
-	
-	  mixins: [LinkedStateMixin, History],
-	
-	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.id);
-	    if (!current_user_id) {
-	      var current_user_id = parseInt(this.props.routeParams.id);
-	    }
-	    return {
-	      current_user_id: current_user_id,
-	      myMatches: InterestStore.allMyMatches(current_user_id)
-	    };
-	  },
-	
-	  getInitialState: function () {
-	    return this.getStateFromStore();
-	  },
-	
-	  componentDidMount: function () {
-	    this.matchListener = InterestStore.addListener(this._matchChanged);
-	    this.userListener = UserStore.addListener(this._matchChanged);
-	    ApiInterestUtil.fetchInterests();
-	    ApiUserUtil.fetchUsers();
-	  },
-	
-	  componentWillUnmount: function () {
-	    this.matchListener.remove();
-	    this.userListener.remove();
-	  },
-	
-	  _matchChanged: function () {
-	    this.setState(this.getStateFromStore());
-	  },
-	
-	  render: function () {
-	    if (!this.state.myMatches) {
-	      return React.createElement('div', null);
-	    } else {
-	      var matchContainer = {};
-	      this.state.myMatches.forEach(function (interest) {
-	        var user = UserStore.find(parseInt(interest.user_id));
-	        if (user) {
-	          if (matchContainer[user.id]) {
-	            matchContainer[user.id].push(interest);
-	          } else {
-	            matchContainer[user.id] = [interest];
-	          }
-	        }
-	      });
-	      var matchList = [];
-	      Object.keys(matchContainer).forEach(function (id) {
-	        var user = UserStore.find(parseInt(id));
-	        if (user) {
-	          matchList.push(React.createElement(UserItem, { key: id, user: user, className: 'like-list-item' }));
-	          matchContainer[user.id].forEach(function (interest) {
-	            matchList.push(React.createElement(
-	              'p',
-	              { key: interest.id + 100, className: 'match-text' },
-	              "likes " + interest.interest
-	            ));
-	          });
-	        }
-	      });
-	    }
-	
-	    return React.createElement(
-	      'ul',
-	      { className: 'likes-div' },
-	      React.createElement(
-	        'h3',
-	        { className: 'h3' },
-	        'Users with shared interests:'
-	      ),
-	      matchList
-	    );
-	  }
-	});
-	
-	module.exports = Matches;
-
-/***/ },
-/* 258 */
-/***/ function(module, exports, __webpack_require__) {
-
-	var React = __webpack_require__(5),
-	    ReactRouter = __webpack_require__(1),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(252),
-	    LinkedStateMixin = __webpack_require__(211),
-	    UserItem = __webpack_require__(254),
-	    History = __webpack_require__(1).History,
-	    MessageStore = __webpack_require__(255),
-	    NewMessage = __webpack_require__(251),
-	    MessageDetails = __webpack_require__(259),
-	    Header = __webpack_require__(263),
+	    MessageStore = __webpack_require__(247),
+	    NewMessage = __webpack_require__(252),
+	    MessageDetails = __webpack_require__(253),
+	    Header = __webpack_require__(246),
 	    UserStore = __webpack_require__(215);
 	
 	var Messages = React.createClass({
@@ -33641,15 +32854,6 @@
 	          { className: detailsClassName },
 	          React.createElement(MessageDetails, { key: this.state.messageDetails, messageId: this.state.messageDetails, currentUserId: this.state.current_user_id })
 	        )
-	      ),
-	      React.createElement(
-	        'footer',
-	        null,
-	        React.createElement(
-	          'a',
-	          { className: 'nav-button', href: '#' },
-	          'Back'
-	        )
 	      )
 	    );
 	  }
@@ -33658,19 +32862,168 @@
 	module.exports = Messages;
 
 /***/ },
-/* 259 */
+/* 251 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    History = __webpack_require__(1).History;
+	
+	module.exports = React.createClass({
+	  displayName: 'exports',
+	
+	  mixins: [History],
+	
+	  showDetail: function () {
+	    var state = this.props.user;
+	    this.history.pushState(state, '/user/' + state.id);
+	  },
+	
+	  render: function () {
+	    if (this.props.text) {
+	      var text = this.props.text;
+	    } else {
+	      var text = this.props.user.username;
+	    }
+	    return React.createElement(
+	      'li',
+	      { onClick: this.showDetail, className: 'user-item' },
+	      text
+	    );
+	  }
+	});
+
+/***/ },
+/* 252 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiMessageUtil = __webpack_require__(248),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(251),
+	    History = __webpack_require__(1).History,
+	    MessageStore = __webpack_require__(247),
+	    UserStore = __webpack_require__(215);
+	
+	var NewMessage = React.createClass({
+	  displayName: 'NewMessage',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  blankAttrs: {
+	    receiver: "",
+	    body: ""
+	  },
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.currentUserId);
+	
+	    if (this.props.userId) {
+	      var receiver = UserStore.find(parseInt(this.props.userId));
+	      var editable = false;
+	    } else {
+	      var receiver = { username: "" };
+	      var editable = true;
+	    }
+	
+	    return {
+	      current_user_id: current_user_id,
+	      receiver: receiver,
+	      body: "",
+	      editable: editable
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.messageListener = MessageStore.addListener(this._messageChanged);
+	    this.userListener = UserStore.addListener(this._messageChanged);
+	    ApiMessageUtil.fetchMessages();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.messageListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _messageChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  sendMessage: function (event) {
+	    event.preventDefault();
+	    var string = event.target[0].value;
+	    var receiver = UserStore.findUsername(string, true);
+	    if (receiver.length === 0) {
+	      alert("No user found with that name");
+	    } else if (receiver.length > 1) {
+	      var list = "";
+	      for (var i = 0; i < receiver.length; i++) {
+	        list += "\n" + receiver[i].username;
+	      }
+	      alert("Multiple users found with that name:\n" + list);
+	    } else {
+	      var receiver_id = receiver[0].id;
+	      var body = event.target[1].value;
+	      var message = { sender_id: this.state.current_user_id, receiver_id: receiver_id, body: body, read: false };
+	      var conf = confirm("Confirm send message to " + receiver[0].username + "?");
+	      if (conf) {
+	        ApiMessageUtil.createMessage(message);
+	        this.setState(this.blankAttrs);
+	      }
+	    }
+	  },
+	
+	  render: function () {
+	    if (!this.state.current_user_id) {
+	      return React.createElement('div', null);
+	    }
+	
+	    var username = this.state.receiver.username;
+	
+	    if (this.state.editable) {
+	      var input = React.createElement('input', { placeholder: 'Recipient', type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") });
+	    } else {
+	      var input = React.createElement('input', { readOnly: true, placeholder: username, type: 'text', defaultValue: username, valueLink: this.linkState("receiver.username") });
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'form',
+	        { onSubmit: this.sendMessage, className: 'new-message-form' },
+	        input,
+	        React.createElement('br', null),
+	        React.createElement('textarea', { cols: '40', rows: '6', name: 'body', valueLink: this.linkState("body") }),
+	        React.createElement('br', null),
+	        React.createElement('input', { className: 'new-message-button', type: 'submit', value: 'Send Message' })
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = NewMessage;
+
+/***/ },
+/* 253 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
 	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(260),
+	    SearchBar = __webpack_require__(254),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(252),
+	    ApiMessageUtil = __webpack_require__(248),
 	    UserStore = __webpack_require__(215),
-	    MessageStore = __webpack_require__(255),
+	    MessageStore = __webpack_require__(247),
 	    History = __webpack_require__(1).History,
-	    Messages = __webpack_require__(258);
+	    Messages = __webpack_require__(250);
 	
 	var MessageDetails = React.createClass({
 	  displayName: 'MessageDetails',
@@ -33784,11 +33137,11 @@
 	module.exports = MessageDetails;
 
 /***/ },
-/* 260 */
+/* 254 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
-	    UserItem = __webpack_require__(254),
+	    UserItem = __webpack_require__(251),
 	    UserStore = __webpack_require__(215),
 	    LinkedStateMixin = __webpack_require__(211),
 	    ApiUserUtil = __webpack_require__(234);
@@ -33853,7 +33206,7 @@
 	          className: 'search-text-field',
 	          type: 'text',
 	          valueLink: this.linkState("search"),
-	          placeholder: 'Search'
+	          placeholder: 'Search Users'
 	        }),
 	        React.createElement(
 	          'button',
@@ -33873,20 +33226,751 @@
 	module.exports = SearchBar;
 
 /***/ },
+/* 255 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiInterestUtil = __webpack_require__(244),
+	    ApiLikeUtil = __webpack_require__(256),
+	    LinkedStateMixin = __webpack_require__(211),
+	    History = __webpack_require__(1).History,
+	    Star = __webpack_require__(258),
+	    NewMessage = __webpack_require__(252),
+	    InterestStore = __webpack_require__(243),
+	    LikeStore = __webpack_require__(259),
+	    Header = __webpack_require__(246),
+	    UserStore = __webpack_require__(215);
+	
+	var UserShow = React.createClass({
+	  displayName: 'UserShow',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var id = parseInt(this.props.params.id);
+	    return { user: UserStore.find(id),
+	      current_user: UserStore.currentUser(),
+	      interests: InterestStore.allMyInterests(id) };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentWillReceiveProps: function (newProps) {
+	    ApiUserUtil.fetchUser(parseInt(newProps.params.id));
+	    ApiInterestUtil.fetchInterests();
+	  },
+	
+	  componentDidMount: function () {
+	    this.userListener = UserStore.addListener(this._userChanged);
+	    this.interestsListener = InterestStore.addListener(this._userChanged);
+	    this.likeListener = LikeStore.addListener(this._userChanged);
+	    ApiUserUtil.fetchUser(parseInt(this.props.params.id));
+	    ApiInterestUtil.fetchInterests();
+	    ApiLikeUtil.fetchLikes();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.userListener.remove();
+	    this.interestsListener.remove();
+	    this.likeListener.remove();
+	  },
+	
+	  _userChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    if (!this.state.user || !this.state.current_user) {
+	      return React.createElement(
+	        'div',
+	        null,
+	        'loading'
+	      );
+	    }
+	    var thisId = parseInt(this.props.routeParams.id);
+	    var thisUser = UserStore.find(parseInt(thisId));
+	    var profileProps = [];
+	    if (thisUser.image_url) {
+	      var thumbnail = React.createElement('img', { className: 'profile', src: thisUser.image_url });
+	    } else {
+	      var thumbnail = React.createElement('img', { className: 'blank', src: "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png" });
+	    }
+	    if (thisUser.email) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        { key: 'profile-email' },
+	        'Email: ',
+	        thisUser.email
+	      ));
+	    }
+	    if (thisUser.gender) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        { key: 'profile-gender' },
+	        'Gender: ',
+	        thisUser.gender
+	      ));
+	    }
+	    if (thisUser.preferred_gender) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        { key: 'profile-pref-gender' },
+	        'Interested in: ',
+	        thisUser.preferred_gender
+	      ));
+	    }
+	    if (thisUser.bio) {
+	      profileProps.push(React.createElement(
+	        'div',
+	        { key: 'profile-bio' },
+	        React.createElement('br', null),
+	        React.createElement('br', null),
+	        React.createElement(
+	          'li',
+	          null,
+	          'About me :'
+	        ),
+	        React.createElement(
+	          'li',
+	          null,
+	          thisUser.bio
+	        )
+	      ));
+	    }
+	    if (profileProps.length < 1) {
+	      profileProps.push(React.createElement(
+	        'li',
+	        { key: 'profile-empty' },
+	        'Nothing here yet'
+	      ));
+	    }
+	
+	    if (this.state.interests.length === 0) {
+	      var interestsContainer = React.createElement(
+	        'li',
+	        null,
+	        'No interests yet!'
+	      );
+	    } else {
+	      var interestsContainer = [];
+	      this.state.interests.forEach(function (interest) {
+	        var interestCapitalized = interest.interest.charAt(0).toUpperCase() + interest.interest.slice(1);
+	        interestsContainer.push(React.createElement(
+	          'li',
+	          { key: interest.id, className: 'interest-item' },
+	          interestCapitalized
+	        ));
+	      });
+	    }
+	
+	    if (thisUser.id != this.state.current_user.id) {
+	      var star = React.createElement(Star, { key: thisUser.id, user: thisUser, currentUserId: this.state.current_user.id });
+	    } else {
+	      var star = React.createElement('p', null);
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      { className: 'user-body' },
+	      React.createElement('div', { className: 'background' }),
+	      React.createElement(
+	        'div',
+	        { className: 'user-info' },
+	        React.createElement(
+	          'div',
+	          { className: 'left' },
+	          thumbnail,
+	          star,
+	          React.createElement(
+	            'div',
+	            { className: 'user-details' },
+	            React.createElement(
+	              'h2',
+	              null,
+	              thisUser.username
+	            ),
+	            profileProps,
+	            React.createElement('br', null),
+	            React.createElement('br', null),
+	            React.createElement(
+	              'h4',
+	              null,
+	              thisUser.username + "'s Interests:",
+	              ' '
+	            ),
+	            React.createElement('br', null),
+	            interestsContainer
+	          )
+	        ),
+	        React.createElement(
+	          'div',
+	          { className: 'profile-message' },
+	          React.createElement(
+	            'h3',
+	            null,
+	            'Send ',
+	            thisUser.username.split(" ")[0],
+	            ' a Message'
+	          ),
+	          React.createElement(NewMessage, { currentUserId: this.state.current_user.id, userId: this.state.user.id })
+	        )
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = UserShow;
+
+/***/ },
+/* 256 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var ApiLikeActions = __webpack_require__(257);
+	
+	var ApiLikeUtil = {
+	  fetchLikes: function () {
+	    $.ajax({
+	      url: "api/likes",
+	      success: function (likes) {
+	        ApiLikeActions.receiveLikes(likes);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  updateLike: function (like, callback) {
+	    $.ajax({
+	      url: "api/likes/",
+	      type: "POST",
+	      data: { like: like },
+	      success: function (like) {
+	        ApiLikeActions.receiveLike(like);
+	        callback && callback(like);
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  },
+	
+	  deleteLike: function (like) {
+	    $.ajax({
+	      url: "api/likes/" + like.id,
+	      type: "DELETE",
+	      success: function () {
+	        ApiLikeActions.removeLike();
+	      },
+	      error: function (message) {
+	        console.log(message);
+	      }
+	    });
+	  }
+	
+	};
+	
+	module.exports = ApiLikeUtil;
+
+/***/ },
+/* 257 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var AppDispatcher = __webpack_require__(236);
+	var Constants = __webpack_require__(233);
+	
+	var ApiLikeActions = {
+	
+	  receiveLikes: function (likes) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.LIKES_RECEIVED,
+	      likes: likes
+	    });
+	  },
+	
+	  receiveLike: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.LIKE_RECEIVED,
+	      like: like
+	    });
+	  },
+	
+	  removeLike: function (like) {
+	    AppDispatcher.dispatch({
+	      actionType: Constants.LIKE_REMOVED,
+	      like: like
+	    });
+	  }
+	};
+	
+	module.exports = ApiLikeActions;
+
+/***/ },
+/* 258 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiLikeUtil = __webpack_require__(256),
+	    LikeStore = __webpack_require__(259),
+	    LinkedStateMixin = __webpack_require__(211),
+	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215);
+	
+	var Star = React.createClass({
+	  displayName: 'Star',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.currentUserId);
+	    var likes = LikeStore.allMyLikes(current_user_id);
+	    if (likes.length === 0) {
+	      var starState = false;
+	    } else {
+	      for (var i in likes) {
+	        if (likes[i].liked_id === parseInt(this.props.user.id)) {
+	          var starState = true;
+	          break;
+	        } else {
+	          var starState = false;
+	        }
+	      }
+	    }
+	    var fans = LikeStore.allMyFans(current_user_id);
+	    if (fans.length === 0) {
+	      var fansState = false;
+	    } else {
+	      for (var i in fans) {
+	        if (fans[i].user_id === parseInt(this.props.user.id)) {
+	          var fanState = true;
+	          break;
+	        } else {
+	          var fanState = false;
+	        }
+	      }
+	    }
+	    return { liked_id: this.props.user.id, user_id: current_user_id, star: starState, fan: fanState };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.likeListener = LikeStore.addListener(this._likeChanged);
+	    this.userListener = UserStore.addListener(this._likeChanged);
+	    ApiLikeUtil.fetchLikes();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.likeListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _likeChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  handleLike: function (event) {
+	    event.preventDefault;
+	    if (this.state.star) {
+	      var like = LikeStore.findLike(parseInt(this.state.user_id), parseInt(this.state.liked_id));
+	      ApiLikeUtil.deleteLike(like);
+	    } else {
+	      var like = { user_id: parseInt(this.state.user_id), liked_id: parseInt(this.state.liked_id) };
+	      ApiLikeUtil.updateLike(like);
+	    }
+	  },
+	
+	  render: function () {
+	    if (typeof this.state.star === 'undefined' && !!this.state.star || !this.state.user_id) {
+	      return React.createElement('div', null);
+	    }
+	    var username = UserStore.find(parseInt(this.state.liked_id)).username;
+	    if (this.state.star) {
+	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: function () {}, type: 'checkbox', checked: true });
+	      var text = "You're interested in " + username + "!";
+	    } else if (!this.state.star) {
+	      var checkbox = React.createElement('input', { className: 'like-checkbox', onChange: function () {}, type: 'checkbox' });
+	      var text = "Click to let " + username + " know that you're interested";
+	    }
+	    if (this.state.fan) {
+	      innerHtml = this.props.user.username + " is interested in you!";
+	      var fanView = React.createElement(
+	        'p',
+	        { className: 'fan-boolean' },
+	        innerHtml
+	      );
+	    } else {
+	      var fanView = React.createElement('p', { className: 'fan-boolean' });
+	    }
+	    return React.createElement(
+	      'div',
+	      { className: 'star' },
+	      React.createElement(
+	        'form',
+	        { className: 'star-form' },
+	        checkbox,
+	        React.createElement('label', { onClick: this.handleLike, htmlFor: 'like' }),
+	        React.createElement(
+	          'span',
+	          null,
+	          text
+	        ),
+	        fanView
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Star;
+
+/***/ },
+/* 259 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var Store = __webpack_require__(216).Store,
+	    Constants = __webpack_require__(233),
+	    UserStore = __webpack_require__(215),
+	    ApiLikeUtil = __webpack_require__(256),
+	    AppDispatcher = __webpack_require__(236);
+	
+	var LikeStore = new Store(AppDispatcher);
+	var _likes = {};
+	
+	var resetLikes = function (likes) {
+	  _likes = {};
+	  likes.forEach(function (like) {
+	    _likes[like.id] = like;
+	  });
+	};
+	
+	var resetLike = function (like) {
+	  _likes[like.id] = like;
+	};
+	
+	var removeLike = function () {
+	  var likes = [];
+	  ApiLikeUtil.fetchLikes();
+	  likes = LikeStore.allLikes();
+	};
+	
+	LikeStore.findLike = function (user_id, liked_id) {
+	  var myLikes = LikeStore.allMyLikes(user_id);
+	  for (var i = 0; i < myLikes.length; i++) {
+	    if (myLikes[i].liked_id === liked_id) {
+	      return myLikes[i];
+	    }
+	  }
+	  return {};
+	};
+	
+	LikeStore.allLikes = function () {
+	  var likes = [];
+	  for (var id in _likes) {
+	    likes.push(_likes[id]);
+	  }
+	  return likes;
+	};
+	
+	LikeStore.allMyLikes = function (user_id) {
+	  var likes = [];
+	  for (var i in _likes) {
+	    if (_likes[i].user_id === user_id) {
+	      likes.push(_likes[i]);
+	    }
+	  }
+	  return likes;
+	};
+	
+	LikeStore.allMyFans = function (user_id) {
+	  var likes = [];
+	  for (var i in _likes) {
+	    if (_likes[i].liked_id === user_id) {
+	      likes.push(_likes[i]);
+	    }
+	  }
+	  return likes;
+	};
+	
+	LikeStore.find = function (id) {
+	  return _likes[id];
+	};
+	
+	LikeStore.__onDispatch = function (payload) {
+	  switch (payload.actionType) {
+	    case Constants.LIKES_RECEIVED:
+	      resetLikes(payload.likes);
+	      break;
+	    case Constants.LIKE_RECEIVED:
+	      resetLike(payload.like);
+	      break;
+	    case Constants.LIKE_REMOVED:
+	      removeLike(payload.like);
+	      break;
+	  }
+	  LikeStore.__emitChange();
+	};
+	
+	module.exports = LikeStore;
+
+/***/ },
+/* 260 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    ApiUserUtil = __webpack_require__(234),
+	    ApiLikeUtil = __webpack_require__(256),
+	    LikeStore = __webpack_require__(259),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(251),
+	    History = __webpack_require__(1).History,
+	    Matches = __webpack_require__(261),
+	    Header = __webpack_require__(246),
+	    UserStore = __webpack_require__(215);
+	
+	var Likes = React.createClass({
+	  displayName: 'Likes',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.id);
+	    if (!current_user_id) {
+	      var current_user_id = parseInt(this.props.routeParams.id);
+	    }
+	    return {
+	      current_user_id: current_user_id,
+	      myLikes: LikeStore.allMyLikes(current_user_id),
+	      myFans: LikeStore.allMyFans(current_user_id)
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.likeListener = LikeStore.addListener(this._likeChanged);
+	    this.userListener = UserStore.addListener(this._likeChanged);
+	    ApiLikeUtil.fetchLikes();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.likeListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _likeChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    if (!this.state.myLikes || !this.state.myFans) {
+	      return React.createElement('div', null);
+	    }
+	
+	    var likesContainer = [];
+	    this.state.myLikes.forEach(function (like) {
+	      var user = UserStore.find(parseInt(like.liked_id));
+	      if (user) {
+	        likesContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      }
+	    });
+	
+	    var fansContainer = [];
+	    this.state.myFans.forEach(function (fan) {
+	      var user = UserStore.find(parseInt(fan.user_id));
+	      if (user) {
+	        fansContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	      }
+	    });
+	
+	    var mutualContainer = [];
+	    if (!this.state.myFans) {
+	      mutualContainer.push(React.createElement('div', null));
+	    } else {
+	      this.state.myLikes.forEach((function (like) {
+	        this.state.myFans.forEach(function (fan) {
+	          if (like.liked_id === fan.user_id) {
+	            var user = UserStore.find(parseInt(like.liked_id));
+	            if (user) {
+	              mutualContainer.push(React.createElement(UserItem, { key: user.id, user: user, className: 'like-list-item' }));
+	            }
+	          }
+	        });
+	      }).bind(this));
+	    }
+	
+	    return React.createElement(
+	      'div',
+	      null,
+	      React.createElement(
+	        'div',
+	        { className: 'likes-container' },
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'Users interested in me:'
+	          ),
+	          fansContainer
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'Users I\'m interested in:'
+	          ),
+	          likesContainer
+	        ),
+	        React.createElement(
+	          'ul',
+	          { className: 'likes-div' },
+	          React.createElement(
+	            'h3',
+	            { className: 'h3' },
+	            'You\'re both interested:'
+	          ),
+	          mutualContainer
+	        ),
+	        React.createElement(Matches, { id: this.state.current_user_id })
+	      )
+	    );
+	  }
+	});
+	
+	module.exports = Likes;
+
+/***/ },
 /* 261 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
 	    ReactRouter = __webpack_require__(1),
-	    UserForm = __webpack_require__(210),
-	    SearchBar = __webpack_require__(260),
 	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(252),
+	    ApiInterestUtil = __webpack_require__(244),
+	    InterestStore = __webpack_require__(243),
+	    LinkedStateMixin = __webpack_require__(211),
+	    UserItem = __webpack_require__(251),
+	    History = __webpack_require__(1).History,
+	    UserStore = __webpack_require__(215);
+	
+	var Matches = React.createClass({
+	  displayName: 'Matches',
+	
+	  mixins: [LinkedStateMixin, History],
+	
+	  getStateFromStore: function () {
+	    var current_user_id = parseInt(this.props.id);
+	    if (!current_user_id) {
+	      var current_user_id = parseInt(this.props.routeParams.id);
+	    }
+	    return {
+	      current_user_id: current_user_id,
+	      myMatches: InterestStore.allMyMatches(current_user_id)
+	    };
+	  },
+	
+	  getInitialState: function () {
+	    return this.getStateFromStore();
+	  },
+	
+	  componentDidMount: function () {
+	    this.matchListener = InterestStore.addListener(this._matchChanged);
+	    this.userListener = UserStore.addListener(this._matchChanged);
+	    ApiInterestUtil.fetchInterests();
+	    ApiUserUtil.fetchUsers();
+	  },
+	
+	  componentWillUnmount: function () {
+	    this.matchListener.remove();
+	    this.userListener.remove();
+	  },
+	
+	  _matchChanged: function () {
+	    this.setState(this.getStateFromStore());
+	  },
+	
+	  render: function () {
+	    if (!this.state.myMatches) {
+	      return React.createElement('div', null);
+	    } else {
+	      var matchContainer = {};
+	      this.state.myMatches.forEach(function (interest) {
+	        var user = UserStore.find(parseInt(interest.user_id));
+	        if (user) {
+	          if (matchContainer[user.id]) {
+	            matchContainer[user.id].push(interest);
+	          } else {
+	            matchContainer[user.id] = [interest];
+	          }
+	        }
+	      });
+	      var matchList = [];
+	      Object.keys(matchContainer).forEach(function (id) {
+	        var user = UserStore.find(parseInt(id));
+	        if (user) {
+	          var matchLi = [];
+	          matchLi.push(React.createElement(UserItem, { key: id, user: user, className: 'like-list-item' }));
+	          matchContainer[user.id].forEach(function (interest) {
+	            matchLi.push(React.createElement(
+	              'p',
+	              { key: interest.id + 100, className: 'match-text' },
+	              "likes " + interest.interest
+	            ));
+	          });
+	        }
+	        matchList.push(React.createElement(
+	          'div',
+	          { className: 'match-list-div' },
+	          matchLi
+	        ));
+	      });
+	    }
+	
+	    return React.createElement(
+	      'ul',
+	      { className: 'likes-div' },
+	      React.createElement(
+	        'h3',
+	        { className: 'h3' },
+	        'Users with shared interests:'
+	      ),
+	      matchList
+	    );
+	  }
+	});
+	
+	module.exports = Matches;
+
+/***/ },
+/* 262 */
+/***/ function(module, exports, __webpack_require__) {
+
+	var React = __webpack_require__(5),
+	    ReactRouter = __webpack_require__(1),
+	    UserForm = __webpack_require__(210),
+	    SearchBar = __webpack_require__(254),
+	    ApiUserUtil = __webpack_require__(234),
 	    UserStore = __webpack_require__(215),
 	    History = __webpack_require__(1).History,
-	    UserItem = __webpack_require__(254),
-	    Header = __webpack_require__(263),
-	    RecentActivity = __webpack_require__(262);
+	    UserItem = __webpack_require__(251),
+	    Header = __webpack_require__(246),
+	    RecentActivity = __webpack_require__(263);
 	
 	var User = React.createClass({
 	  displayName: 'User',
@@ -33908,13 +33992,8 @@
 	
 	  componentDidMount: function () {
 	    this.userListener = UserStore.addListener(this._usersChanged);
-	    var state = this.getStateFromStore();
-	    var showUsers = this.randomize(state.current_user, state.users);
-	    this.setState({
-	      current_user: state.current_user,
-	      users: state.users,
-	      showUsers: showUsers
-	    });
+	    ApiUserUtil.fetchCurrentUser();
+	    ApiUserUtil.fetchUsers();
 	  },
 	
 	  componentWillUnmount: function () {
@@ -33922,13 +34001,7 @@
 	  },
 	
 	  _usersChanged: function () {
-	    var state = this.getStateFromStore();
-	    var showUsers = this.randomize(state.current_user, state.users);
-	    this.setState({
-	      current_user: state.current_user,
-	      users: state.users,
-	      showUsers: showUsers
-	    });
+	    this.setState(this.getStateFromStore());
 	  },
 	
 	  searchResults: function (string) {
@@ -33941,16 +34014,16 @@
 	    this.history.pushState(current_user, '/user/' + user.id);
 	  },
 	
-	  randomize: function (current_user, users) {
+	  randomize: function () {
 	    var showUsers = [];
-	    if (users.length > 0) {
-	      var copyUsers = users.slice(0);
+	    if (this.state.users.length > 0) {
+	      var copyUsers = this.state.users.slice(0);
 	      while (showUsers.length < 6 && copyUsers.length > 0) {
 	        var rand = Math.floor(Math.random() * copyUsers.length);
 	        var user = copyUsers[rand];
 	        copyUsers.splice(rand, 1);
-	        if (current_user && user && current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" && user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png") {
-	          if (current_user.preferred_gender === "no preference" || current_user.preferred_gender === user.gender || !current_user.preferred_gender || user.gender != "male" && user.gender != "female") {
+	        if (this.state.current_user && user && this.state.current_user.id != user.id && user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" && user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png") {
+	          if (this.state.current_user.preferred_gender === "no preference" || this.state.current_user.preferred_gender === user.gender || !this.state.current_user.preferred_gender || user.gender != "male" && user.gender != "female") {
 	            showUsers.push(user);
 	          }
 	        }
@@ -33960,13 +34033,14 @@
 	  },
 	
 	  render: function () {
-	    if (!this.state.current_user || !this.state.showUsers) {
+	    if (!this.state.current_user) {
 	      return React.createElement(
 	        'div',
 	        null,
 	        'loading'
 	      );
 	    };
+	    var showUsers = this.randomize();
 	    return React.createElement(
 	      'div',
 	      null,
@@ -33986,7 +34060,7 @@
 	            ),
 	            React.createElement('span', { id: 'no-text', className: 'side-scroll-text' })
 	          ),
-	          this.state.showUsers.map((function (user) {
+	          showUsers.map((function (user) {
 	            if (this.state.current_user) {
 	              return React.createElement(
 	                'li',
@@ -34011,7 +34085,7 @@
 	module.exports = User;
 
 /***/ },
-/* 262 */
+/* 263 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
@@ -34020,8 +34094,8 @@
 	    ApiInterestUtil = __webpack_require__(244),
 	    UserStore = __webpack_require__(215),
 	    InterestStore = __webpack_require__(243),
-	    MessageStore = __webpack_require__(255),
-	    UserItem = __webpack_require__(254),
+	    MessageStore = __webpack_require__(247),
+	    UserItem = __webpack_require__(251),
 	    History = __webpack_require__(1).History;
 	
 	var RecentActivity = React.createClass({
@@ -34078,6 +34152,12 @@
 	    }
 	  },
 	
+	  showDetail: function (event) {
+	    var current_user = this.state.current_user;
+	    var user = UserStore.find(parseInt(event.target.id));
+	    this.history.pushState(current_user, '/user/' + user.id);
+	  },
+	
 	  render: function () {
 	    var activity = this.populateActivity();
 	    if (activity) {
@@ -34102,7 +34182,7 @@
 	            activity_show.push(React.createElement(
 	              'div',
 	              null,
-	              React.createElement('img', { id: user.id, className: 'activity-image', src: user.image_url }),
+	              React.createElement('img', { id: user.id, onClick: this.showDetail, className: 'activity-image', src: user.image_url }),
 	              React.createElement(UserItem, { key: i, user: user, text: string })
 	            ));
 	          } else if (Date.now() - Date.parse(user.created_at) < 604800000) {
@@ -34110,7 +34190,7 @@
 	            activity_show.push(React.createElement(
 	              'div',
 	              null,
-	              React.createElement('img', { id: user.id, className: 'activity-image', src: user.image_url }),
+	              React.createElement('img', { id: user.id, onClick: this.showDetail, className: 'activity-image', src: user.image_url }),
 	              React.createElement(UserItem, { key: i, user: user, text: string })
 	            ));
 	          } else {
@@ -34118,7 +34198,7 @@
 	            activity_show.push(React.createElement(
 	              'div',
 	              null,
-	              React.createElement('img', { id: user.id, className: 'activity-image', src: user.image_url }),
+	              React.createElement('img', { id: user.id, onClick: this.showDetail, className: 'activity-image', src: user.image_url }),
 	              React.createElement(UserItem, { key: i, user: user, text: string })
 	            ));
 	          }
@@ -34150,7 +34230,7 @@
 	module.exports = RecentActivity;
 
 /***/ },
-/* 263 */
+/* 264 */
 /***/ function(module, exports, __webpack_require__) {
 
 	var React = __webpack_require__(5),
@@ -34158,10 +34238,8 @@
 	    LinkedStateMixin = __webpack_require__(211),
 	    History = __webpack_require__(1).History,
 	    UserStore = __webpack_require__(215),
-	    MessageStore = __webpack_require__(255),
-	    Messages = __webpack_require__(258),
-	    ApiUserUtil = __webpack_require__(234),
-	    ApiMessageUtil = __webpack_require__(252);
+	    ApiMessageUtil = __webpack_require__(248),
+	    MessageStore = __webpack_require__(247);
 	
 	module.exports = React.createClass({
 	  displayName: 'exports',
@@ -34169,11 +34247,20 @@
 	  mixins: [History],
 	
 	  getStateFromStore: function () {
-	    var current_user = UserStore.find(parseInt(this.props.currentUserId));
+	    var current_user_id = parseInt(this.props.currentUserId);
+	    var current_user = UserStore.find(current_user_id);
+	    var messages = MessageStore.allMyReceivedMessages(current_user_id);
+	    var count = 0;
+	    messages.forEach(function (message) {
+	      if (!message.read && !message.receiver_delete) {
+	        count += 1;
+	      }
+	    });
 	    return {
 	      current_user: current_user,
-	      id: parseInt(this.props.currentUserId),
-	      unread_count: this.props.messageCount
+	      id: current_user_id,
+	      messages: messages,
+	      count: count
 	    };
 	  },
 	
@@ -34181,75 +34268,32 @@
 	    return this.getStateFromStore();
 	  },
 	
-	  componentWillReceiveProps: function (newProps) {
-	    var current_user = UserStore.find(parseInt(newProps.currentUserId));
-	    this.setState({ current_user: current_user, unread_count: newProps.messageCount });
+	  componentDidMount: function () {
+	    this.messageListener = MessageStore.addListener(this._messagesChanged);
+	    ApiMessageUtil.fetchMessages();
 	  },
 	
-	  handleMatchesButton: function (event) {
-	    event.preventDefault();
-	    var current_user = this.state.current_user;
-	    this.history.pushState(current_user, '/likes/' + this.state.id);
+	  componentWillUnmount: function () {
+	    this.messageListener.remove();
 	  },
 	
-	  handleMessagesButton: function (event) {
-	    event.preventDefault();
-	    var current_user = this.state.current_user;
-	    this.history.pushState(current_user, '/messages/' + this.state.id);
-	  },
-	
-	  handleEditProfileButton: function (event) {
-	    event.preventDefault();
-	    var current_user = this.state.current_user;
-	    this.history.pushState(current_user, '/profile/' + this.state.id);
+	  _messagesChanged: function () {
+	    this.setState(this.getStateFromStore());
 	  },
 	
 	  render: function () {
-	    if (!this.state.current_user) {
-	      return React.createElement(
-	        'div',
-	        null,
-	        'loading'
-	      );
+	    if (!this.state.count) {
+	      return React.createElement('div', null);
 	    };
-	
+	    if (this.state.count > 0) {
+	      var className = "show";
+	    } else {
+	      var className = "hide";
+	    }
 	    return React.createElement(
-	      'nav',
-	      { className: 'header-nav' },
-	      React.createElement(
-	        'a',
-	        { id: 'profile-link', onClick: this.handleEditProfileButton },
-	        React.createElement('img', { id: 'img-icon', src: this.state.current_user.image_url }),
-	        React.createElement(
-	          'span',
-	          { className: 'profile-hover' },
-	          'Edit Profile'
-	        )
-	      ),
-	      React.createElement(
-	        'h1',
-	        { className: 'header-logo' },
-	        React.createElement(
-	          'a',
-	          { className: 'header-button', href: '#' },
-	          'OkAlpha'
-	        ),
-	        React.createElement(
-	          'a',
-	          { className: 'header-button', onClick: this.handleMatchesButton },
-	          'My Matches'
-	        ),
-	        React.createElement(
-	          'a',
-	          { className: 'header-button', onClick: this.handleMessagesButton },
-	          React.createElement(
-	            'div',
-	            null,
-	            'My Messages'
-	          ),
-	          React.createElement('span', { className: 'hidden', id: 'badge' })
-	        )
-	      )
+	      'span',
+	      { className: className, id: 'badge' },
+	      this.state.count
 	    );
 	  }
 	});

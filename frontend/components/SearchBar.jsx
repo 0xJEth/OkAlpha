@@ -45,7 +45,7 @@ var SearchBar = React.createClass({
       var list = this.makeList(UserStore.all());
       var browseAll = "disabled";
     }
-    
+
     return (
       <div className="search-div">
         <div className="search-bar">
@@ -53,7 +53,7 @@ var SearchBar = React.createClass({
             className="search-text-field"
             type="text"
             valueLink={this.linkState("search")}
-            placeholder="Search"
+            placeholder="Search Users"
           />
         <button className={browseAll} onClick={this.allUsers}>Browse All Users</button>
         </div>

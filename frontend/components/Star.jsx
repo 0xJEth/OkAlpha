@@ -79,10 +79,10 @@ var Star = React.createClass({
     var username = UserStore.find(parseInt(this.state.liked_id)).username;
     if (this.state.star) {
       var checkbox = <input className="like-checkbox" onChange={function(){}} type="checkbox" checked/>
-      var text = "I'm no longer interested in " + username;
+      var text = "You're interested in " + username + "!";
     } else if (!this.state.star) {
       var checkbox = <input className="like-checkbox" onChange={function(){}} type="checkbox"/>
-      var text = "Let " + username + " know that you're intested!"
+      var text = "Click to let " + username + " know that you're interested"
     }
     if (this.state.fan) {
       innerHtml = this.props.user.username + " is interested in you!"
@@ -92,9 +92,9 @@ var Star = React.createClass({
     }
     return (
       <div className="star">
-        {fanView}
         <form className="star-form">
-          {checkbox}<label htmlFor="like"></label><span onClick={this.handleLike}>{text}</span>
+          {checkbox}<label onClick={this.handleLike} htmlFor="like"></label><span>{text}</span>
+        {fanView}
         </form>
       </div>
     );

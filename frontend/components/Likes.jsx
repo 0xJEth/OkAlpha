@@ -99,9 +99,6 @@ var Likes = React.createClass({
           </ul>
           <Matches id={this.state.current_user_id}/>
         </div>
-        <footer>
-          <a className="nav-button" href="#">Back</a>
-        </footer>
       </div>
     );
   }

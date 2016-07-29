@@ -60,6 +60,12 @@ var RecentActivity = React.createClass({
     }
   },
 
+  showDetail: function (event) {
+    var current_user = this.state.current_user;
+    var user = UserStore.find(parseInt(event.target.id));
+    this.history.pushState(current_user, '/user/' + user.id)
+  },
+
   render: function () {
     var activity = this.populateActivity();
     if (activity) {
@@ -81,15 +87,15 @@ var RecentActivity = React.createClass({
           }
           if (action.interest) {
             var string = user.username + " has added " + action.interest + " to " + pronoun + " interests";
-            activity_show.push(<div><img id={user.id} className="activity-image" src={user.image_url}/>
+            activity_show.push(<div><img id={user.id} onClick={this.showDetail} className="activity-image" src={user.image_url}/>
                                <UserItem key={i} user={user} text={string}/></div>);
           } else if (Date.now() - Date.parse(user.created_at) < 604800000) {
             var string = user.username + " is a new member!";
-            activity_show.push(<div><img id={user.id} className="activity-image" src={user.image_url}/>
+            activity_show.push(<div><img id={user.id} onClick={this.showDetail} className="activity-image" src={user.image_url}/>
                                <UserItem key={i} user={user} text={string}/></div>);
           } else {
             var string = user.username + " has updated " + pronoun + " profile";
-            activity_show.push(<div><img id={user.id} className="activity-image" src={user.image_url}/>
+            activity_show.push(<div><img id={user.id} onClick={this.showDetail} className="activity-image" src={user.image_url}/>
                                <UserItem key={i} user={user} text={string}/></div>);
           }
         }

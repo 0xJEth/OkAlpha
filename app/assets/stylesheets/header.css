@@ -6,7 +6,7 @@ nav {
 
 .header-nav, #sign-out {
   display: flex;
-  height: 45px;
+  height: 47px;
   border-bottom: solid 1px white;
   padding-bottom: 10px;
 }
@@ -16,20 +16,12 @@ nav {
   height: 45px;
 }
 
-#profile-link, .header-button {
+.header-button {
   display: inline-block;
   text-align: center;
-  -moz-appearance: none;
-  -webkit-appearance: none;
-  -ms-appearance: none;
-  appearance: none;
-  -moz-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  -webkit-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  -ms-transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
-  transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out;
   cursor: pointer;
   display: inline-block;
-  padding: 7px 15px 15px 0;
+  margin: 0;
   text-align: center;
   text-decoration: none;
   white-space: nowrap;
@@ -38,17 +30,35 @@ nav {
   font-weight: 300;
   letter-spacing: 0.09em;
   line-height: 1.65em;
-  -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
-  box-sizing: border-box;
 }
 
 .header-button {
   height: 45px;
+  padding: 8px 1px 14px 1px;
+  margin: 0 15px;
+}
+
+#home {
+  width: 75px;
+}
+
+#matches {
+  width: 125px;
+}
+
+#messages {
+  width: 150px;
+}
+
+#profile-text {
+  width: 100px;
+  margin-left: 0;
+  padding-left: 0;
 }
 
 .header-button div {
   cursor: pointer;
+  display: inline-flex;
 }
 
 #profile-link, #sign-out input {
@@ -72,52 +82,40 @@ nav {
 
 .header-button:active, .header-button:hover, #sign-out input:hover, #sign-out input:active {
   color: #bfbfbf;
+  font-size: 11pt;
 }
 
 .show {
   border-radius: 50%;
   background-color: red;
-  padding: 5px 10px;
+  padding: 0 8px;
+  display:inline-block;
+  margin-left: 3px;
+  cursor: pointer;
 }
 
-.hidden {
+.hide {
   background-color: #4242f0;
+  display: none;
 }
 
 #profile-link {
-  width: 50px;
+  height: 45px;
   margin-left: 15px;
   cursor: pointer;
-  padding: 0;
 }
 
 #img-icon {
+  padding: 0;
   height: 37px;
   width: 37px;
-  margin: 2px;
+  margin: 1px;
   border-radius: 100%;
   z-index: -1;
-}
-
-#profile-link:hover img {
-  opacity: 0.4;
-}
-
-#profile-link:hover span {
-  opacity: 1;
-}
-
-#profile-link span {
-  opacity: 0;
-  position: relative;
-  left: -38px;
-  top: 4px;
-  display: inline-block;
-  height: 35px;
-  width: 37px;
-  font-size: 8pt;
-  white-space: normal;
-  color: white;
   cursor: pointer;
-  line-height: 1.2em;
+}
+
+#profile-link:hover a {
+  color: #bfbfbf;
+  font-size: 11pt;
 }
