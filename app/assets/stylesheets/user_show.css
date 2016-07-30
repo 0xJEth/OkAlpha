@@ -11,9 +11,17 @@
   display: block;
 }
 
-.user-info li, .user-info span {
+.user-info h2,.user-info h3 {
+  margin-bottom: 5px;
+}
+
+.user-info li {
   padding: 2px;
-  height: 20px;
+  min-height: 20px;
+  font-size: 12pt;
+  padding: 2px 10px 2px 10px;
+  text-align: justify;
+  line-height: 1.2em;
 }
 
 .user-details {
@@ -22,7 +30,7 @@
   margin: 20px;
   padding: 20px;
   background-color: white;
-  width: 400px;
+  width: 450px;
 }
 
 .left {
@@ -31,14 +39,24 @@
 }
 
 .profile-message {
+  position: absolute;
   border: solid 1px;
   border-radius: 10px;
-  margin: 20px;
+  margin: 190px 20px 20px 0;
   padding: 20px;
   background-color: white;
   display: inline-block;
-  margin-top: 190px;
   vertical-align: top;
+  left: 550px;
+}
+
+.profile-message * {
+  font-size: 12pt;
+}
+
+.profile-message h2 * {
+  font-size: 1.4em;
+  line-height: 1.5em;
 }
 
 .star {
@@ -50,11 +68,12 @@
 .fan-boolean {
   display: flex;
   margin: 0px 20px 10px 64px;
-  color: white;
-  cursor: default;
+  font-size: 10pt;
+  position: absolute;
+  left: 272px;
 }
 
-.star-form {
+.star-form * {
   color: white;
   margin-left: 10px;
 }
@@ -62,6 +81,7 @@
 .star-form span {
   background-color: #4242f0;
   cursor: default;
+  font-size: 10pt;
 }
 
 .star-form label {

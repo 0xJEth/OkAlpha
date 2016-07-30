@@ -8,7 +8,7 @@
 		vertical-align: middle;
 		cursor: auto;
 		font-family: "Raleway", Arial, Helvetica, sans-serif;
-		background_image: none;
+		background-image: none;
 	}
 
 	.router {
@@ -20,7 +20,7 @@
 	}
 
 	body, html{
-		line-height: 1;
+		line-height: 1em;
 		height: 100%;
 		display: block;
 	}
@@ -79,7 +79,7 @@
 
 	body, input, select, textarea {
 		font-family: "Raleway", Arial, Helvetica, sans-serif;
-		font-size: 10pt;
+		font-size: 12pt;
 		font-weight: 300;
 		line-height: 1.00em;
 	}
@@ -156,6 +156,22 @@
 		border: 0;
 	}
 
+	form input[type="button"],
+	form input[type="submit"],
+	form input[type="reset"],
+	form input[type="button"],
+	form button,
+	form .button,
+	button.upload-button,
+	button.remove-interest,
+	button.enabled,
+	.profile-button {
+		-moz-box-shadow: inset -1px -1px 1px gray;
+		-webkit-box-shadow: inset -1px -1px 1px gray;
+		-ms-box-shadow: inset -1px -1px 1px gray;
+		box-shadow: inset -1px -1px 1px gray;
+	}
+
 	.grid-form {
 		display: -moz-flex;
 		display: -webkit-flex;
@@ -199,7 +215,7 @@
 			text-decoration: none;
 			cursor: pointer;
 			display: inline-block;
-			font-size: 1em;
+			/*font-size: 1em;*/
 			font-weight: 300;
 			padding-left: 0.25em;
 			padding-right: 0.75em;

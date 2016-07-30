@@ -64,13 +64,13 @@ var UserShow = React.createClass({
       var thumbnail = <img className="blank" src={"http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"}/>
     }
     if (thisUser.email) {
-      profileProps.push(<li key="profile-email">Email: {thisUser.email}</li>)
+      profileProps.push(<li key="profile-email">Email : {thisUser.email}</li>)
     }
     if (thisUser.gender) {
-      profileProps.push(<li key="profile-gender">Gender: {thisUser.gender}</li>)
+      profileProps.push(<li key="profile-gender">Gender : {thisUser.gender}</li>)
     }
     if (thisUser.preferred_gender) {
-      profileProps.push(<li key="profile-pref-gender">Interested in: {thisUser.preferred_gender}</li>)
+      profileProps.push(<li key="profile-pref-gender">Interested in : {thisUser.preferred_gender}</li>)
     }
     if (thisUser.bio) {
       profileProps.push(<div key="profile-bio"><br/><br/><li>About me :</li><li>{thisUser.bio}</li></div>)
@@ -106,13 +106,12 @@ var UserShow = React.createClass({
               <h2>{thisUser.username}</h2>
               {profileProps}
               <br/><br/>
-              <h4>{thisUser.username + "'s Interests:"} </h4>
-              <br/>
+              <h3>{thisUser.username + "'s Interests:"} </h3>
               {interestsContainer}
             </div>
           </div>
           <div className="profile-message">
-            <h3>Send {thisUser.username.split(" ")[0]} a Message</h3>
+            <h2>Send {thisUser.username.split(" ")[0]} a Message</h2>
             <NewMessage currentUserId={this.state.current_user.id} userId={this.state.user.id}/>
           </div>
         </div>

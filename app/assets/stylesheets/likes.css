@@ -53,11 +53,3 @@ div.likes {
 .match-list-div:hover {
   background-color: #b3d1ff;
 }
-
-.match-list-div:hover .match-text {
-  font-size: 12pt;
-}
-
-.match-list-div:hover li.user-item {
-  font-size: 14pt;
-}

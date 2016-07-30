@@ -43,15 +43,16 @@
   font-size: 12pt;
 }
 
-.search-button, .enabled {
+.enabled {
   font-family: "Raleway", Arial, Helvetica, sans-serif;
   padding: 10px;
   margin: 5px 5px;
   height: 30px;
   border-radius: 5px;
+  font-size: 12pt;
 }
 
-.search-button:hover, .search-button:active, .enabled:hover, .enabled:active {
+.enabled:hover, .enabled:active {
   color: #999999;
 }
 
@@ -68,5 +69,4 @@ li.user-item {
 
 li.user-item:hover {
   background-color: #b3d1ff;
-  font-size: 14pt;
 }

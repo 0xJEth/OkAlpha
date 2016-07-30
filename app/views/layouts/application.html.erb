@@ -21,8 +21,13 @@
 	    <%= yield %>
 		</body>
 	<% else %>
-		<body class="sign-in-page">
-	    <%= render "./layouts/new_user" %>
-		</body>
+		<body class="front-page">
+			<div class="sign-in-page">
+	    	<%= render "./layouts/new_user" %>
+			</div>
+			<div class="testimonials-page">
+				<%= render "./layouts/testimonials" %>
+			</body>
+		</div>
   <% end %>
 </html>

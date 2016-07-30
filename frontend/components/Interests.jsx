@@ -71,8 +71,8 @@ var Interests = React.createClass({
         }
         interestsContainer.push(
           <li className="interest-item" key={interest.id}>
-            {interestCapitalized}
             <button title="delete" className="remove-interest" id={interest.id} onClick={this.removeInterest}>X</button>
+            {interestCapitalized}
           </li>
         )
       }.bind(this))

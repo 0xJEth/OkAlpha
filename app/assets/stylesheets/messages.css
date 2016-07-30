@@ -46,9 +46,29 @@
   float: right;
 }
 
+.no-messages {
+  font-size: 12pt;
+  padding: 10px 0 0 34px;
+}
+
+.message-label {
+  margin: 5px 0;
+  border-bottom: 1px solid black;
+  padding: 0 0 5px 34px;
+}
+
 .date-label {
   margin-right: 10px;
   float: right;
+}
+
+.message-panel {
+  margin: 0 10px 0 75px;
+  width: 400px;
+}
+
+.message-panel * span {
+  font-size: 12pt;
 }
 
 .message-details, .message-panel {
@@ -58,7 +78,6 @@
   background-color: white;
   border: solid 1px;
   border-radius: 10px;
-  margin: 0 10px;
 }
 
 .message-details-hidden {
@@ -69,21 +88,32 @@
 
 .message-details {
   visibility: visible;
+  margin: 0 0 0 25px;
 }
 
-.time {
+.time * {
   padding-top: 5px;
+  font-size: 12pt;
 }
 
 .message-body {
-  font-size: 12pt;
+  font-size: 13pt;
   margin-top: 45px;
+  padding-left: 2px;
+  white-space: normal;
+  width: 300px;
+  line-height: 1.2em;
+  text-align: justify;
 }
 
 .message-image, .title-container {
   display: inline-block;
   margin-right: 10px;
   vertical-align: top;
+}
+
+.new-message-form * {
+  font-size: 12pt;
 }
 
 .new-message-button {

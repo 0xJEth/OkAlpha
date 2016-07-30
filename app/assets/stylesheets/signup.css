@@ -1,33 +1,32 @@
-body.sign-in-page {
+body.front-page {
   background-image: url(http://www.drodd.com/images10/space-wallpaper17.jpg);
   background-repeat: no-repeat;
-  background-size: auto 100%;
+  background-size: 100% 100%;
+  background-blend-mode: luminosity;
   position:absolute;
   min-height: 100%;
   min-width: 100%;
 }
 
 .splash-body {
-  width:500px;
-  height: 500px;
+  width: 25%;
+  height: 600px;
   vertical-align: middle;
-  position:relative;
-  padding: 50px;
-  margin: 100px auto;
-  margin-bottom: 0;
-  border-radius: 5px;
+  position: absolute;
+  padding: 25px;
+  border-radius: 10px;
   background-color: white;
   color: black;
   max-height: 100%;
-
   overflow: hidden;
+  top: 50%;
+  left: 20%;
+  opacity: 0.85;
+  transform: translate(-20%, -50%);
 }
 
 .logo-img {
-  padding: 0;
-  margin: 0 auto;
-  margin-left: 75px;
-  display: block;
+  margin-top: 50px;
 }
 
 #img-one {
@@ -55,14 +54,11 @@ body.sign-in-page {
   border-color: #e3e3e3;
 }
 
-.new-user, .new-session, .new-page {
+.new-user, .new-session, .guest-user, .splash-body h4, .logo-img {
   display: block;
   width: 100%;
-  margin: 0 50px;
-}
-
-.bar {
-  margin-left: 0;
+  /*margin: auto auto;*/
+  text-align: center;
 }
 
 .new-user input[type="submit"],
@@ -71,29 +67,34 @@ body.sign-in-page {
 {
   border-radius: 5px;
   padding: 10px;
+  margin: 10px 0;
 }
 
-.new-user input[type="submit"]:hover, .new-session input[type="submit"]:hover {
+.new-user a, .new-session a {
+  margin: 15px 0;
+}
+
+.new-user input[type="submit"]:hover,
+.new-session input[type="submit"]:hover,
+.guest-user input[type="submit"]:hover
+{
   color: #999999;
 }
 
-.new-user input[type="submit"]:active, .new-session input[type="submit"]:active {
+.new-user input[type="submit"]:active,
+.new-session input[type="submit"]:active,
+.guest-user input[type="submit"]:active
+{
   color: #999999;
 }
 
-.errors {
-  margin-left: 20px;
+.errors-show, .errors-hide {
   color: red;
+  margin: 5px 50px;
+  padding: 10px;
+  border-radius: 10pt;
 }
 
-.splash-body h1 {
-  margin-left: 150px;
-}
-
-.splash-body h4 {
-  margin-left: 55px;
-}
-
-a {
-  margin-left: 15px;
+.errors-show {
+  background-color: #ffcccc;
 }

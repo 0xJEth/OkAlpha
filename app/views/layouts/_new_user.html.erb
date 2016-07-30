@@ -4,42 +4,28 @@
   <img id="img-two" src="http://res.cloudinary.com/jolinar1013/image/upload/v1452725195/alpha-logo_qrywtj.png"></img>
 </div>
 
-<br/>
+
 <h4>Join the best free dating site in the Quadrant</h4>
-<div class="new-page">
-<br>
-<h2 class="guest-user">Try with a demo account!</h2>
-<br>
 
-<form class="guest-user" action="<%= session_url %>" method="post">
-  <%= auth_token_input %>
-  <input type="hidden" name="user[username]" value="Guest">
-  <input type="hidden" name="user[password]" value="password">
-  <input type="submit" value="Log in as Guest">
-</form>
-
-</div>
-
-<br>
-<hr class="bar"><hr class="bar">
 
 <% if session_flag? %>
 
 <div class= "new-session" id="new-session">
-  <div class="errors" id="errors-session">
-    <br/>
-    <%= flash[:errors_login].join("<br>").html_safe if flash[:errors_login] %>
-    <br/>
-  </div>
+  <% if flash[:errors_login] %>
+    <div class="errors-show"><%= flash[:errors_login].join("").html_safe if flash[:errors_login] %></div>
+  <% else %>
+    <div class="errors-hide"></div>
+  <% end %>
   <h2>Log In</h2>
-  <br>
+
   <form action="<%= session_url %>" method="post">
     <%= auth_token_input %>
     <input type="text" name="user[username]" placeholder="Username">
-    <br>
+    <br/>
     <input type="password" name="user[password]" placeholder="Password">
-    <br><br>
+    <br/>
     <input type="submit" value="Log In">
+    <br/>
     <a href="/users/new">Don't have an account? Sign Up</a>
   </form>
 </div>
@@ -47,24 +33,35 @@
 <% else %>
 
 <div class="new-user" id="new-user">
-  <div class="errors" id="errors-user">
-    <br/>
-    <%= flash[:errors_signup].join("<br>").html_safe if flash[:errors_signup] %>
-    <br/>
-  </div>
+  <% if flash[:errors_signup] %>
+    <div class="errors-show"><%= flash[:errors_signup].join("").html_safe %></div>
+  <% else %>
+    <div class="errors-hide"></div>
+  <% end %>
   <h2>Sign Up</h2>
-  <br>
+
   <form action="<%= users_url %>" method="post">
     <%= auth_token_input %>
     <input type="text" name="user[username]" placeholder="Username">
-    <br>
+    <br/>
     <input type="password" name="user[password]" placeholder="Password">
-    <br><br>
+    <br/>
     <input type="submit" value="Sign Up">
+    <br/>
     <a href="/session/new">Already have an account? Log In</a>
   </form>
 </div>
 
 <% end %>
+
+
+<h3 class="guest-user">Or log in with a demo account!</h3>
+
+<form class="guest-user" action="<%= session_url %>" method="post">
+  <%= auth_token_input %>
+  <input type="hidden" name="user[username]" value="Guest">
+  <input type="hidden" name="user[password]" value="password">
+  <input type="submit" value="Log in as Guest">
+</form>
 
 </div>

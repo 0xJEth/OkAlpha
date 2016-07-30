@@ -17,6 +17,7 @@ ul.side-scroll-ul {
   line-height: 1.2;
   text-align: center;
   padding: 30px 20px;
+  font-size: 10pt;
 }
 
 #header, #no-text, #header-li {

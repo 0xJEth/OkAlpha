@@ -11,7 +11,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20160722000225) do
+ActiveRecord::Schema.define(version: 20160730013326) do
 
   create_table "interests", force: :cascade do |t|
     t.string   "interest",   null: false
@@ -43,16 +43,16 @@ ActiveRecord::Schema.define(version: 20160722000225) do
   add_index "messages", ["sender_id", "receiver_id"], name: "index_messages_on_sender_id_and_receiver_id"
 
   create_table "users", force: :cascade do |t|
-    t.string   "username",                                                                                               null: false
+    t.string   "username",                                                                                                                      null: false
     t.string   "gender"
     t.string   "preferred_gender"
     t.string   "email"
-    t.string   "image_url",        default: "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"
+    t.string   "image_url",        default: "https://res.cloudinary.com/jolinar1013/image/upload/v1456866249/OkAlpha/jwfs0vwpxfohk7aciiv1.png"
     t.string   "bio"
-    t.string   "session_token",                                                                                          null: false
-    t.string   "password_digest",                                                                                        null: false
-    t.datetime "created_at",                                                                                             null: false
-    t.datetime "updated_at",                                                                                             null: false
+    t.string   "session_token",                                                                                                                 null: false
+    t.string   "password_digest",                                                                                                               null: false
+    t.datetime "created_at",                                                                                                                    null: false
+    t.datetime "updated_at",                                                                                                                    null: false
   end
 
   add_index "users", ["username", "session_token"], name: "index_users_on_username_and_session_token", unique: true

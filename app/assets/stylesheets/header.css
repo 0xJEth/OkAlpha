@@ -71,6 +71,10 @@ nav {
 
 #sign-out input {
   line-height: 1.65em;
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  -ms-box-shadow: none;
+  box-shadow: none;
 }
 
 #sign-out {

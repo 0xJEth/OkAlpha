@@ -135,7 +135,7 @@ var Messages = React.createClass({
       }.bind(this))
       messageReceivedContainer.unshift(<li key={1001} className="message-label">User<span className="date-label">Date</span></li>);
       if (messageReceivedContainer.length === 1) {
-        messageReceivedContainer[0] = <li key={1002} className={"no messages"}>No messages</li>;
+        messageReceivedContainer[0] = <li key={1002} className={"no-messages"}>No messages</li>;
       }
 
       var messageSentContainer = [];
@@ -160,7 +160,7 @@ var Messages = React.createClass({
       }.bind(this))
       messageSentContainer.unshift(<li key={1003} className="message-label">User<span className="date-label">Date</span></li>);
       if (messageSentContainer.length === 1) {
-        messageSentContainer[0] = <li key={1004} className={"no messages"}>No messages</li>;
+        messageSentContainer[0] = <li key={1004} className="no-messages">No messages</li>;
       }
     }
 
@@ -175,16 +175,16 @@ var Messages = React.createClass({
         <div className="message-container">
           <div className="message-panel">
             <ul className="message-ul">
-              <h2 className="h2">Inbox:</h2>
+              <h2 className="h2">Inbox</h2>
               {messageReceivedContainer}
             </ul>
             <br/><br/>
             <ul className="message-ul">
-              <h2 className="h2">Sent Messages:</h2>
+              <h2 className="h2">Sent</h2>
               {messageSentContainer}
             </ul>
             <br/><br/><br/><br/>
-            <h3 className="h3">Send New Message: </h3>
+            <h2 className="h2">Compose New</h2>
             <NewMessage key={this.state.current_user_id} currentUserId={this.state.current_user_id}/>
           </div>
           <div className={detailsClassName}>
