@@ -70,7 +70,7 @@ var MessageDetails = React.createClass({
         var title = <h2>Message to {user.username}:</h2>;
       } else {
         var user = this.state.sender;
-        var title = <h2>Message from {user.username}:</h2>;
+        var title = <h3>Message from {user.username}:</h3>;
       }
       var time = MessageStore.dateToString(this.state.created_at);
       return (

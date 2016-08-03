@@ -33247,7 +33247,7 @@
 	        { onSubmit: this.sendMessage, className: 'new-message-form' },
 	        input,
 	        React.createElement('br', null),
-	        React.createElement('textarea', { cols: '44', rows: '6', name: 'body', valueLink: this.linkState("body") }),
+	        React.createElement('textarea', { cols: '42', rows: '6', name: 'body', valueLink: this.linkState("body") }),
 	        React.createElement('br', null),
 	        React.createElement('input', { className: 'new-message-button', type: 'submit', value: 'Send Message' })
 	      )
@@ -33895,7 +33895,7 @@
 	      } else {
 	        var user = this.state.sender;
 	        var title = React.createElement(
-	          'h2',
+	          'h3',
 	          null,
 	          'Message from ',
 	          user.username,

@@ -97,7 +97,7 @@ var NewMessage = React.createClass({
         <form onSubmit={this.sendMessage} className="new-message-form">
           {input}
           <br/>
-          <textarea cols="44" rows="6" name="body" valueLink={this.linkState("body")}></textarea>
+          <textarea cols="42" rows="6" name="body" valueLink={this.linkState("body")}></textarea>
           <br/>
           <input className="new-message-button" type="submit" value="Send Message"/>
         </form>
