@@ -65,7 +65,7 @@ return (
 );
 ```
 
-## Future Ideas
+### Future Ideas
 
 There are still a few features I'd like to add to OkAlpha in my spare time:
 * The ability to mark messages as unread
