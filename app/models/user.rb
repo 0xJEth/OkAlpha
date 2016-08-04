@@ -53,10 +53,8 @@ class User < ActiveRecord::Base
   def self.capitalize_username(username)
     username = username.split(" ")
     username.each do |word|
-      p word
       word.capitalize!
     end
-    p username
     username = username.join(" ")
   end
 
