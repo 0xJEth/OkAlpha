@@ -71,5 +71,4 @@ There are still a few features I'd like to add to OkAlpha in my spare time:
 * The ability to mark messages as unread
 * The ability to search messages
 * The ability to see messages from one user or subject line bundled in a thread
-* Fix the delete messages API so it takes both sender and receiver to delete
 * Implement more complicated matching algorithms
