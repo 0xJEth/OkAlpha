@@ -72,6 +72,6 @@ There are still a few features I'd like to add to OkAlpha in my spare time:
 * The ability to search through messages
 * The ability to see messages from one user or subject line bundled into a thread
 * The ability to message multiple recipients
-* The ability to search an interest and see all users with that interest without adding it to your profile
+* The ability to search an interest and see all users with that interest (without having to add it to your profile)
 * Look into socket.io for real-time chat functionality
 * Implement more complicated matching algorithms
