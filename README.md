@@ -42,7 +42,7 @@ end
 
 ### Database Schema
 
-OkAplha is built with 4 tables: users, interests, messages, and likes. Each table has its own store. When a user logs in, all of his or her personal data is collected from the database and stored in these stores. For example, to obtain all of a user's messages, an API request is made to the database which joins the user table and the message table polymorphically on both `receiver_id` and `sender_id`. Then, if just viewing these messages, calls to the store are made when refreshing, instead of pinging the database too often.
+OkAlpha is built with 4 tables: users, interests, messages, and likes. Each table has its own store. When a user logs in, all of his or her personal data is collected from the database and stored in these stores. For example, to obtain all of a user's messages, an API request is made to the database which joins the user table and the message table polymorphically on both `receiver_id` and `sender_id`. Then, if just viewing these messages, calls to the store are made when refreshing, instead of pinging the database too often.
 
 * [DB schema][schema]
 [schema]: ./docs/schema.md
@@ -71,4 +71,7 @@ There are still a few features I'd like to add to OkAlpha in my spare time:
 * The ability to mark messages as unread
 * The ability to search messages
 * The ability to see messages from one user or subject line bundled in a thread
+* Messaging with multiple recipients
+* Clicking on an interest in a user's profile will aggregate all users with that interest
+* Look into socket.io for real-time chat functionality
 * Implement more complicated matching algorithms
