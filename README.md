@@ -68,10 +68,10 @@ return (
 ### Future Ideas
 
 There are still a few features I'd like to add to OkAlpha in my spare time:
-* The ability to mark messages as unread
-* The ability to search messages
-* The ability to see messages from one user or subject line bundled in a thread
-* Messaging with multiple recipients
-* Clicking on an interest in a user's profile will aggregate all users with that interest
+* The ability to mark messages manually as unread or read
+* The ability to search through messages
+* The ability to see messages from one user or subject line bundled into a thread
+* The ability to message multiple recipients
+* The ability to search an interest and see all users with that interest without adding it to your profile
 * Look into socket.io for real-time chat functionality
 * Implement more complicated matching algorithms
