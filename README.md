@@ -76,4 +76,4 @@ There are still a few features I'd like to add to OkAlpha in my spare time:
 * Look into socket.io for real-time chat functionality
 * Implement more complicated matching algorithms
 
-##### Much much thanks to [Memory-Alpha](http://memory-alpha.wikia.com/) for their extensive Star Trek encyclopedia!
+##### Footnote: Much much thanks to [Memory-Alpha](http://memory-alpha.wikia.com/) for their extensive Star Trek encyclopedia!
