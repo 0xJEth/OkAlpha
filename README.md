@@ -75,3 +75,5 @@ There are still a few features I'd like to add to OkAlpha in my spare time:
 * The ability to search an interest and see all users with that interest (without having to add it to your profile)
 * Look into socket.io for real-time chat functionality
 * Implement more complicated matching algorithms
+
+##### Much much thanks to [Memory-Alpha](http://memory-alpha.wikia.com/) for their extensive Star Trek encyclopedia!
