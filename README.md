@@ -69,11 +69,12 @@ return (
 
 There are still a few features I'd like to add to OkAlpha in my spare time:
 * The ability to mark messages manually as unread or read
-* The ability to search through messages
-* The ability to see messages from one user or subject line bundled into a thread
-* The ability to message multiple recipients
+* The ability to search for messages
+* Combine email threads into a single view
+* The ability to message multiple recipients, also basic messaging functions like reply-all and forward
 * The ability to search an interest and see all users with that interest (without having to add it to your profile)
 * Look into socket.io for real-time chat functionality
 * Implement more complicated matching algorithms
+* Look into fuse.js to implement fuzzy search - fuzzy search would be great for matching interests that aren't literally identical
 
 ##### Footnote: Much much thanks to [Memory-Alpha](http://memory-alpha.wikia.com/) for their extensive Star Trek encyclopedia!
