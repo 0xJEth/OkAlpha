@@ -12,10 +12,8 @@ var Matches = React.createClass({
   mixins: [LinkedStateMixin, History],
 
   getStateFromStore: function () {
-    var current_user_id = parseInt(this.props.id);
-    if (!current_user_id) {
-      var current_user_id = parseInt(this.props.routeParams.id)
-    }
+    var user = UserStore.currentUser();
+    var current_user_id = user.id;
     return ({
       current_user_id: current_user_id,
       myMatches: InterestStore.allMyMatches(current_user_id)
@@ -65,10 +63,10 @@ var Matches = React.createClass({
           matchLi.push(<UserItem key={id} user={user} className="like-list-item"/>);
           matchContainer[user.id].forEach(function(interest) {
             matchLi.push(<p key={interest.id + 100} className="match-text">{"likes " + interest.interest}</p>);
-          })
+          }.bind(this));
         }
         matchList.push(<div className="match-list-div">{matchLi}</div>);
-      })
+      }.bind(this));
     }
 
     return (

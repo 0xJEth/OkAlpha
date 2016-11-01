@@ -45,11 +45,3 @@ div.likes {
   display: block;
   font-size: 10pt;
 }
-
-.match-list-div *{
-  cursor: pointer;
-}
-
-.match-list-div:hover {
-  background-color: #b3d1ff;
-}

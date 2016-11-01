@@ -33,19 +33,19 @@ module.exports = React.createClass({
   handleMatchesButton: function (event) {
     event.preventDefault();
     var current_user = this.state.current_user;
-    this.history.pushState(current_user, '/likes/' + this.state.id);
+    this.history.pushState(current_user, '/likes/');
   },
 
   handleMessagesButton: function (event) {
     event.preventDefault();
     var current_user = this.state.current_user;
-    this.history.pushState(current_user, '/messages/' + this.state.id);
+    this.history.pushState(current_user, '/messages/');
   },
 
   handleEditProfileButton: function (event) {
     event.preventDefault();
     var current_user = this.state.current_user;
-    this.history.pushState(current_user, '/profile/' + this.state.id);
+    this.history.pushState(current_user, '/profile/');
   },
 
   render: function () {

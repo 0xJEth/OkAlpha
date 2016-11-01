@@ -14,10 +14,13 @@ var Likes = React.createClass({
   mixins: [LinkedStateMixin, History],
 
   getStateFromStore: function () {
-    var current_user_id = parseInt(this.props.id);
-    if (!current_user_id) {
-      var current_user_id = parseInt(this.props.routeParams.id)
-    }
+    // var current_user_id = parseInt(this.props.id);
+    var user = UserStore.currentUser();
+    var current_user_id = user.id;
+
+    // if (!current_user_id) {
+    //   var current_user_id = parseInt(this.props.routeParams.id)
+    // }
     return ({
       current_user_id: current_user_id,
       myLikes: LikeStore.allMyLikes(current_user_id),

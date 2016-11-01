@@ -15,7 +15,8 @@ var Messages = React.createClass({
   mixins: [LinkedStateMixin, History],
 
   getStateFromStore: function () {
-    var current_user_id = parseInt(this.props.routeParams.id);
+    var user = UserStore.currentUser();
+    var current_user_id = user.id;
     var messages = MessageStore.allMyReceivedMessages(current_user_id);
     var count = 0;
     messages.forEach(function(message){

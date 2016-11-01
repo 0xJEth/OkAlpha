@@ -36,7 +36,7 @@ module.exports = React.createClass({
   },
 
   getStateFromStore: function () {
-    var user = UserStore.find(parseInt(this.props.routeParams.id));
+    var user = UserStore.currentUser();
     if (user) {
       return ({
         user: user,
@@ -56,13 +56,8 @@ module.exports = React.createClass({
     return this.getStateFromStore();
   },
 
-  componentWillReceiveProps: function (newProps) {
-    ApiUserUtil.fetchUser(parseInt(newProps.routeParams.id));
-  },
-
   componentDidMount: function () {
     this.userListener = UserStore.addListener(this._userChanged);
-    ApiUserUtil.fetchUser(parseInt(this.props.routeParams.id));
   },
 
   componentWillUnmount: function () {
@@ -95,7 +90,7 @@ module.exports = React.createClass({
     var gender = this.radioGroup("gender");
     var preferred_gender = this.radioGroup("preferred_gender");
 
-    var user = UserStore.find(parseInt(this.props.routeParams.id));
+    var user = this.state.user;
 
     if (this.state.gender != "male" && this.state.gender!= "female") {
       var linkstate = this.linkState("gender");

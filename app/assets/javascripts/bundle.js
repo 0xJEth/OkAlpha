@@ -105,15 +105,14 @@
 	    }
 	  }
 	});
-	
 	var routes = React.createElement(
 	  Route,
 	  { path: '/', component: App },
 	  React.createElement(IndexRoute, { component: User }),
-	  React.createElement(Route, { path: 'profile/:id', component: UserForm }),
+	  React.createElement(Route, { path: 'profile', component: UserForm }),
 	  React.createElement(Route, { path: 'user/:id', component: UserShow }),
-	  React.createElement(Route, { path: 'likes/:id', component: Likes }),
-	  React.createElement(Route, { path: 'messages/:id', component: Messages })
+	  React.createElement(Route, { path: 'likes', component: Likes }),
+	  React.createElement(Route, { path: 'messages', component: Messages })
 	);
 	
 	document.addEventListener("DOMContentLoaded", function () {
@@ -24522,7 +24521,7 @@
 	  },
 	
 	  getStateFromStore: function () {
-	    var user = UserStore.find(parseInt(this.props.routeParams.id));
+	    var user = UserStore.currentUser();
 	    if (user) {
 	      return {
 	        user: user,
@@ -24542,13 +24541,8 @@
 	    return this.getStateFromStore();
 	  },
 	
-	  componentWillReceiveProps: function (newProps) {
-	    ApiUserUtil.fetchUser(parseInt(newProps.routeParams.id));
-	  },
-	
 	  componentDidMount: function () {
 	    this.userListener = UserStore.addListener(this._userChanged);
-	    ApiUserUtil.fetchUser(parseInt(this.props.routeParams.id));
 	  },
 	
 	  componentWillUnmount: function () {
@@ -24585,7 +24579,7 @@
 	    var gender = this.radioGroup("gender");
 	    var preferred_gender = this.radioGroup("preferred_gender");
 	
-	    var user = UserStore.find(parseInt(this.props.routeParams.id));
+	    var user = this.state.user;
 	
 	    if (this.state.gender != "male" && this.state.gender != "female") {
 	      var linkstate = this.linkState("gender");
@@ -32310,19 +32304,19 @@
 	  handleMatchesButton: function (event) {
 	    event.preventDefault();
 	    var current_user = this.state.current_user;
-	    this.history.pushState(current_user, '/likes/' + this.state.id);
+	    this.history.pushState(current_user, '/likes/');
 	  },
 	
 	  handleMessagesButton: function (event) {
 	    event.preventDefault();
 	    var current_user = this.state.current_user;
-	    this.history.pushState(current_user, '/messages/' + this.state.id);
+	    this.history.pushState(current_user, '/messages/');
 	  },
 	
 	  handleEditProfileButton: function (event) {
 	    event.preventDefault();
 	    var current_user = this.state.current_user;
-	    this.history.pushState(current_user, '/profile/' + this.state.id);
+	    this.history.pushState(current_user, '/profile/');
 	  },
 	
 	  render: function () {
@@ -33310,10 +33304,13 @@
 	  mixins: [LinkedStateMixin, History],
 	
 	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.id);
-	    if (!current_user_id) {
-	      var current_user_id = parseInt(this.props.routeParams.id);
-	    }
+	    // var current_user_id = parseInt(this.props.id);
+	    var user = UserStore.currentUser();
+	    var current_user_id = user.id;
+	
+	    // if (!current_user_id) {
+	    //   var current_user_id = parseInt(this.props.routeParams.id)
+	    // }
 	    return {
 	      current_user_id: current_user_id,
 	      myLikes: LikeStore.allMyLikes(current_user_id),
@@ -33442,10 +33439,8 @@
 	  mixins: [LinkedStateMixin, History],
 	
 	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.id);
-	    if (!current_user_id) {
-	      var current_user_id = parseInt(this.props.routeParams.id);
-	    }
+	    var user = UserStore.currentUser();
+	    var current_user_id = user.id;
 	    return {
 	      current_user_id: current_user_id,
 	      myMatches: InterestStore.allMyMatches(current_user_id)
@@ -33488,25 +33483,25 @@
 	        }
 	      });
 	      var matchList = [];
-	      Object.keys(matchContainer).forEach(function (id) {
+	      Object.keys(matchContainer).forEach((function (id) {
 	        var user = UserStore.find(parseInt(id));
 	        if (user) {
 	          var matchLi = [];
 	          matchLi.push(React.createElement(UserItem, { key: id, user: user, className: 'like-list-item' }));
-	          matchContainer[user.id].forEach(function (interest) {
+	          matchContainer[user.id].forEach((function (interest) {
 	            matchLi.push(React.createElement(
 	              'p',
 	              { key: interest.id + 100, className: 'match-text' },
 	              "likes " + interest.interest
 	            ));
-	          });
+	          }).bind(this));
 	        }
 	        matchList.push(React.createElement(
 	          'div',
 	          { className: 'match-list-div' },
 	          matchLi
 	        ));
-	      });
+	      }).bind(this));
 	    }
 	
 	    return React.createElement(
@@ -33547,7 +33542,8 @@
 	  mixins: [LinkedStateMixin, History],
 	
 	  getStateFromStore: function () {
-	    var current_user_id = parseInt(this.props.routeParams.id);
+	    var user = UserStore.currentUser();
+	    var current_user_id = user.id;
 	    var messages = MessageStore.allMyReceivedMessages(current_user_id);
 	    var count = 0;
 	    messages.forEach(function (message) {
