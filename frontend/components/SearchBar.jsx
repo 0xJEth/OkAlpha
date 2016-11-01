@@ -18,15 +18,25 @@ var SearchBar = React.createClass({
   },
 
   makeList: function(results) {
+    results.sort(function(a, b) {
+      var nameA = a.username.toUpperCase();
+      var nameB = b.username.toUpperCase();
+      if (nameA < nameB) {
+        return -1;
+      }
+      if (nameA > nameB) {
+        return 1;
+      }
+      return 0;
+    });
+    console.log(results);
+
     var list = [];
     {results.map(function (user) {
       if (user.id != this.props.currentUser.id) {
         list.push(<UserItem key={user.id} user={user}/>)
       }
     }.bind(this))}
-    if (list.length === 0) {
-      list.push(<p key={-1} className="search-results">No results</p>)
-    }
     return list;
   },
 
@@ -46,6 +56,13 @@ var SearchBar = React.createClass({
       var browseAll = "disabled";
     }
 
+    if (list.length === 0) {
+      var searchClassName = "none";
+      list.push(<div key={-1} className="no-search-results">No results</div>)
+    } else {
+      var searchClassName = "search-results"
+    }
+
     return (
       <div className="search-div">
         <div className="search-bar">
@@ -57,7 +74,7 @@ var SearchBar = React.createClass({
           />
         <button className={browseAll} onClick={this.allUsers}>Browse All Users</button>
         </div>
-        <ul className="search-results">{list}</ul>
+        <ul className={searchClassName}>{list}</ul>
       </div>
     );
   }

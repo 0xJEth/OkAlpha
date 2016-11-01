@@ -26,10 +26,16 @@
 .search-results {
   height: auto;
   padding: 10px;
-  -webkit-column-count: 2;
-  -moz-column-count: 2;
-  column-count: 2;
+  -webkit-column-count: 4;
+  -moz-column-count: 4;
+  column-count: 4;
   }
+
+.none {
+  height: auto;
+  padding: 20px;
+  margin-left: 20px;
+}
 
 .search-results li.user-item {
   width: 200px;
