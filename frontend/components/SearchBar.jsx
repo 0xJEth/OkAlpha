@@ -29,7 +29,6 @@ var SearchBar = React.createClass({
       }
       return 0;
     });
-    console.log(results);
 
     var list = [];
     {results.map(function (user) {

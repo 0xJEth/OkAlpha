@@ -28,14 +28,14 @@ var ApiMessageUtil = {
     });
   },
 
-  updateMessage: function (read_messaage, callback) {
+  updateMessage: function (read_message, callback) {
     $.ajax({
-      url: "api/messages/" + read_messaage.id,
+      url: "api/messages/" + read_message.id,
       type: "PATCH",
-      data: {message: read_messaage},
+      data: {message: read_message},
       success: function (message) {
-        ApiMessageActions.receiveMessage(read_messaage);
-        callback && callback(read_messaage.id);
+        ApiMessageActions.receiveMessage(read_message);
+        callback && callback(read_message.id);
       },
       error: function (message) {
         console.log(message);

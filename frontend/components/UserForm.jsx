@@ -141,7 +141,7 @@ module.exports = React.createClass({
             <label>Female</label>
             <br/>
             <input type="radio" name="preferred-gender" checkedLink={preferred_gender.valueLink("no preference")}/>
-            <label>No prefence</label><br/>
+            <label>No preference</label><br/>
             <input type="radio" name="preferred-gender" checkedLink={preferred_gender.valueLink(preferredGenderState)}/>
             <label>Other</label>
             <input id="profile-textbox2" type="text" valueLink={preferredlinkstate}/>
