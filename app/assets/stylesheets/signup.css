@@ -1,5 +1,5 @@
 body.front-page {
-  background-image: url(http://www.drodd.com/images10/space-wallpaper17.jpg);
+  background-image: url(https://res.cloudinary.com/jolinar1013/image/upload/v1524881326/tY3OiJm_xpoukb.jpg);
   background-repeat: no-repeat;
   background-size: 100% 100%;
   background-blend-mode: luminosity;
@@ -10,7 +10,8 @@ body.front-page {
 
 .splash-body {
   width: 25%;
-  height: 600px;
+  min-width: 300px;
+  min-height: 650px;
   vertical-align: middle;
   position: absolute;
   padding: 25px;
