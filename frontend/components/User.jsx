@@ -60,7 +60,7 @@ var User = React.createClass({
         if (
             this.state.current_user && user &&
             this.state.current_user.id != user.id &&
-            user.image_url != "http://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" &&
+            user.image_url != "https://res.cloudinary.com/jolinar1013/image/upload/v1451896155/OkAlpha/ljrlqsnwviwsfaykklje.png" &&
             user.image_url != "http://www.gl-assessment.ie/sites/gl/files/images/1414510022_user-128.png"
             )
           {
