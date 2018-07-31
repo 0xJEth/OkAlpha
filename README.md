@@ -2,7 +2,7 @@
 
 OkAlpha is a full-stack web application inspired by OkCupid.  It's built with Ruby on Rails on the backend, a PostgreSQL database, and React.js with a Flux architectural framework on the frontend.  
 
-##[Live](https://okalpha.herokuapp.com/)
+## [Live](https://okalpha.herokuapp.com/)
 
 ### Features
 
